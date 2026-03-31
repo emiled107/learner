@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚽ Quiz Histoire du Foot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #0a0e1a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header .sub {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* Category selector */
+        .cat-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .cat-btn {
+            padding: 8px 16px;
+            border: 2px solid #333;
+            border-radius: 25px;
+            background: rgba(0,0,0,0.3);
+            color: #aaa;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .cat-btn:hover { border-color: #00b09b; color: #00b09b; }
+        .cat-btn.active {
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        /* Progress */
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b09b, #96c93d);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+        .streak { color: #ffd700; font-weight: 700; }
+
+        /* Question card */
+        .qcard {
+            background: linear-gradient(135deg, #141a2e, #1a2040);
+            border: 2px solid #222;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.35s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .qcard-cat {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            background: rgba(0, 176, 155, 0.2);
+            color: #00b09b;
+        }
+        .qcard-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.5;
+            margin-bottom: 18px;
+        }
+        .qcard-hint {
+            background: rgba(150, 201, 61, 0.1);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #96c93d;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .opt {
+            padding: 14px 18px;
+            border: 2px solid #2a2a3a;
+            border-radius: 10px;
+            cursor: pointer;
+            background: rgba(0,0,0,0.3);
+            transition: all 0.25s ease;
+            font-size: 0.95rem;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        .opt:hover { border-color: #00b09b; background: rgba(0, 176, 155, 0.08); }
+        .opt.selected { border-color: #00b09b; background: rgba(0, 176, 155, 0.2); }
+        .opt.correct { border-color: #00ff88; background: rgba(0, 255, 136, 0.15); color: #00ff88; }
+        .opt.wrong { border-color: #ff4444; background: rgba(255, 68, 68, 0.15); color: #ff8888; }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            display: none;
+        }
+        .feedback.show { display: block; animation: fadeIn 0.3s ease; }
+        .feedback.ok { background: rgba(0, 255, 136, 0.08); border-left: 4px solid #00ff88; color: #aaffcc; }
+        .feedback.ko { background: rgba(255, 68, 68, 0.08); border-left: 4px solid #ff4444; color: #ffaaaa; }
+        .feedback strong { display: block; margin-bottom: 5px; font-size: 1rem; }
+        .feedback .detail { color: #bbb; }
+
+        /* Buttons */
+        .btns { display: flex; gap: 10px; margin-top: 18px; }
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            transition: all 0.3s;
+        }
+        .btn-go {
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            color: #fff;
+        }
+        .btn-go:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,176,155,0.4); }
+        .btn-go:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-next {
+            background: rgba(0, 176, 155, 0.15);
+            color: #00b09b;
+            border: 2px solid #00b09b;
+        }
+        .btn-next:hover { background: rgba(0, 176, 155, 0.25); }
+
+        /* Results */
+        .results { display: none; text-align: center; }
+        .results.show { display: block; animation: fadeIn 0.4s ease; }
+        .results .big-score {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        .results .stars { font-size: 2.5rem; letter-spacing: 8px; margin: 15px 0; }
+        .results .msg { font-size: 1.1rem; margin-bottom: 20px; }
+        .cat-results {
+            text-align: left;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 18px;
+            margin: 20px 0;
+        }
+        .cat-results h3 { font-size: 0.85rem; color: #00b09b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .cat-result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+        }
+        .cat-result-row:last-child { border: none; }
+        .cat-result-score { color: #96c93d; font-weight: 700; }
+        .result-code {
+            background: rgba(0,0,0,0.5);
+            padding: 14px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.7rem;
+            word-break: break-all;
+            color: #00b09b;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .result-code:hover { background: rgba(0,0,0,0.7); }
+        .copy-ok { color: #00ff88; font-size: 0.8rem; margin-top: 5px; display: none; }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #00b09b;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.3s;
+        }
+        .back-link:hover { color: #96c93d; }
+
+        /* Start screen */
+        .start-screen { text-align: center; padding: 40px 20px; }
+        .start-screen .emoji { font-size: 4rem; margin-bottom: 15px; }
+        .start-screen p { color: #999; font-size: 0.95rem; margin-bottom: 25px; line-height: 1.6; }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.5rem; }
+            .qcard { padding: 18px; }
+            .big-score { font-size: 2.5rem !important; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>⚽ Quiz Histoire du Foot</h1>
+        <div class="sub">Teste tes connaissances sur le plus beau sport du monde</div>
+    </div>
+
+    <!-- Start screen -->
+    <div id="start-screen" class="start-screen">
+        <div class="emoji">⚽</div>
+        <p>20 questions sur l'histoire du football : Coupes du Monde, legendes, records, clubs et regles du jeu.</p>
+        <div class="cat-selector" id="cat-selector">
+            <button class="cat-btn active" data-cat="all">Tout</button>
+            <button class="cat-btn" data-cat="cdm">🏆 Coupes du Monde</button>
+            <button class="cat-btn" data-cat="legendes">👑 Legendes</button>
+            <button class="cat-btn" data-cat="clubs">🏟️ Clubs</button>
+            <button class="cat-btn" data-cat="records">📊 Records</button>
+            <button class="cat-btn" data-cat="regles">📋 Regles & Origines</button>
+        </div>
+        <button class="btn btn-go" onclick="startQuiz()" style="max-width:300px;">Lancer le quiz !</button>
+    </div>
+
+    <!-- Quiz area -->
+    <div id="quiz-area" style="display:none;">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="pbar" style="width:5%"></div></div>
+        <div class="stats-bar">
+            <span>Question <b id="qnum">1</b> / 20</span>
+            <span id="streak-display" style="display:none;" class="streak">🔥 <span id="streak-n">0</span></span>
+            <span id="score-live">Score: <b>0</b></span>
+        </div>
+        <div class="qcard">
+            <div class="qcard-cat" id="q-cat"></div>
+            <div class="qcard-text" id="q-text"></div>
+            <div class="qcard-hint" id="q-hint" style="display:none;"></div>
+            <div class="options" id="q-opts"></div>
+            <div class="feedback" id="q-fb"></div>
+        </div>
+        <div class="btns">
+            <button class="btn btn-go" id="btn-validate" onclick="validate()" disabled>Valider</button>
+            <button class="btn btn-next" id="btn-next" onclick="next()" style="display:none;">Suivante →</button>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="results">
+        <h2>⚽ Résultats</h2>
+        <div class="big-score" id="r-score"></div>
+        <div class="stars" id="r-stars"></div>
+        <div class="msg" id="r-msg"></div>
+        <div class="cat-results" id="r-cats">
+            <h3>📊 Par catégorie</h3>
+        </div>
+        <p style="font-size:0.8rem;color:#666;margin-top:15px;">📋 Code résultat :</p>
+        <div class="result-code" id="r-code" onclick="copyCode()"></div>
+        <div class="copy-ok" id="copy-ok">✓ Copié !</div>
+        <br>
+        <button class="btn btn-go" onclick="location.reload()" style="max-width:250px;margin:10px auto;">🔄 Rejouer</button>
+        <br>
+        <a href="/learner/index.html" class="back-link">← Retour à l'accueil</a>
+    </div>
+</div>
+
+<script>
+const TOTAL = 20;
+
+const catLabels = {
+    cdm: '🏆 Coupes du Monde',
+    legendes: '👑 Légendes',
+    clubs: '🏟️ Clubs',
+    records: '📊 Records',
+    regles: '📋 Règles & Origines'
+};
+
+const allQ = [
+// ===== COUPES DU MONDE =====
+{cat:'cdm', q:"Quel pays a remporté la première Coupe du Monde en 1930 ?",
+ opts:["Brésil","Argentine","Uruguay","Italie"], c:2,
+ exp:"L'Uruguay a remporté la première Coupe du Monde, organisée chez eux à Montevideo, en battant l'Argentine 4-2 en finale."},
+
+{cat:'cdm', q:"Quel pays détient le record de victoires en Coupe du Monde (5 titres) ?",
+ opts:["Allemagne","Brésil","Italie","Argentine"], c:1,
+ exp:"Le Brésil a gagné 5 Coupes du Monde : 1958, 1962, 1970, 1994 et 2002. Record absolu."},
+
+{cat:'cdm', q:"En quelle année la France a-t-elle remporté sa première Coupe du Monde ?",
+ opts:["1994","1998","2002","2006"], c:1,
+ exp:"La France a remporté sa première Coupe du Monde en 1998, à domicile, en battant le Brésil 3-0 en finale (doublé de Zidane)."},
+
+{cat:'cdm', q:"Qui est le meilleur buteur de l'histoire des Coupes du Monde ?",
+ opts:["Pelé","Ronaldo (R9)","Miroslav Klose","Just Fontaine"], c:2,
+ exp:"Miroslav Klose (Allemagne) détient le record avec 16 buts en Coupe du Monde, devant Ronaldo (15)."},
+
+{cat:'cdm', q:"Quel pays a perdu 3 finales de Coupe du Monde sans jamais gagner (avant 2022) ?",
+ opts:["Pays-Bas","Hongrie","Suède","Tchécoslovaquie"], c:0,
+ exp:"Les Pays-Bas ont perdu les finales de 1974, 1978 et 2010 sans jamais remporter le trophée."},
+
+{cat:'cdm', q:"Qui a marqué le 'But du Siècle' en quarts de finale du Mondial 1986 ?",
+ opts:["Pelé","Zinédine Zidane","Diego Maradona","Michel Platini"], c:2,
+ exp:"Maradona a dribblé 6 joueurs anglais sur 60 mètres pour marquer ce but légendaire. C'est aussi le match de la 'Main de Dieu'."},
+
+{cat:'cdm', q:"Quel joueur a marqué le plus de buts dans une seule Coupe du Monde ?",
+ hint:"Coupe du Monde 1958 en Suède",
+ opts:["Pelé (6 buts, 1970)","Gerd Müller (10 buts, 1970)","Just Fontaine (13 buts, 1958)","Ronaldo (8 buts, 2002)"], c:2,
+ exp:"Just Fontaine a inscrit 13 buts lors du Mondial 1958, un record qui tient toujours. La France avait terminé 3ème."},
+
+{cat:'cdm', q:"Quel pays a remporté la Coupe du Monde 2022 au Qatar ?",
+ opts:["France","Brésil","Argentine","Croatie"], c:2,
+ exp:"L'Argentine de Lionel Messi a battu la France aux tirs au but en finale (3-3 a.p., 4-2 t.a.b.), malgré un triplé de Mbappé."},
+
+{cat:'cdm', q:"Combien de fois l'Italie a-t-elle remporté la Coupe du Monde ?",
+ opts:["2 fois","3 fois","4 fois","5 fois"], c:2,
+ exp:"L'Italie a gagné 4 fois : 1934, 1938, 1982 et 2006."},
+
+{cat:'cdm', q:"Quel gardien français a été élu meilleur gardien du Mondial 2018 ?",
+ opts:["Steve Mandanda","Hugo Lloris","Thibaut Courtois","Mike Maignan"], c:1,
+ exp:"Hugo Lloris, capitaine des Bleus, a reçu le Gant d'Or lors du Mondial 2018 remporté par la France."},
+
+// ===== LÉGENDES =====
+{cat:'legendes', q:"Combien de Ballons d'Or Lionel Messi a-t-il remportés ?",
+ opts:["6","7","8","5"], c:2,
+ exp:"Lionel Messi détient le record avec 8 Ballons d'Or (2009, 2010, 2011, 2012, 2015, 2019, 2021, 2023)."},
+
+{cat:'legendes', q:"Quel joueur est le meilleur buteur de l'histoire du Real Madrid ?",
+ opts:["Raúl","Alfredo Di Stéfano","Cristiano Ronaldo","Karim Benzema"], c:2,
+ exp:"Cristiano Ronaldo a marqué 451 buts en 438 matchs avec le Real Madrid (2009-2018). Record du club."},
+
+{cat:'legendes', q:"De quel pays est originaire Pelé ?",
+ opts:["Argentine","Portugal","Brésil","Colombie"], c:2,
+ exp:"Pelé (Edson Arantes do Nascimento) est brésilien. Il a remporté 3 Coupes du Monde (1958, 1962, 1970)."},
+
+{cat:'legendes', q:"Quel joueur français a inscrit un doublé en finale de la Coupe du Monde 1998 ?",
+ opts:["Thierry Henry","Zinédine Zidane","David Trezeguet","Emmanuel Petit"], c:1,
+ exp:"Zidane a marqué deux têtes en première mi-temps contre le Brésil. Petit a ajouté le 3ème but."},
+
+{cat:'legendes', q:"Qui est surnommé 'O Fenômeno' ?",
+ opts:["Ronaldinho","Ronaldo Nazário","Neymar","Rivaldo"], c:1,
+ exp:"Ronaldo Nazário (R9), attaquant brésilien, est surnommé 'O Fenômeno' (Le Phénomène). Deux fois Ballon d'Or."},
+
+{cat:'legendes', q:"Quel joueur détient le record de buts en sélection nationale ?",
+ opts:["Cristiano Ronaldo","Lionel Messi","Ali Daei","Pelé"], c:0,
+ exp:"Cristiano Ronaldo détient le record avec plus de 130 buts pour le Portugal, dépassant Ali Daei (109) en 2021."},
+
+{cat:'legendes', q:"Dans quel club Zinédine Zidane a-t-il terminé sa carrière de joueur ?",
+ opts:["Juventus","Bordeaux","Real Madrid","Olympique de Marseille"], c:2,
+ exp:"Zidane a pris sa retraite au Real Madrid en 2006, après son expulsion en finale de la Coupe du Monde."},
+
+{cat:'legendes', q:"Qui est le plus jeune joueur à avoir marqué en finale de Coupe du Monde ?",
+ opts:["Pelé (17 ans, 1958)","Kylian Mbappé (19 ans, 2018)","Michael Owen (18 ans, 1998)","Ronaldo (21 ans, 2002)"], c:0,
+ exp:"Pelé avait 17 ans et 249 jours quand il a marqué en finale 1958 contre la Suède. Record toujours imbattu."},
+
+{cat:'legendes', q:"Quel joueur a le surnom 'La Pulga' (La Puce) ?",
+ opts:["Diego Maradona","Andrés Iniesta","Lionel Messi","Xavi Hernández"], c:2,
+ exp:"Messi est surnommé 'La Pulga' en raison de sa petite taille (1,70m) et de son agilité exceptionnelle."},
+
+{cat:'legendes', q:"Quel joueur africain a remporté le Ballon d'Or en 1995 ?",
+ opts:["Samuel Eto'o","Didier Drogba","George Weah","Jay-Jay Okocha"], c:2,
+ exp:"George Weah (Libéria) a remporté le Ballon d'Or 1995. Il est devenu président du Libéria en 2018."},
+
+// ===== CLUBS =====
+{cat:'clubs', q:"Quel club a remporté le plus de Ligues des Champions / Coupes d'Europe ?",
+ opts:["FC Barcelone","AC Milan","Real Madrid","Liverpool"], c:2,
+ exp:"Le Real Madrid détient le record avec 15 Ligues des Champions (en 2024). Milan en a 7, Liverpool 6."},
+
+{cat:'clubs', q:"Comment s'appelle le stade du FC Barcelone inauguré en 1957 ?",
+ opts:["Santiago Bernabéu","Camp Nou","San Siro","Wembley"], c:1,
+ exp:"Le Camp Nou est le stade du Barça depuis 1957. C'est le plus grand stade d'Europe avec ~99 000 places."},
+
+{cat:'clubs', q:"Quel club anglais est surnommé 'The Red Devils' ?",
+ opts:["Liverpool","Arsenal","Manchester United","Chelsea"], c:2,
+ exp:"Manchester United est surnommé 'The Red Devils' (Les Diables Rouges). Surnom adopté dans les années 1960."},
+
+{cat:'clubs', q:"Quel club a réalisé le 'Sextuplé' en 2009 (6 trophées en une saison) ?",
+ opts:["Real Madrid","FC Barcelone","Manchester City","Bayern Munich"], c:1,
+ exp:"Le Barça de Guardiola a gagné les 6 compétitions possibles en 2009 : Liga, Copa del Rey, Ligue des Champions, Supercoupe d'Espagne, Supercoupe d'Europe, Coupe du Monde des clubs."},
+
+{cat:'clubs', q:"Quel club français a atteint la finale de la Ligue des Champions en 2020 ?",
+ opts:["Olympique de Marseille","AS Monaco","Paris Saint-Germain","Olympique Lyonnais"], c:2,
+ exp:"Le PSG a atteint sa première finale de Ligue des Champions en 2020, perdue 1-0 contre le Bayern Munich."},
+
+{cat:'clubs', q:"Dans quelle ville se trouve le stade 'San Siro' ?",
+ opts:["Rome","Madrid","Milan","Turin"], c:2,
+ exp:"San Siro (officiellement Giuseppe Meazza) est à Milan, partagé entre l'AC Milan et l'Inter Milan."},
+
+{cat:'clubs', q:"Quel club allemand a dominé le football allemand avec plus de 30 titres de Bundesliga ?",
+ opts:["Borussia Dortmund","Schalke 04","Bayern Munich","Bayer Leverkusen"], c:2,
+ exp:"Le Bayern Munich est le club le plus titré d'Allemagne avec plus de 30 championnats."},
+
+{cat:'clubs', q:"Quel club a remporté la première Coupe d'Europe en 1956 ?",
+ opts:["Benfica","AC Milan","Real Madrid","Manchester United"], c:2,
+ exp:"Le Real Madrid a remporté les 5 premières éditions de la Coupe d'Europe (1956-1960). Un record de domination."},
+
+// ===== RECORDS =====
+{cat:'records', q:"Quel est le score le plus large jamais enregistré dans un match international ?",
+ opts:["Australie 31-0 Samoa Américaines","Allemagne 16-0 Russie","Brésil 14-0 Nicaragua","Espagne 13-0 Bulgarie"], c:0,
+ exp:"Le 11 avril 2001, l'Australie a battu les Samoa Américaines 31-0 en éliminatoires de la Coupe du Monde 2002."},
+
+{cat:'records', q:"Quel gardien détient le record d'invincibilité en équipe de France ?",
+ opts:["Fabien Barthez","Hugo Lloris","Joël Bats","Mike Maignan"], c:0,
+ exp:"Fabien Barthez détient le record avec 1175 minutes sans encaisser de but en sélection."},
+
+{cat:'records', q:"Quel joueur a marqué le but le plus rapide de l'histoire en match officiel ?",
+ hint:"En moins de 3 secondes après le coup d'envoi",
+ opts:["Hakan Şükür (11 sec)","Nawaf Al Abed (2 sec)","Shane Long (7 sec)","Christian Benteke (8 sec)"], c:1,
+ exp:"Nawaf Al Abed (Arabie Saoudite) a marqué après 2 secondes de jeu en 2009. En Coupe du Monde, le record est de Hakan Şükür (11 sec, 2002)."},
+
+{cat:'records', q:"Quel joueur a reçu le plus de cartons rouges en carrière professionnelle ?",
+ opts:["Zinédine Zidane","Sergio Ramos","Gerardo Bedoya","Pepe"], c:2,
+ exp:"Le colombien Gerardo Bedoya a reçu 46 cartons rouges en carrière, un record mondial."},
+
+{cat:'records', q:"Quel est le transfert le plus cher de l'histoire du football ?",
+ opts:["Cristiano Ronaldo (Juve)","Neymar (PSG)","Kylian Mbappé (PSG)","Philippe Coutinho (Barça)"], c:1,
+ exp:"Le transfert de Neymar du Barça au PSG en 2017 pour 222 millions d'euros reste le plus cher de l'histoire."},
+
+{cat:'records', q:"Quel club a la plus longue série d'invincibilité en championnat (49 matchs) ?",
+ opts:["Juventus","AC Milan","Arsenal","Bayern Munich"], c:2,
+ exp:"Arsenal, les 'Invincibles', sont invaincus en 49 matchs de Premier League entre 2003 et 2004 (dont la saison 2003-04 entière sans défaite)."},
+
+// ===== RÈGLES & ORIGINES =====
+{cat:'regles', q:"En quelle année les premières règles officielles du football ont-elles été écrites ?",
+ opts:["1848","1863","1900","1930"], c:1,
+ exp:"La Football Association (FA) a codifié les premières lois du jeu en 1863 à Londres. C'est la naissance du football moderne."},
+
+{cat:'regles', q:"Depuis quand les cartons jaunes et rouges sont-ils utilisés en football ?",
+ opts:["1950","1962","1970","1986"], c:2,
+ exp:"Les cartons ont été introduits lors de la Coupe du Monde 1970 au Mexique, sur une idée de l'arbitre anglais Ken Aston."},
+
+{cat:'regles', q:"Combien de joueurs composent une équipe de football sur le terrain ?",
+ opts:["10","11","12","9"], c:1,
+ exp:"11 joueurs par équipe, dont un gardien de but. Si une équipe descend en dessous de 7 joueurs, le match est arrêté."},
+
+{cat:'regles', q:"Quelle est la durée réglementaire d'un match de football ?",
+ opts:["80 minutes","90 minutes","100 minutes","120 minutes"], c:1,
+ exp:"Un match dure 90 minutes (2x45 min). En cas d'égalité dans certaines compétitions : prolongation de 30 min (2x15)."},
+
+{cat:'regles', q:"Qu'est-ce que la règle du hors-jeu ?",
+ opts:[
+    "Un joueur ne peut pas jouer le ballon dans sa moitié de terrain",
+    "Un joueur est en position irrégulière s'il est plus près de la ligne de but adverse que le ballon et l'avant-dernier défenseur au moment de la passe",
+    "Un joueur ne peut pas toucher le ballon deux fois de suite",
+    "Un joueur doit toujours être face au but adverse"
+ ], c:1,
+ exp:"Le hors-jeu empêche un attaquant de 'camper' devant le but. Il faut au moins 2 adversaires (dont le gardien) entre le joueur et le but au moment de la passe."},
+
+{cat:'regles', q:"Depuis quand l'assistance vidéo à l'arbitrage (VAR) est-elle utilisée en Coupe du Monde ?",
+ opts:["2014","2018","2010","2022"], c:1,
+ exp:"La VAR a été utilisée pour la première fois en Coupe du Monde lors du Mondial 2018 en Russie."},
+
+{cat:'regles', q:"Quel pays est considéré comme le berceau du football moderne ?",
+ opts:["Brésil","France","Italie","Angleterre"], c:3,
+ exp:"L'Angleterre est le berceau du football moderne. La FA a été fondée en 1863, et le premier match international a eu lieu en 1872."},
+
+{cat:'regles', q:"Que signifie le terme 'hat-trick' ?",
+ opts:["Un arrêt spectaculaire du gardien","Trois buts marqués par un même joueur dans un match","Un dribble qui élimine trois adversaires","Un triple changement de joueurs"], c:1,
+ exp:"Un hat-trick = 3 buts par le même joueur dans un seul match. Le terme vient du cricket anglais."}
+];
+
+// ---- State ----
+let selectedCat = 'all';
+let questions = [];
+let qi = 0, score = 0, sel = null, streak = 0, maxStreak = 0;
+const t0 = new Date();
+const catScore = {};
+Object.keys(catLabels).forEach(k => { catScore[k] = {c:0, t:0}; });
+
+// Cat selector
+document.querySelectorAll('.cat-btn').forEach(b => {
+    b.onclick = () => {
+        document.querySelectorAll('.cat-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        selectedCat = b.dataset.cat;
+    };
+});
+
+function startQuiz() {
+    let pool = selectedCat === 'all' ? [...allQ] : allQ.filter(q => q.cat === selectedCat);
+    // Shuffle
+    for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    questions = pool.slice(0, TOTAL);
+    if (questions.length < TOTAL) questions = pool; // if category has fewer
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('quiz-area').style.display = 'block';
+    loadQ();
+}
+
+function loadQ() {
+    const q = questions[qi];
+    document.getElementById('pbar').style.width = ((qi+1)/questions.length*100)+'%';
+    document.getElementById('qnum').textContent = qi+1;
+    document.getElementById('q-cat').textContent = catLabels[q.cat];
+    document.getElementById('q-text').textContent = q.q;
+    if (q.hint) {
+        document.getElementById('q-hint').textContent = '💡 ' + q.hint;
+        document.getElementById('q-hint').style.display = 'block';
+    } else {
+        document.getElementById('q-hint').style.display = 'none';
+    }
+
+    const od = document.getElementById('q-opts');
+    od.innerHTML = '';
+    q.opts.forEach((o, i) => {
+        const d = document.createElement('div');
+        d.className = 'opt';
+        d.textContent = o;
+        d.onclick = () => selectOpt(i);
+        od.appendChild(d);
+    });
+
+    document.getElementById('q-fb').className = 'feedback';
+    document.getElementById('q-fb').innerHTML = '';
+    document.getElementById('btn-validate').style.display = 'block';
+    document.getElementById('btn-validate').disabled = true;
+    document.getElementById('btn-next').style.display = 'none';
+    sel = null;
+}
+
+function selectOpt(i) {
+    document.querySelectorAll('.opt').forEach((o, idx) => o.classList.toggle('selected', idx === i));
+    sel = i;
+    document.getElementById('btn-validate').disabled = false;
+}
+
+function validate() {
+    if (sel === null) return;
+    const q = questions[qi];
+    const ok = sel === q.c;
+    catScore[q.cat].t++;
+    if (ok) { score++; streak++; if(streak>maxStreak) maxStreak=streak; catScore[q.cat].c++; }
+    else { streak = 0; }
+
+    document.getElementById('score-live').innerHTML = 'Score: <b>'+score+'</b>';
+    if (streak >= 2) {
+        document.getElementById('streak-display').style.display = 'inline';
+        document.getElementById('streak-n').textContent = streak;
+    } else {
+        document.getElementById('streak-display').style.display = 'none';
+    }
+
+    const opts = document.querySelectorAll('.opt');
+    opts.forEach(o => o.style.pointerEvents = 'none');
+    opts[q.c].classList.add('correct');
+    if (!ok) opts[sel].classList.add('wrong');
+
+    const fb = document.getElementById('q-fb');
+    fb.className = 'feedback show ' + (ok ? 'ok' : 'ko');
+    fb.innerHTML = `<strong>${ok ? '✅ Correct !' : '❌ Raté !'}</strong><div class="detail">${q.exp}</div>`;
+
+    document.getElementById('btn-validate').style.display = 'none';
+    document.getElementById('btn-next').style.display = 'block';
+}
+
+function next() {
+    qi++;
+    if (qi < questions.length) {
+        loadQ();
+    } else {
+        showResults();
+    }
+}
+
+function showResults() {
+    document.getElementById('quiz-area').style.display = 'none';
+    const r = document.getElementById('results');
+    r.classList.add('show');
+
+    const total = questions.length;
+    const pct = Math.round(score / total * 100);
+    let stars;
+    if (pct >= 90) stars = 5;
+    else if (pct >= 75) stars = 4;
+    else if (pct >= 60) stars = 3;
+    else if (pct >= 40) stars = 2;
+    else stars = 1;
+
+    document.getElementById('r-score').textContent = score + ' / ' + total;
+    document.getElementById('r-stars').textContent = '⭐'.repeat(stars);
+    document.getElementById('r-msg').textContent =
+        pct >= 90 ? "🏆 Incroyable ! Tu es un vrai expert du foot !" :
+        pct >= 70 ? "⚽ Très bien ! Tu connais bien ton foot !" :
+        pct >= 50 ? "👍 Pas mal ! Continue d'apprendre !" :
+        "💪 Tu as encore des choses à découvrir !";
+
+    // Cat breakdown
+    const cd = document.getElementById('r-cats');
+    Object.entries(catLabels).forEach(([k, label]) => {
+        if (catScore[k].t === 0) return;
+        const row = document.createElement('div');
+        row.className = 'cat-result-row';
+        const p = Math.round(catScore[k].c / catScore[k].t * 100);
+        row.innerHTML = `<span>${label}</span><span class="cat-result-score">${catScore[k].c}/${catScore[k].t} (${p}%)</span>`;
+        cd.appendChild(row);
+    });
+
+    const dt = {
+        v: 'foot_hist',
+        dt: new Date().toISOString(),
+        score: score+'/'+total,
+        pct, stars, streak: maxStreak,
+        time: Math.floor((new Date() - t0)/1000),
+        cats: {}
+    };
+    Object.entries(catScore).forEach(([k, d]) => {
+        if (d.t > 0) dt.cats[k] = {c: d.c, t: d.t};
+    });
+    document.getElementById('r-code').textContent = btoa(unescape(encodeURIComponent(JSON.stringify(dt))));
+}
+
+function copyCode() {
+    navigator.clipboard.writeText(document.getElementById('r-code').textContent).then(() => {
+        const m = document.getElementById('copy-ok');
+        m.style.display = 'block';
+        setTimeout(() => m.style.display = 'none', 2000);
+    });
+}
+</script>
+</body>
+</html>

@@ -149,6 +149,8 @@
         .card-nsi .badge { background: linear-gradient(90deg, #667eea, #764ba2); }
         .card-exam::before { background: linear-gradient(90deg, #7c6af7, #e84393); }
         .card-exam .badge { background: linear-gradient(90deg, #7c6af7, #e84393); }
+        .card-foot::before { background: linear-gradient(90deg, #00b09b, #96c93d); }
+        .card-foot .badge { background: linear-gradient(90deg, #00b09b, #96c93d); }
 
         /* Activity list inside card */
         .activity-list {
@@ -245,6 +247,7 @@
         <button class="tab" data-tab="2nde">2nde</button>
         <button class="tab" data-tab="1ere">1ere</button>
         <button class="tab" data-tab="terminale">Terminale</button>
+        <button class="tab" data-tab="foot">⚽ Foot</button>
     </div>
 
     <div class="content">
@@ -491,6 +494,20 @@
                     <span class="icon">🔬</span><h3>Sciences</h3><p>Enseignement scientifique</p>
                     <span class="badge">Bac</span>
                     <div class="activity-list" data-folder="terminale/sciences"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ FOOT ═══ -->
+        <div class="tab-content" id="tab-foot">
+            <div class="level-subtitle">⚽ Zone Foot — Quiz & Culture</div>
+            <div class="subjects-grid">
+                <div class="subject-card card-foot" onclick="toggle(this)">
+                    <span class="icon">🏆</span>
+                    <h3>Histoire du Foot</h3>
+                    <p>Coupes du Monde, legendes, records, clubs mythiques</p>
+                    <span class="badge">Quiz</span>
+                    <div class="activity-list" data-folder="foot"></div>
                 </div>
             </div>
         </div>
