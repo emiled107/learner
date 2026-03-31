@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧩 Labo des Textes - Terminale</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Nunito',sans-serif;background:#08090f;color:#e0e0e0;min-height:100vh;padding:15px}
+        .container{max-width:850px;margin:0 auto}
+
+        h1{font-size:1.8rem;font-weight:800;text-align:center;margin-bottom:5px;
+           background:linear-gradient(135deg,#f093fb,#f5576c);-webkit-background-clip:text;
+           -webkit-text-fill-color:transparent;background-clip:text}
+        .sub{text-align:center;color:#888;font-size:.85rem;margin-bottom:20px}
+
+        /* Mode selector */
+        .modes{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+        .mode-btn{padding:10px 20px;border:2px solid #333;border-radius:12px;background:rgba(0,0,0,.3);
+                   color:#aaa;font-family:'Nunito',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;transition:all .3s}
+        .mode-btn:hover{border-color:#f093fb;color:#f093fb}
+        .mode-btn.active{background:linear-gradient(135deg,#f093fb,#f5576c);border-color:transparent;color:#fff}
+        .mode-btn .emoji{font-size:1.2rem;display:block;margin-bottom:2px}
+
+        /* Progress */
+        .pbar-bg{width:100%;height:5px;background:rgba(255,255,255,.08);border-radius:3px;margin-bottom:6px;overflow:hidden}
+        .pbar-fill{height:100%;background:linear-gradient(90deg,#f093fb,#f5576c);border-radius:3px;transition:width .4s}
+        .stats{display:flex;justify-content:space-between;font-size:.82rem;color:#777;margin-bottom:15px}
+        .streak-txt{color:#ffd700;font-weight:700}
+
+        /* Game area */
+        .game-card{background:linear-gradient(135deg,#141828,#1a1e38);border:2px solid #222;
+                    border-radius:14px;padding:22px;margin-bottom:15px;animation:fadeIn .35s ease}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+        .game-label{display:inline-block;padding:3px 10px;border-radius:15px;font-size:.7rem;font-weight:700;
+                     text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;background:rgba(240,147,251,.2);color:#f093fb}
+        .game-title{font-size:1.05rem;font-weight:700;color:#fff;line-height:1.5;margin-bottom:15px}
+        .game-excerpt{background:rgba(245,87,108,.08);padding:12px 15px;border-radius:8px;border-left:3px solid #f5576c;
+                      font-size:.88rem;line-height:1.7;color:#d0c0d0;margin-bottom:18px;font-style:italic}
+        .game-excerpt .author{display:block;text-align:right;margin-top:6px;font-style:normal;color:#f093fb;font-weight:600;font-size:.8rem}
+
+        /* MODE 1: Drag & Drop reorder */
+        .drop-zone{min-height:50px;background:rgba(0,0,0,.2);border:2px dashed #333;border-radius:10px;padding:8px;margin-bottom:12px;transition:border-color .3s}
+        .drop-zone.over{border-color:#f093fb;background:rgba(240,147,251,.05)}
+        .drop-zone-label{font-size:.72rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:700}
+        .drag-item{padding:10px 14px;background:rgba(240,147,251,.1);border:2px solid #3a3050;border-radius:8px;
+                   margin:5px 0;cursor:grab;font-size:.88rem;line-height:1.5;transition:all .2s;user-select:none}
+        .drag-item:active{cursor:grabbing;opacity:.8}
+        .drag-item.placed{background:rgba(0,255,136,.08);border-color:#00ff88}
+        .drag-item.wrong{background:rgba(255,68,68,.08);border-color:#ff4444}
+        .drag-item.correct{background:rgba(0,255,136,.12);border-color:#00ff88}
+        .drag-pool{background:rgba(0,0,0,.2);border-radius:10px;padding:10px;margin-bottom:12px}
+        .drag-pool-label{font-size:.72rem;color:#888;margin-bottom:6px;font-weight:700}
+
+        /* MODE 2: Type identification */
+        .type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+        .type-btn{padding:14px;border:2px solid #333;border-radius:10px;background:rgba(0,0,0,.3);
+                  cursor:pointer;text-align:center;transition:all .25s;font-weight:700;font-size:.9rem}
+        .type-btn:hover{border-color:#f093fb;background:rgba(240,147,251,.08)}
+        .type-btn.selected{border-color:#f093fb;background:rgba(240,147,251,.2)}
+        .type-btn.correct{border-color:#00ff88;background:rgba(0,255,136,.15);color:#00ff88}
+        .type-btn.wrong{border-color:#ff4444;background:rgba(255,68,68,.15);color:#ff8888}
+        .type-btn .t-emoji{font-size:1.5rem;display:block;margin-bottom:4px}
+
+        /* MODE 3: Procédés - spot the device */
+        .highlight-text{font-size:.92rem;line-height:2;color:#d0c0d0;margin-bottom:15px}
+        .highlight-text span.hl{padding:2px 6px;border-radius:4px;cursor:pointer;transition:all .2s}
+        .highlight-text span.hl:hover{background:rgba(240,147,251,.15)}
+        .highlight-text span.hl.selected{background:rgba(240,147,251,.3);border-bottom:2px solid #f093fb}
+        .highlight-text span.hl.correct{background:rgba(0,255,136,.2);border-bottom:2px solid #00ff88}
+        .highlight-text span.hl.wrong{background:rgba(255,68,68,.2);border-bottom:2px solid #ff4444}
+        .procede-options{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+        .proc-chip{padding:6px 14px;border:2px solid #333;border-radius:20px;background:rgba(0,0,0,.3);
+                   cursor:pointer;font-size:.82rem;font-weight:600;transition:all .25s}
+        .proc-chip:hover{border-color:#f093fb}
+        .proc-chip.selected{border-color:#f093fb;background:rgba(240,147,251,.2);color:#f093fb}
+        .proc-chip.correct{border-color:#00ff88;color:#00ff88}
+        .proc-chip.wrong{border-color:#ff4444;color:#ff8888}
+
+        /* Feedback */
+        .fb{margin-top:12px;padding:12px;border-radius:8px;font-size:.88rem;line-height:1.6;display:none}
+        .fb.show{display:block;animation:fadeIn .3s}
+        .fb.ok{background:rgba(0,255,136,.06);border-left:4px solid #00ff88;color:#aaffcc}
+        .fb.ko{background:rgba(255,68,68,.06);border-left:4px solid #ff4444;color:#ffaaaa}
+        .fb strong{display:block;margin-bottom:4px}
+        .fb .detail{color:#bbb}
+
+        /* Buttons */
+        .btns{display:flex;gap:10px;margin-top:15px}
+        .btn{flex:1;padding:13px;border:none;border-radius:10px;font-weight:700;font-size:.95rem;
+             cursor:pointer;font-family:'Nunito',sans-serif;transition:all .3s}
+        .btn-go{background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff}
+        .btn-go:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(240,147,251,.4)}
+        .btn-go:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+        .btn-next{background:rgba(240,147,251,.15);color:#f093fb;border:2px solid #f093fb}
+        .btn-next:hover{background:rgba(240,147,251,.25)}
+
+        /* Results */
+        .results{display:none;text-align:center}
+        .results.show{display:block;animation:fadeIn .4s}
+        .big-score{font-size:3rem;font-weight:800;background:linear-gradient(135deg,#f093fb,#f5576c);
+                   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:15px 0}
+        .stars{font-size:2.2rem;letter-spacing:8px;margin:12px 0}
+        .mode-results{text-align:left;background:rgba(0,0,0,.3);border-radius:10px;padding:15px;margin:15px 0}
+        .mode-results h3{font-size:.8rem;color:#f093fb;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+        .mr-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.88rem}
+        .mr-row:last-child{border:none}
+        .mr-score{color:#f5576c;font-weight:700}
+        .result-code{background:rgba(0,0,0,.5);padding:12px;border-radius:8px;font-family:'Courier New',monospace;
+                     font-size:.65rem;word-break:break-all;color:#f093fb;cursor:pointer;margin-top:12px}
+        .copy-ok{color:#00ff88;font-size:.8rem;margin-top:4px;display:none}
+        .back-link{display:inline-block;margin-top:18px;color:#f093fb;text-decoration:none;font-weight:700}
+        .back-link:hover{color:#f5576c}
+
+        @media(max-width:600px){
+            h1{font-size:1.4rem}
+            .game-card{padding:16px}
+            .type-grid{grid-template-columns:1fr}
+            .big-score{font-size:2.2rem}
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🧩 Le Labo des Textes</h1>
+    <div class="sub">Deviens un chirurgien du texte — Terminale</div>
+
+    <!-- Start -->
+    <div id="start">
+        <div style="text-align:center;padding:20px 0">
+            <div style="font-size:3rem;margin-bottom:10px">🔬</div>
+            <p style="color:#999;font-size:.92rem;max-width:500px;margin:0 auto 20px;line-height:1.6">
+                3 modes de jeu pour maîtriser les structures de texte au programme du Bac :
+            </p>
+        </div>
+        <div class="modes" id="mode-sel">
+            <button class="mode-btn active" data-mode="all"><span class="emoji">🎲</span>Mix (tout)</button>
+            <button class="mode-btn" data-mode="rebuild"><span class="emoji">🧩</span>Reconstruction</button>
+            <button class="mode-btn" data-mode="identify"><span class="emoji">🔍</span>Identification</button>
+            <button class="mode-btn" data-mode="procedes"><span class="emoji">✨</span>Procédés</button>
+        </div>
+        <div style="text-align:center">
+            <button class="btn btn-go" onclick="launch()" style="max-width:280px">Lancer !</button>
+        </div>
+    </div>
+
+    <!-- Game -->
+    <div id="game" style="display:none">
+        <div class="pbar-bg"><div class="pbar-fill" id="pbar" style="width:5%"></div></div>
+        <div class="stats">
+            <span>Défi <b id="qnum">1</b> / <span id="qtotal">12</span></span>
+            <span id="streak-d" style="display:none" class="streak-txt">🔥 <span id="strk">0</span></span>
+            <span>Score: <b id="sc">0</b></span>
+        </div>
+        <div class="game-card" id="gc"></div>
+        <div class="btns">
+            <button class="btn btn-go" id="bval" onclick="doValidate()" disabled>Valider</button>
+            <button class="btn btn-next" id="bnxt" onclick="doNext()" style="display:none">Suivant →</button>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="results">
+        <h2>🧩 Résultats</h2>
+        <div class="big-score" id="r-sc"></div>
+        <div class="stars" id="r-st"></div>
+        <div id="r-msg" style="font-size:1rem;margin-bottom:10px"></div>
+        <div class="mode-results" id="r-modes"><h3>📊 Par mode</h3></div>
+        <p style="font-size:.75rem;color:#666;margin-top:12px">📋 Code résultat :</p>
+        <div class="result-code" id="r-code" onclick="cpCode()"></div>
+        <div class="copy-ok" id="cp-ok">✓ Copié !</div>
+        <br><button class="btn btn-go" onclick="location.reload()" style="max-width:220px;margin:10px auto">🔄 Rejouer</button>
+        <br><a href="/learner/index.html" class="back-link">← Retour à l'accueil</a>
+    </div>
+</div>
+
+<script>
+// ============ DATA ============
+
+const modeLabels = {rebuild:'🧩 Reconstruction', identify:'🔍 Identification', procedes:'✨ Procédés'};
+
+// --- MODE 1: REBUILD (remettre dans l'ordre) ---
+const rebuildData = [
+{
+    title:"Remets ce texte argumentatif dans l'ordre logique",
+    author:"D'après Montaigne",
+    pieces:[
+        {id:0, text:"La lecture est une source inépuisable de savoir et de réflexion.", tag:"Thèse"},
+        {id:1, text:"En effet, les livres nous permettent de voyager dans le temps et de comprendre d'autres civilisations.", tag:"Argument 1"},
+        {id:2, text:"De plus, la confrontation avec des idées différentes des nôtres aiguise notre esprit critique.", tag:"Argument 2"},
+        {id:3, text:"Certes, certains pourraient objecter que la lecture est une activité solitaire et passive.", tag:"Concession"},
+        {id:4, text:"Cependant, c'est précisément dans cette solitude que naît la réflexion personnelle la plus profonde.", tag:"Réfutation"},
+        {id:5, text:"Ainsi, lire n'est pas fuir le monde mais mieux le comprendre pour y agir.", tag:"Conclusion"}
+    ],
+    order:[0,1,2,3,4,5]
+},
+{
+    title:"Reconstitue cette introduction de dissertation",
+    author:"Sujet : La poésie n'est-elle qu'un jeu sur les mots ?",
+    pieces:[
+        {id:0, text:"Depuis l'Antiquité, la poésie fascine par son travail sur le langage.", tag:"Amorce"},
+        {id:1, text:"Si les poètes jouent effectivement avec les sons, les rythmes et les images, leur art ne se réduit-il pas à un simple jeu formel ?", tag:"Problématique"},
+        {id:2, text:"Nous verrons d'abord que la poésie est un art du langage, avant d'analyser sa dimension expressive, puis sa portée engagée.", tag:"Plan annoncé"}
+    ],
+    order:[0,1,2]
+},
+{
+    title:"Recompose ce paragraphe de commentaire littéraire",
+    author:"Analyse de Baudelaire",
+    pieces:[
+        {id:0, text:"Dans ce poème, Baudelaire utilise le champ lexical de la mort pour exprimer le spleen.", tag:"Idée directrice"},
+        {id:1, text:"On relève ainsi les termes « cercueil », « linceul » et « tombeau » qui parcourent le texte.", tag:"Citation / Preuve"},
+        {id:2, text:"Cette isotopie funèbre traduit le sentiment d'enfermement et de désespoir du poète.", tag:"Interprétation"},
+        {id:3, text:"La poésie devient alors l'espace où se dit une souffrance existentielle intime.", tag:"Ouverture"}
+    ],
+    order:[0,1,2,3]
+},
+{
+    title:"Remets cette conclusion de dissertation dans l'ordre",
+    author:"Sujet : Le théâtre est-il un divertissement ?",
+    pieces:[
+        {id:0, text:"En définitive, le théâtre dépasse le simple divertissement.", tag:"Bilan synthétique"},
+        {id:1, text:"Si la comédie fait rire et offre un moment de détente, la tragédie nous confronte à nos propres contradictions.", tag:"Rappel arguments"},
+        {id:2, text:"Ne pourrait-on pas dire que tout grand art oscille entre plaisir et réflexion ?", tag:"Ouverture"}
+    ],
+    order:[0,1,2]
+},
+{
+    title:"Reconstitue ce texte narratif classique",
+    author:"Structure du récit",
+    pieces:[
+        {id:0, text:"Le village vivait dans une paix tranquille depuis des années.", tag:"Situation initiale"},
+        {id:1, text:"Un matin, un étranger mystérieux apparut sur la place du marché.", tag:"Élément perturbateur"},
+        {id:2, text:"Les habitants se mirent à enquêter, multipliant les hypothèses sur son identité.", tag:"Péripéties"},
+        {id:3, text:"Finalement, on découvrit qu'il était un ancien habitant revenu après trente ans d'absence.", tag:"Dénouement"},
+        {id:4, text:"Le village retrouva sa sérénité, mais quelque chose avait changé : on ne regardait plus les étrangers de la même façon.", tag:"Situation finale"}
+    ],
+    order:[0,1,2,3,4]
+}
+];
+
+// --- MODE 2: IDENTIFY (quel type de texte ?) ---
+const identifyData = [
+{
+    excerpt:"Le réchauffement climatique est causé par l'augmentation des gaz à effet de serre dans l'atmosphère. Ce phénomène, lié aux activités humaines depuis la révolution industrielle, provoque une hausse des températures moyennes à la surface du globe.",
+    author:"Manuel de SVT",
+    correct:"explicatif",
+    exp:"Ce texte explique un phénomène (le réchauffement) en donnant ses causes. Il ne cherche pas à convaincre, il informe."
+},
+{
+    excerpt:"La peine de mort devrait être abolie dans tous les pays. Non seulement elle ne dissuade pas le crime, mais elle prive l'individu de tout droit à la rédemption. De surcroît, le risque d'erreur judiciaire rend cette sentence irréversible et inacceptable.",
+    author:"Éditorial",
+    correct:"argumentatif",
+    exp:"L'auteur défend une thèse (abolir la peine de mort) avec des arguments (pas de dissuasion, risque d'erreur). C'est un texte argumentatif."
+},
+{
+    excerpt:"Le soleil déclinait derrière les collines, nappant la vallée d'une lumière dorée. Les peupliers, alignés le long de la rivière, frémissaient sous la brise du soir, et l'eau, d'un bleu profond, reflétait les derniers éclats du jour.",
+    author:"Texte littéraire",
+    correct:"descriptif",
+    exp:"Ce texte peint un paysage avec des détails sensoriels (lumière, couleur, mouvement). Pas d'action, pas d'argument : c'est une description."
+},
+{
+    excerpt:"Il poussa la porte, traversa le couloir sombre et monta l'escalier quatre à quatre. Son cœur battait. Il savait que derrière la dernière porte, tout allait basculer.",
+    author:"Roman",
+    correct:"narratif",
+    exp:"Une succession d'actions (poussa, traversa, monta) avec un personnage et une tension dramatique. C'est un récit, un texte narratif."
+},
+{
+    excerpt:"Pour faire une omelette, cassez trois œufs dans un bol. Battez-les vigoureusement avec une fourchette. Ajoutez sel et poivre. Faites chauffer du beurre dans une poêle, puis versez la préparation.",
+    author:"Livre de cuisine",
+    correct:"injonctif",
+    exp:"Le texte donne des ordres / instructions à suivre (impératif : cassez, battez, ajoutez). C'est un texte injonctif (ou prescriptif)."
+},
+{
+    excerpt:"J'ai découvert ce matin que mon voisin avait planté un cerisier dans son jardin. Quelle drôle d'idée ! Les cerises, franchement, ça attire les oiseaux et ça salit le trottoir. Mais bon, c'est son jardin après tout.",
+    author:"Blog personnel",
+    correct:"argumentatif",
+    exp:"Malgré son ton familier, l'auteur donne son opinion (drôle d'idée, ça salit) avec une concession (c'est son jardin). C'est argumentatif, même informel."
+},
+{
+    excerpt:"Le romantisme est un mouvement littéraire et artistique né en Europe à la fin du XVIIIe siècle. Il se caractérise par l'expression des sentiments personnels, le goût pour la nature et la révolte contre les conventions classiques.",
+    author:"Manuel de littérature",
+    correct:"explicatif",
+    exp:"Le texte définit et caractérise le romantisme sans porter de jugement. Il vise à informer : c'est un texte explicatif."
+},
+{
+    excerpt:"Chers concitoyens, notre école manque de moyens. Les classes sont surchargées, les équipements vétustes. Il est temps d'agir ensemble ! Signez cette pétition pour obtenir les budgets que nos enfants méritent.",
+    author:"Tract associatif",
+    correct:"argumentatif",
+    exp:"L'auteur veut convaincre de signer (thèse + arguments + appel à l'action). Le texte est clairement argumentatif, avec une dimension persuasive."
+}
+];
+
+// --- MODE 3: PROCÉDÉS (repérer dans un extrait) ---
+const procedesData = [
+{
+    text:'La terre est <hl id="0">bleue comme une orange</hl>. <hl id="1">Jamais une erreur</hl>, les mots <hl id="2">ne mentent pas</hl>.',
+    author:"Paul Éluard",
+    question:"Quel segment contient une comparaison inattendue (rapprochement surréaliste) ?",
+    correctHl:0,
+    procede:"Comparaison surréaliste",
+    exp:"« Bleue comme une orange » est une comparaison surprenante typique du surréalisme : elle associe deux réalités contradictoires pour créer une image poétique."
+},
+{
+    text:'<hl id="0">Je suis le ténébreux</hl>, — <hl id="1">le veuf</hl>, — <hl id="2">l\'inconsolé</hl>, / Le prince d\'Aquitaine à la tour abolie.',
+    author:"Nerval, El Desdichado",
+    question:"Quelle figure de style est utilisée dans la succession « le ténébreux, le veuf, l'inconsolé » ?",
+    correctHl:-1,
+    procede:"Énumération / Accumulation",
+    options:["Métaphore","Énumération","Antithèse","Hyperbole"],
+    correctOpt:1,
+    exp:"L'accumulation de groupes nominaux apposés (le ténébreux, le veuf, l'inconsolé) construit un autoportrait lyrique fragmenté."
+},
+{
+    text:'<hl id="0">Ô temps ! suspends ton vol</hl>, et vous, <hl id="1">heures propices</hl> ! / <hl id="2">Suspendez votre cours</hl>.',
+    author:"Lamartine, Le Lac",
+    question:"Quel procédé consiste à s'adresser directement au temps comme s'il était une personne ?",
+    correctHl:0,
+    procede:"Apostrophe + Personnification",
+    exp:"Le poète s'adresse au temps (apostrophe « Ô temps ! ») et lui prête une action humaine (« suspends ton vol » = personnification)."
+},
+{
+    text:'Il était <hl id="0">grand, très grand, immensément grand</hl>. Son ombre <hl id="1">dévorait la moitié de la pièce</hl>. <hl id="2">Personne n\'osait le regarder</hl>.',
+    author:"Exercice de style",
+    question:"Quel segment contient une hyperbole (exagération) ?",
+    correctHl:0,
+    procede:"Hyperbole + Gradation",
+    exp:"« Grand, très grand, immensément grand » est une gradation ascendante qui amplifie progressivement. C'est aussi une hyperbole par l'exagération."
+},
+{
+    text:'<hl id="0">Je vis, je meurs</hl> ; <hl id="1">je me brûle et me noie</hl>. / J\'ai chaud extrême en endurant froidure : / <hl id="2">la vie m\'est et trop molle et trop dure</hl>.',
+    author:"Louise Labé, Sonnet VIII",
+    question:"Quel procédé domine ce vers, opposant des termes contraires ?",
+    correctHl:-1,
+    options:["Métaphore","Comparaison","Antithèse","Allégorie"],
+    correctOpt:2,
+    exp:"L'antithèse oppose des termes contraires : vis/meurs, brûle/noie, molle/dure. Ce procédé traduit les contradictions du sentiment amoureux."
+},
+{
+    text:'La <hl id="0">Nature est un temple</hl> où de <hl id="1">vivants piliers</hl> / Laissent parfois sortir de <hl id="2">confuses paroles</hl>.',
+    author:"Baudelaire, Correspondances",
+    question:"Quel segment contient une métaphore ?",
+    correctHl:0,
+    procede:"Métaphore",
+    exp:"« La Nature est un temple » est une métaphore : la nature est directement assimilée à un temple, sans outil de comparaison (comme, tel)."
+},
+{
+    text:'<hl id="0">Paris ! Paris outragé ! Paris brisé ! Paris martyrisé !</hl> Mais <hl id="1">Paris libéré !</hl> <hl id="2">Libéré par lui-même</hl>.',
+    author:"De Gaulle, 25 août 1944",
+    question:"Quel procédé rhétorique crée un effet d'insistance par la répétition de « Paris » ?",
+    correctHl:-1,
+    options:["Métonymie","Anaphore","Litote","Euphémisme"],
+    correctOpt:1,
+    exp:"L'anaphore est la répétition d'un mot en début de phrase/groupe. « Paris ! Paris ! Paris ! » martèle le nom pour créer une intensité oratoire croissante."
+},
+{
+    text:'Elle avait <hl id="0">des yeux d\'émeraude</hl>, <hl id="1">un sourire de cristal</hl>, et <hl id="2">une voix de velours</hl>.',
+    author:"Portrait littéraire",
+    question:"Identifiez le procédé qui associe une qualité abstraite à un élément concret dans ces descriptions.",
+    correctHl:-1,
+    options:["Comparaison","Métaphore","Personnification","Oxymore"],
+    correctOpt:1,
+    exp:"Chaque expression (yeux d'émeraude, sourire de cristal, voix de velours) est une métaphore : l'élément du corps est directement associé à un matériau sans « comme »."
+}
+];
+
+// ============ ENGINE ============
+let mode = 'all';
+let challenges = [];
+let ci = 0, score = 0, sel = null, streak = 0, maxStreak = 0;
+const t0 = new Date();
+const modeScore = {rebuild:{c:0,t:0}, identify:{c:0,t:0}, procedes:{c:0,t:0}};
+
+document.querySelectorAll('.mode-btn').forEach(b => {
+    b.onclick = () => {
+        document.querySelectorAll('.mode-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        mode = b.dataset.mode;
+    };
+});
+
+function shuffle(a) { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function launch() {
+    let pool = [];
+    if (mode === 'all' || mode === 'rebuild') pool.push(...rebuildData.map(d => ({...d, mode:'rebuild'})));
+    if (mode === 'all' || mode === 'identify') pool.push(...identifyData.map(d => ({...d, mode:'identify'})));
+    if (mode === 'all' || mode === 'procedes') pool.push(...procedesData.map(d => ({...d, mode:'procedes'})));
+    shuffle(pool);
+    challenges = pool.slice(0, 12);
+    document.getElementById('qtotal').textContent = challenges.length;
+    document.getElementById('start').style.display = 'none';
+    document.getElementById('game').style.display = 'block';
+    loadChallenge();
+}
+
+function loadChallenge() {
+    const ch = challenges[ci];
+    document.getElementById('pbar').style.width = ((ci+1)/challenges.length*100)+'%';
+    document.getElementById('qnum').textContent = ci+1;
+    document.getElementById('bval').style.display = 'block';
+    document.getElementById('bval').disabled = true;
+    document.getElementById('bnxt').style.display = 'none';
+    sel = null;
+
+    const gc = document.getElementById('gc');
+    if (ch.mode === 'rebuild') renderRebuild(gc, ch);
+    else if (ch.mode === 'identify') renderIdentify(gc, ch);
+    else renderProcedes(gc, ch);
+}
+
+// ---- REBUILD ----
+let dragOrder = [];
+function renderRebuild(gc, ch) {
+    const shuffled = shuffle([...ch.pieces]);
+    dragOrder = [];
+    gc.innerHTML = `
+        <div class="game-label">🧩 Reconstruction</div>
+        <div class="game-title">${ch.title}</div>
+        ${ch.author ? `<div style="font-size:.8rem;color:#f093fb;margin-bottom:12px">${ch.author}</div>` : ''}
+        <div class="drop-zone" id="dz">
+            <div class="drop-zone-label">↓ Glisse les blocs ici dans le bon ordre ↓</div>
+        </div>
+        <div class="drag-pool" id="dp">
+            <div class="drag-pool-label">Blocs disponibles :</div>
+            ${shuffled.map(p => `
+                <div class="drag-item" draggable="true" data-id="${p.id}" onclick="clickMove(this)">
+                    <span style="color:#f093fb;font-size:.75rem;font-weight:700">[${p.tag}]</span> ${p.text}
+                </div>
+            `).join('')}
+        </div>
+        <div class="fb" id="fb"></div>
+    `;
+    setupDrag();
+    checkRebuildReady();
+}
+
+function clickMove(el) {
+    const dz = document.getElementById('dz');
+    const dp = document.getElementById('dp');
+    if (el.parentElement.id === 'dp') {
+        dz.appendChild(el);
+    } else {
+        dp.appendChild(el);
+    }
+    checkRebuildReady();
+}
+
+function setupDrag() {
+    const dz = document.getElementById('dz');
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+    dz.addEventListener('drop', e => {
+        e.preventDefault();
+        dz.classList.remove('over');
+        const id = e.dataTransfer.getData('text/plain');
+        const el = document.querySelector(`.drag-item[data-id="${id}"]`);
+        if (el) dz.appendChild(el);
+        checkRebuildReady();
+    });
+
+    const dp = document.getElementById('dp');
+    dp.addEventListener('dragover', e => e.preventDefault());
+    dp.addEventListener('drop', e => {
+        e.preventDefault();
+        const id = e.dataTransfer.getData('text/plain');
+        const el = document.querySelector(`.drag-item[data-id="${id}"]`);
+        if (el) dp.appendChild(el);
+        checkRebuildReady();
+    });
+
+    document.querySelectorAll('.drag-item').forEach(d => {
+        d.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', d.dataset.id));
+    });
+}
+
+function checkRebuildReady() {
+    const dz = document.getElementById('dz');
+    const items = dz.querySelectorAll('.drag-item');
+    const ch = challenges[ci];
+    document.getElementById('bval').disabled = items.length !== ch.pieces.length;
+}
+
+function validateRebuild() {
+    const ch = challenges[ci];
+    const dz = document.getElementById('dz');
+    const items = dz.querySelectorAll('.drag-item');
+    const userOrder = Array.from(items).map(el => parseInt(el.dataset.id));
+    const correct = JSON.stringify(userOrder) === JSON.stringify(ch.order);
+
+    items.forEach((el, i) => {
+        el.style.cursor = 'default';
+        el.setAttribute('draggable', 'false');
+        el.onclick = null;
+        if (parseInt(el.dataset.id) === ch.order[i]) el.classList.add('correct');
+        else el.classList.add('wrong');
+    });
+
+    return {correct, exp: correct ?
+        "Parfait ! L'ordre logique du texte est respecté." :
+        "L'ordre attendu était : " + ch.order.map(i => ch.pieces[i].tag).join(' → ')};
+}
+
+// ---- IDENTIFY ----
+function renderIdentify(gc, ch) {
+    const types = shuffle(["argumentatif","narratif","descriptif","explicatif","injonctif"]);
+    // Make sure correct is in the list
+    if (!types.includes(ch.correct)) types[4] = ch.correct;
+
+    gc.innerHTML = `
+        <div class="game-label">🔍 Identification</div>
+        <div class="game-title">Quel est le type de ce texte ?</div>
+        <div class="game-excerpt">${ch.excerpt}<span class="author">— ${ch.author}</span></div>
+        <div class="type-grid" id="tgrid">
+            ${types.slice(0,4).map(t => {
+                // Make sure correct type is always shown
+                return `<div class="type-btn" data-type="${t}" onclick="selType(this)">
+                    <span class="t-emoji">${t==='argumentatif'?'⚔️':t==='narratif'?'📖':t==='descriptif'?'🖼️':t==='explicatif'?'💡':'📋'}</span>
+                    ${t.charAt(0).toUpperCase()+t.slice(1)}
+                </div>`;
+            }).join('')}
+        </div>
+        <div class="fb" id="fb"></div>
+    `;
+    // Ensure correct answer is in grid
+    const grid = document.getElementById('tgrid');
+    const btns = grid.querySelectorAll('.type-btn');
+    const hasCorrect = Array.from(btns).some(b => b.dataset.type === ch.correct);
+    if (!hasCorrect) {
+        btns[3].dataset.type = ch.correct;
+        const label = ch.correct.charAt(0).toUpperCase()+ch.correct.slice(1);
+        const emoji = ch.correct==='argumentatif'?'⚔️':ch.correct==='narratif'?'📖':ch.correct==='descriptif'?'🖼️':ch.correct==='explicatif'?'💡':'📋';
+        btns[3].innerHTML = `<span class="t-emoji">${emoji}</span>${label}`;
+    }
+    document.getElementById('bval').disabled = true;
+    sel = null;
+}
+
+function selType(el) {
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    sel = el.dataset.type;
+    document.getElementById('bval').disabled = false;
+}
+
+function validateIdentify() {
+    const ch = challenges[ci];
+    const correct = sel === ch.correct;
+    document.querySelectorAll('.type-btn').forEach(b => {
+        b.onclick = null;
+        b.style.cursor = 'default';
+        if (b.dataset.type === ch.correct) b.classList.add('correct');
+        else if (b.classList.contains('selected')) b.classList.add('wrong');
+    });
+    return {correct, exp: ch.exp};
+}
+
+// ---- PROCÉDÉS ----
+function renderProcedes(gc, ch) {
+    const hasOpts = !!ch.options;
+    gc.innerHTML = `
+        <div class="game-label">✨ Procédés littéraires</div>
+        <div class="game-title">${ch.question}</div>
+        <div class="game-excerpt">
+            <div class="highlight-text">${ch.text.replace(/<hl id="(\d+)">/g, '<span class="hl" data-hl="$1" onclick="selHl(this)">').replace(/<\/hl>/g, '</span>')}</div>
+            <span class="author">— ${ch.author}</span>
+        </div>
+        ${hasOpts ? `
+            <div style="font-size:.82rem;color:#aaa;margin-bottom:8px;font-weight:600">Quel procédé ?</div>
+            <div class="procede-options" id="procopts">
+                ${ch.options.map((o,i) => `<span class="proc-chip" data-idx="${i}" onclick="selProc(this)">${o}</span>`).join('')}
+            </div>
+        ` : ''}
+        <div class="fb" id="fb"></div>
+    `;
+    sel = {hl: null, proc: null};
+    document.getElementById('bval').disabled = true;
+}
+
+function selHl(el) {
+    document.querySelectorAll('.hl').forEach(h => h.classList.remove('selected'));
+    el.classList.add('selected');
+    if (typeof sel !== 'object') sel = {};
+    sel.hl = parseInt(el.dataset.hl);
+    checkProcReady();
+}
+
+function selProc(el) {
+    document.querySelectorAll('.proc-chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    if (typeof sel !== 'object') sel = {};
+    sel.proc = parseInt(el.dataset.idx);
+    checkProcReady();
+}
+
+function checkProcReady() {
+    const ch = challenges[ci];
+    const hasOpts = !!ch.options;
+    if (hasOpts) {
+        document.getElementById('bval').disabled = !(sel && sel.proc !== null && sel.proc !== undefined);
+    } else {
+        document.getElementById('bval').disabled = !(sel && sel.hl !== null && sel.hl !== undefined);
+    }
+}
+
+function validateProcedes() {
+    const ch = challenges[ci];
+    const hasOpts = !!ch.options;
+    let correct = false;
+
+    if (ch.correctHl >= 0 && sel.hl !== undefined) {
+        // Check highlight
+        correct = sel.hl === ch.correctHl;
+        document.querySelectorAll('.hl').forEach(h => {
+            h.onclick = null;
+            if (parseInt(h.dataset.hl) === ch.correctHl) h.classList.add('correct');
+            else if (h.classList.contains('selected')) h.classList.add('wrong');
+        });
+    }
+
+    if (hasOpts) {
+        correct = sel.proc === ch.correctOpt;
+        document.querySelectorAll('.proc-chip').forEach(c => {
+            c.onclick = null;
+            if (parseInt(c.dataset.idx) === ch.correctOpt) c.classList.add('correct');
+            else if (c.classList.contains('selected')) c.classList.add('wrong');
+        });
+    }
+
+    return {correct, exp: `<b>${ch.procede}</b> — ${ch.exp}`};
+}
+
+// ---- VALIDATE / NEXT ----
+function doValidate() {
+    const ch = challenges[ci];
+    let result;
+    if (ch.mode === 'rebuild') result = validateRebuild();
+    else if (ch.mode === 'identify') result = validateIdentify();
+    else result = validateProcedes();
+
+    modeScore[ch.mode].t++;
+    if (result.correct) { score++; streak++; if(streak>maxStreak) maxStreak=streak; modeScore[ch.mode].c++; }
+    else { streak = 0; }
+
+    document.getElementById('sc').textContent = score;
+    if (streak >= 2) {
+        document.getElementById('streak-d').style.display = 'inline';
+        document.getElementById('strk').textContent = streak;
+    } else {
+        document.getElementById('streak-d').style.display = 'none';
+    }
+
+    const fb = document.getElementById('fb');
+    fb.className = 'fb show ' + (result.correct ? 'ok' : 'ko');
+    fb.innerHTML = `<strong>${result.correct ? '✅ Bravo !' : '❌ Pas tout à fait...'}</strong><div class="detail">${result.exp}</div>`;
+
+    document.getElementById('bval').style.display = 'none';
+    document.getElementById('bnxt').style.display = 'block';
+}
+
+function doNext() {
+    ci++;
+    if (ci < challenges.length) loadChallenge();
+    else showResults();
+}
+
+function showResults() {
+    document.getElementById('game').style.display = 'none';
+    const r = document.getElementById('results');
+    r.classList.add('show');
+
+    const total = challenges.length;
+    const pct = Math.round(score / total * 100);
+    let stars = pct >= 90 ? 5 : pct >= 75 ? 4 : pct >= 60 ? 3 : pct >= 40 ? 2 : 1;
+
+    document.getElementById('r-sc').textContent = score + ' / ' + total;
+    document.getElementById('r-st').textContent = '⭐'.repeat(stars);
+    document.getElementById('r-msg').textContent =
+        pct >= 85 ? "🏆 Excellent ! Tu maîtrises les structures de texte !" :
+        pct >= 65 ? "📝 Bien joué ! Continue de t'entraîner." :
+        pct >= 45 ? "👍 Pas mal, mais revois les procédés littéraires." :
+        "💪 Il faut retravailler les bases du commentaire.";
+
+    const md = document.getElementById('r-modes');
+    Object.entries(modeLabels).forEach(([k, label]) => {
+        if (modeScore[k].t === 0) return;
+        const row = document.createElement('div');
+        row.className = 'mr-row';
+        const p = Math.round(modeScore[k].c / modeScore[k].t * 100);
+        row.innerHTML = `<span>${label}</span><span class="mr-score">${modeScore[k].c}/${modeScore[k].t} (${p}%)</span>`;
+        md.appendChild(row);
+    });
+
+    const dt = {
+        v: 't_franc_struct',
+        dt: new Date().toISOString(),
+        score: score+'/'+total, pct, stars, streak: maxStreak,
+        time: Math.floor((new Date() - t0)/1000),
+        modes: {}
+    };
+    Object.entries(modeScore).forEach(([k, d]) => { if(d.t>0) dt.modes[k]={c:d.c,t:d.t}; });
+    document.getElementById('r-code').textContent = btoa(unescape(encodeURIComponent(JSON.stringify(dt))));
+}
+
+function cpCode() {
+    navigator.clipboard.writeText(document.getElementById('r-code').textContent).then(() => {
+        const m = document.getElementById('cp-ok');
+        m.style.display = 'block';
+        setTimeout(() => m.style.display = 'none', 2000);
+    });
+}
+</script>
+</body>
+</html>
