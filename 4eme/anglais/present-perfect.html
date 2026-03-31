@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Present Perfect - 4ème Anglais</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #08090f;
+            color: #fff;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #ffa500 0%, #ff6b6b 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #ffa500 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #1a1d2e;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffa500 0%, #ff6b6b 100%);
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        .score-display {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .score-card {
+            background: rgba(255, 165, 0, 0.1);
+            border: 2px solid #ffa500;
+            padding: 15px 25px;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .score-card.correct {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .score-card.incorrect {
+            border-color: #ff3366;
+            background: rgba(255, 51, 102, 0.1);
+        }
+
+        .score-number {
+            font-size: 2em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffa500 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-label {
+            font-size: 0.9em;
+            color: #aaa;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .question-container {
+            background: rgba(26, 29, 46, 0.8);
+            border: 2px solid #ffa500;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .question-number {
+            color: #ffa500;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .sentence-blank {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid #ffa500;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            color: #ddd;
+            line-height: 1.7;
+            font-style: italic;
+            font-size: 1.1em;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .option {
+            padding: 15px;
+            background: rgba(255, 165, 0, 0.1);
+            border: 2px solid #ffa500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .option:hover {
+            background: rgba(255, 165, 0, 0.3);
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: #ffa500;
+            border-color: #ffa500;
+            color: #000;
+        }
+
+        .option.correct {
+            background: #00ff88;
+            color: #000;
+            border-color: #00ff88;
+        }
+
+        .option.incorrect {
+            background: #ff3366;
+            border-color: #ff3366;
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 255, 136, 0.1);
+            border-left: 4px solid #00ff88;
+            border-radius: 5px;
+            color: #ddd;
+            line-height: 1.6;
+            display: none;
+            font-size: 0.95em;
+        }
+
+        .explanation.show {
+            display: block;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ffa500 0%, #ff6b6b 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 165, 0, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #1a1d2e;
+            color: #ffa500;
+            border: 2px solid #ffa500;
+        }
+
+        .btn-secondary:hover {
+            background: #ffa500;
+            color: #000;
+        }
+
+        .result-screen {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .result-screen.show {
+            display: block;
+        }
+
+        .stars {
+            font-size: 4em;
+            margin: 20px 0;
+            letter-spacing: 10px;
+        }
+
+        .stars.one { color: #ffa500; }
+        .stars.two { color: #ff6b6b; }
+        .stars.three { color: #00ff88; }
+
+        .final-score {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffa500 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+
+        .result-message {
+            font-size: 1.3em;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            .question-container { padding: 20px; }
+            .question-text { font-size: 1.1em; }
+            .option { font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/index.html" class="back-link">← Retour</a>
+
+        <header>
+            <h1>Present Perfect</h1>
+            <p class="subtitle">Maîtrise le "present perfect" en anglais</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="score-display">
+            <div class="score-card correct">
+                <div class="score-number" id="correctCount">0</div>
+                <div class="score-label">Correctes</div>
+            </div>
+            <div class="score-card incorrect">
+                <div class="score-number" id="incorrectCount">0</div>
+                <div class="score-label">Incorrectes</div>
+            </div>
+            <div class="score-card">
+                <div class="score-number" id="percentDisplay">0%</div>
+                <div class="score-label">Réussite</div>
+            </div>
+        </div>
+
+        <div id="quizContainer">
+            <div class="question-container">
+                <div class="question-number" id="questionNumber"></div>
+                <div class="question-text" id="questionText"></div>
+                <div class="sentence-blank" id="sentenceBlank"></div>
+                <div class="options" id="optionsContainer"></div>
+                <div class="explanation" id="explanation"></div>
+                <div class="button-group">
+                    <button class="btn btn-primary" id="submitBtn" onclick="submitAnswer()">Valider</button>
+                    <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()" style="display:none;">Suivant</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-screen" id="resultScreen">
+            <h2 style="font-size: 2em; margin-bottom: 20px;">Résultats</h2>
+            <div class="stars" id="starsDisplay"></div>
+            <div class="final-score" id="finalScore"></div>
+            <div class="result-message" id="resultMessage"></div>
+            <button class="btn btn-primary" onclick="location.reload()">Recommencer</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                text: 'Complète avec la bonne forme du "present perfect" :',
+                sentence: 'I _____ to Paris three times.',
+                options: ['go', 'have gone', 'went', 'am going'],
+                correct: 1,
+                explanation: 'Ici on utilise "have gone" (present perfect) car on parle d\'une expérience passée qui s\'étend jusqu\'au présent (trois fois). Formation : have/has + past participle.'
+            },
+            {
+                text: 'Complète :',
+                sentence: 'She _____ her homework already.',
+                options: ['finish', 'has finished', 'finished', 'is finishing'],
+                correct: 1,
+                explanation: '"Has finished" (present perfect) indique une action complétée récemment. Le mot "already" est un indice du present perfect.'
+            },
+            {
+                text: 'Choisir la bonne réponse :',
+                sentence: 'They _____ the film yet.',
+                options: ['see', 'have seen', 'saw', 'did see'],
+                correct: 1,
+                explanation: '"Have seen" convient avec "yet" (pas encore). On utilise le present perfect avec "yet", "already", "just".'
+            },
+            {
+                text: 'Complète :',
+                sentence: 'We _____ this book since last month.',
+                options: ['read', 'have read', 'are reading', 'were reading'],
+                correct: 1,
+                explanation: '"Have read" + "since" indique une action qui a commencé dans le passé et continue au présent.'
+            },
+            {
+                text: 'Remplis le blanc :',
+                sentence: 'He _____ never _____ pizza.',
+                options: ['have, eaten', 'has, eaten', 'did, eat', 'does, eat'],
+                correct: 1,
+                explanation: 'Avec "never" on utilise le present perfect : has never eaten. Formation négative du present perfect.'
+            },
+            {
+                text: 'Complète :',
+                sentence: 'I _____ you for years.',
+                options: ['know', 'have known', 'knew', 'am knowing'],
+                correct: 1,
+                explanation: '"Have known you for years" : present perfect avec "for" (période de temps). L\'action a commencé dans le passé et dure toujours.'
+            },
+            {
+                text: 'Choisir la bonne forme :',
+                sentence: 'They _____ just _____ the house.',
+                options: ['have, clean', 'have, cleaned', 'did, clean', 'are, cleaning'],
+                correct: 1,
+                explanation: 'Present perfect avec "just" (vient de...) : have cleaned. Action très récente.'
+            },
+            {
+                text: 'Remplis le blanc :',
+                sentence: 'Has she _____ a doctor?',
+                options: ['saw', 'seen', 'see', 'seeing'],
+                correct: 1,
+                explanation: 'Question au present perfect : Has she seen? Formation correcte avec le past participle.'
+            },
+            {
+                text: 'Complète :',
+                sentence: 'I _____ coffee today.',
+                options: ['have drunk', 'have drank', 'drank', 'did drink'],
+                correct: 0,
+                explanation: '"Have drunk" (present perfect) avec "today". Past participle de "drink" est "drunk".'
+            },
+            {
+                text: 'Choisir la réponse correcte :',
+                sentence: 'She _____ not _____ to London yet.',
+                options: ['have, been', 'has, been', 'did, go', 'has, gone'],
+                correct: 1,
+                explanation: 'Négation : has not been (yet = pas encore). Formation correcte du present perfect négatif.'
+            },
+            {
+                text: 'Remplis le vide :',
+                sentence: 'We _____ here for two hours.',
+                options: ['are', 'have been', 'were', 'was'],
+                correct: 1,
+                explanation: '"Have been here for two hours" : present perfect continu, action qui dure depuis deux heures.'
+            },
+            {
+                text: 'Complète :',
+                sentence: 'He _____ his keys.',
+                options: ['has lost', 'has lose', 'have lost', 'did lose'],
+                correct: 0,
+                explanation: '"He has lost" : sujet singulier, donc "has". Past participle de "lose" : "lost".'
+            },
+            {
+                text: 'Choisir la bonne forme :',
+                sentence: 'I _____ never _____ a tiger.',
+                options: ['have, saw', 'have, seen', 'did, see', 'has, seen'],
+                correct: 1,
+                explanation: 'Present perfect avec "never" : have seen (sujet "I"). Indique une expérience de vie.'
+            },
+            {
+                text: 'Remplis le blanc :',
+                sentence: 'How long _____ you _____ in this city?',
+                options: ['have, lived', 'have, living', 'did, live', 'are, living'],
+                correct: 0,
+                explanation: 'Question au present perfect : How long have you lived? Indique une durée qui continue au présent.'
+            },
+            {
+                text: 'Complète :',
+                sentence: 'They _____ the project for three weeks.',
+                options: ['have worked', 'have work', 'worked', 'are working'],
+                correct: 0,
+                explanation: '"Have worked for three weeks" : present perfect avec "for" (durée). Action qui a commencé et dure toujours.'
+            },
+            {
+                text: 'Choisir la réponse :',
+                sentence: 'She _____ there many times.',
+                options: ['has gone', 'has go', 'went', 'goes'],
+                correct: 0,
+                explanation: '"She has gone" mais attention : "has gone" = elle est partie et n\'est pas revenu. "Has been" = elle y est allée (expérience).'
+            },
+            {
+                text: 'Remplis le vide :',
+                sentence: 'I _____ this exercise before.',
+                options: ['have done', 'have do', 'did do', 'have did'],
+                correct: 0,
+                explanation: 'Present perfect : have done. Past participle de "do" : "done". Expression "before" = par le passé.'
+            },
+            {
+                text: 'Complète :',
+                sentence: 'He _____ the book for weeks.',
+                options: ['has read', 'have read', 'reads', 'is reading'],
+                correct: 0,
+                explanation: '"He has read the book for weeks" - sujet singulier, donc "has". Action qui dure depuis plusieurs semaines.'
+            },
+            {
+                text: 'Choisir la bonne forme :',
+                sentence: 'We _____ just _____ breakfast.',
+                options: ['have, ate', 'have, eaten', 'did, eat', 'are, eat'],
+                correct: 1,
+                explanation: '"Have eaten" avec "just" (vient de manger). Formation correcte du present perfect.'
+            },
+            {
+                text: 'Remplis le blanc :',
+                sentence: 'Have you _____ your sister today?',
+                options: ['saw', 'see', 'seen', 'seeing'],
+                correct: 2,
+                explanation: 'Question au present perfect : Have you seen? Le past participle de "see" est "seen".'
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+        const totalQuestions = 20;
+
+        function initQuiz() {
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1}/${totalQuestions}`;
+            document.getElementById('questionText').textContent = q.text;
+            document.getElementById('sentenceBlank').textContent = q.sentence;
+
+            const optionsHtml = q.options.map((opt, idx) =>
+                `<div class="option" data-index="${idx}" onclick="selectOption(${idx})">${opt}</div>`
+            ).join('');
+            document.getElementById('optionsContainer').innerHTML = optionsHtml;
+
+            document.getElementById('explanation').textContent = '';
+            document.getElementById('explanation').classList.remove('show');
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'none';
+            answered = false;
+
+            updateProgressBar();
+        }
+
+        function selectOption(index) {
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelector(`[data-index="${index}"]`).classList.add('selected');
+        }
+
+        function submitAnswer() {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestion];
+            const selected = document.querySelector('.option.selected');
+
+            if (!selected) return;
+
+            const selectedIndex = parseInt(selected.dataset.index);
+            const isCorrect = selectedIndex === q.correct;
+
+            if (isCorrect) {
+                score++;
+                selected.classList.add('correct');
+            } else {
+                selected.classList.add('incorrect');
+                document.querySelector(`[data-index="${q.correct}"]`).classList.add('correct');
+            }
+
+            document.getElementById('explanation').textContent = q.explanation;
+            document.getElementById('explanation').classList.add('show');
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'block';
+
+            updateScore();
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= totalQuestions) {
+                showResults();
+            } else {
+                showQuestion();
+            }
+        }
+
+        function updateScore() {
+            const correct = score;
+            const incorrect = currentQuestion + 1 - score;
+            const percent = Math.round((score / (currentQuestion + 1)) * 100);
+
+            document.getElementById('correctCount').textContent = correct;
+            document.getElementById('incorrectCount').textContent = incorrect;
+            document.getElementById('percentDisplay').textContent = percent + '%';
+        }
+
+        function updateProgressBar() {
+            const percent = ((currentQuestion + 1) / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = percent + '%';
+        }
+
+        function showResults() {
+            const percent = Math.round((score / totalQuestions) * 100);
+            let stars = '⭐';
+            if (percent >= 80) stars = '⭐⭐⭐';
+            else if (percent >= 60) stars = '⭐⭐';
+
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('resultScreen').classList.add('show');
+            document.getElementById('starsDisplay').textContent = stars;
+            document.getElementById('finalScore').textContent = `${score}/${totalQuestions}`;
+            document.getElementById('resultMessage').textContent = `Réussite : ${percent}%`;
+
+            const resultData = {
+                v: '4_pp',
+                dt: new Date().toISOString(),
+                score: `${score}/20`,
+                pct: percent,
+                stars: stars.length
+            };
+            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+            console.log('RESULT CODE:', encoded);
+        }
+
+        initQuiz();
+    </script>
+</body>
+</html>

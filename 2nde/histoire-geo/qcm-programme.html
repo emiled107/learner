@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QCM Histoire-Géo - 2nde</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #08090f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8c42 100%);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(255, 107, 107, 0.3);
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .subtitle {
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .question-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 107, 107, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+        }
+        .question-number {
+            color: #ff6b6b;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        .question-text {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 12px;
+            background: rgba(255, 107, 107, 0.1);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.2);
+        }
+        .option.selected {
+            background: rgba(255, 107, 107, 0.3);
+            border-color: #ff6b6b;
+        }
+        .option.correct {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+        }
+        .option.incorrect {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #f44336;
+        }
+        .explanation {
+            background: rgba(255, 195, 0, 0.1);
+            border-left: 4px solid #ffc300;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 5px;
+            color: #d0d0d0;
+            font-size: 0.95em;
+            display: none;
+        }
+        .explanation.show {
+            display: block;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8c42 100%);
+            transition: width 0.3s;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Nunito', sans-serif;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8c42 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+        .btn-secondary {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            border: 2px solid #ff6b6b;
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 107, 107, 0.3);
+        }
+        .results {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.2) 0%, rgba(255, 140, 66, 0.2) 100%);
+            border-radius: 12px;
+            border: 2px solid rgba(255, 107, 107, 0.3);
+        }
+        .score-display {
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8c42 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        .stars {
+            font-size: 2.5em;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+        .result-code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            word-break: break-all;
+            font-size: 0.9em;
+            color: #4caf50;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #ff6b6b;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            color: #ff8c42;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            .question-container {
+                padding: 18px;
+            }
+            .score-display {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>QCM Histoire-Géo</h1>
+            <p class="subtitle">Classe de 2nde - Programme complet</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div id="quizContent"></div>
+
+        <div id="resultsSection" style="display:none;">
+            <div class="results">
+                <h2>Résultats</h2>
+                <div class="score-display" id="scoreDisplay">0/0</div>
+                <div class="stars" id="starsDisplay">☆☆☆☆☆</div>
+                <p id="percentageText"></p>
+                <div class="result-code" id="resultCode"></div>
+                <a href="/index.html" class="back-link">← Retour à l'accueil</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Quel est le principal centre politique et culturel de la Méditerranée antique?",
+                options: ["Rome", "Athènes", "Alexandrie", "Carthage"],
+                correct: 0,
+                explanation: "Rome devient le centre dominant de la Méditerranée antique, particulièrement après les guerres puniques."
+            },
+            {
+                question: "En quelle année la chute de l'Empire romain d'Occident est-elle traditionnellement datée?",
+                options: ["395", "476", "800", "1453"],
+                correct: 1,
+                explanation: "476 marque la déposition du dernier empereur romain d'Occident, Romulus Augustule."
+            },
+            {
+                question: "Quel événement marque la transition entre l'Antiquité et le Moyen Âge?",
+                options: ["La chute de Rome", "L'arrivée de l'Islam", "Les invasions barbares", "La Réforme"],
+                correct: 0,
+                explanation: "La chute de l'Empire romain d'Occident en 476 marque traditionnellement cette transition."
+            },
+            {
+                question: "Quelle est la nature principale de la Méditerranée médiévale?",
+                options: ["Un espace de paix", "Un espace d'échanges commerciaux et culturels", "Une zone dépeupler", "Un centre politique unique"],
+                correct: 1,
+                explanation: "La Méditerranée médiévale est un espace d'échanges intenses malgré les conflits religieux."
+            },
+            {
+                question: "Quel mouvement culturel caractérise le XVe-XVIe siècle en Europe?",
+                options: ["Le Moyen Âge", "La Renaissance et l'Humanisme", "Les Lumières", "Le Romantisme"],
+                correct: 1,
+                explanation: "L'Humanisme et la Renaissance marquent une redécouverte de l'Antiquité et l'essor de la culture."
+            },
+            {
+                question: "Qui est Martin Luther?",
+                options: ["Un roi français", "Un théologien qui critique l'Église catholique", "Un artiste de la Renaissance", "Un explorateur"],
+                correct: 1,
+                explanation: "Martin Luther est le fondateur de la Réforme protestante au XVIe siècle."
+            },
+            {
+                question: "Quelle découverte scientifique marque la Renaissance?",
+                options: ["La gravitation", "L'imprimerie de Gutenberg", "La machine à vapeur", "L'électricité"],
+                correct: 1,
+                explanation: "L'imprimerie de Gutenberg révolutionne la diffusion des connaissances au XVe siècle."
+            },
+            {
+                question: "Quel est le principal processus de l'État moderne du XVIe-XVIIe siècle?",
+                options: ["La démocratisation", "La centralisation du pouvoir", "L'abandon du territoire", "La réduction de l'armée"],
+                correct: 1,
+                explanation: "L'État moderne se caractérise par la centralisation du pouvoir autour du monarque."
+            },
+            {
+                question: "Quel concept géographique décrit la relation entre sociétés et environnements?",
+                options: ["La mondialisation", "L'environnementalisme", "L'interaction dynamique", "La démographie"],
+                correct: 2,
+                explanation: "Les sociétés interagissent constamment avec leur environnement, modifiant et s'adaptant."
+            },
+            {
+                question: "Quel est le principal enjeu de la géographie concernant les territoires?",
+                options: ["L'art", "L'organisation de l'espace et les inégalités", "La littérature", "La musique"],
+                correct: 1,
+                explanation: "La géographie étudie comment l'espace est organisé et les inégalités qui en résultent."
+            },
+            {
+                question: "Qu'est-ce qu'une mobilité géographique?",
+                options: ["Un mouvement de population", "Une route commerciale", "Un climat", "Une montagne"],
+                correct: 0,
+                explanation: "Les mobilités incluent les migrations de population, les transports de marchandises, etc."
+            },
+            {
+                question: "Quel est le principal facteur de développement dans les zones côtières?",
+                options: ["L'isolement", "L'accès aux ressources marines et au commerce", "L'absence d'industrie", "La montagne"],
+                correct: 1,
+                explanation: "Les zones côtières bénéficient de l'accès aux routes commerciales maritimes."
+            },
+            {
+                question: "Comment définir la 'population'?",
+                options: ["Uniquement le nombre d'habitants", "L'ensemble des habitants avec leurs caractéristiques", "Un territoire", "Une religion"],
+                correct: 1,
+                explanation: "La population inclut le nombre, la structure, la répartition et les caractéristiques des habitants."
+            },
+            {
+                question: "Quel processus décrit la migration du rural vers l'urbain?",
+                options: ["La sédentarité", "L'exode rural", "L'agriculture intensive", "La colonisation"],
+                correct: 1,
+                explanation: "L'exode rural est le mouvement de populations quittant les campagnes pour les villes."
+            },
+            {
+                question: "Quelle est la principale cause de développement inégal entre régions?",
+                options: ["Le climat", "L'accumulation de capital et les infrastructures", "La langue", "La religion"],
+                correct: 1,
+                explanation: "Le développement dépend de l'accumulation de capital, des infrastructures et des investissements."
+            },
+            {
+                question: "Quel concept décrit la limite entre espaces développés et moins développés?",
+                options: ["L'équateur", "La fracture Nord-Sud", "Le méridien de Greenwich", "L'Atlantique"],
+                correct: 1,
+                explanation: "La fracture Nord-Sud représente les inégalités de développement entre régions."
+            },
+            {
+                question: "Qu'est-ce qu'une ressource naturelle renouvelable?",
+                options: ["Le pétrole", "La forêt ou l'eau", "Le charbon", "Le métal"],
+                correct: 1,
+                explanation: "Les ressources renouvelables se régénèrent naturellement, contrairement aux énergies fossiles."
+            },
+            {
+                question: "Quel est l'impact principal de l'urbanisation?",
+                options: ["L'augmentation des terres agricoles", "La concentration de population et ses enjeux", "La réduction de la pollution", "L'augmentation des forêts"],
+                correct: 1,
+                explanation: "L'urbanisation crée des défis d'aménagement, de transport, d'environnement et de logement."
+            },
+            {
+                question: "Comment s'appelle le processus de déplacement de populations pour des raisons de survie?",
+                options: ["Le tourisme", "La migration forcée", "Le commerce", "L'éducation"],
+                correct: 1,
+                explanation: "La migration forcée résulte de guerres, famines, catastrophes naturelles ou persécutions."
+            },
+            {
+                question: "Quel est le principal moteur des mobilités contemporaines?",
+                options: ["La religion", "La recherche d'emploi et de meilleures conditions", "Le hasard", "L'art"],
+                correct: 1,
+                explanation: "La majorité des migrations sont motivées par la recherche d'opportunités économiques."
+            },
+            {
+                question: "Comment s'appelle l'étude des populations et de leurs mouvements?",
+                options: ["L'écologie", "La démographie", "La géologie", "L'astronomie"],
+                correct: 1,
+                explanation: "La démographie étudie la taille, la structure et les mouvements des populations."
+            },
+            {
+                question: "Quel est le principal impact du changement climatique sur les populations?",
+                options: ["L'augmentation des côtes", "La modification des zones habitables et des ressources", "L'abaissement des mers", "L'augmentation du CO2 bénéfique"],
+                correct: 1,
+                explanation: "Le changement climatique modifie les conditions de vie et force les populations à s'adapter ou migrer."
+            },
+            {
+                question: "Comment s'appelle la zone de transition entre terre et mer?",
+                options: ["L'océan", "Le littoral", "La savane", "La toundra"],
+                correct: 1,
+                explanation: "Le littoral est une zone hautement stratégique pour le commerce et la population."
+            },
+            {
+                question: "Quel concept décrit la relation entre développement économique et environnement?",
+                options: ["L'indépendance totale", "La durabilité et l'équilibre", "L'opposabilité", "L'ignorance"],
+                correct: 1,
+                explanation: "La durabilité vise à concilier développement économique et protection environnementale."
+            },
+            {
+                question: "Qu'est-ce qu'une métropole en géographie?",
+                options: ["Une petite ville", "Un grand centre urbain dominant économiquement et politiquement", "Un désert", "Une forêt"],
+                correct: 1,
+                explanation: "Une métropole est une grande ville exerçant une domination économique et politique."
+            },
+            {
+                question: "Comment définir le sous-développement?",
+                options: ["L'absence de ressources", "Le manque d'infrastructures, de capital et d'éducation", "Un choix politique", "L'absence d'habitants"],
+                correct: 1,
+                explanation: "Le sous-développement résulte de l'accumulation insuffisante de capital et d'infrastructures."
+            },
+            {
+                question: "Quel est le rôle principal des transports dans la géographie?",
+                options: ["Uniquement touristique", "Connecter les territoires et faciliter les échanges", "Réduire la population", "Polluer"],
+                correct: 1,
+                explanation: "Les transports structurent l'espace, créent des connexions et favorisent les échanges."
+            },
+            {
+                question: "Qu'est-ce qu'une aire urbaine?",
+                options: ["Une banlieue isolée", "Un ensemble incluant la ville et sa zone d'influence", "Un désert", "Une montagne"],
+                correct: 1,
+                explanation: "L'aire urbaine inclut la ville-centre et les zones où elle exerce une influence."
+            },
+            {
+                question: "Quel est le principal défi de la géographie contemporaine?",
+                options: ["Cartographier les routes", "Équilibrer développement et durabilité face aux changements globaux", "Étudier les animaux", "Construire des routes"],
+                correct: 1,
+                explanation: "La géographie contemporaine doit répondre aux enjeux de développement durable et de changement climatique."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        const userAnswers = [];
+        const startTime = Date.now();
+
+        function initQuiz() {
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const question = quizData[currentQuestion];
+            const total = quizData.length;
+            const progress = ((currentQuestion + 1) / total) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            let html = `
+                <div class="question-container">
+                    <div class="question-number">Question ${currentQuestion + 1}/${total}</div>
+                    <div class="question-text">${question.question}</div>
+                    <div class="options">
+            `;
+
+            question.options.forEach((option, index) => {
+                html += `
+                    <div class="option" onclick="selectOption(${index})">
+                        <input type="radio" name="question${currentQuestion}" value="${index}" id="opt${index}">
+                        <label for="opt${index}">${option}</label>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <div class="explanation" id="explanation${currentQuestion}">
+                        <strong>Explication:</strong> ${question.explanation}
+                    </div>
+                    <div class="button-group">
+                        ${currentQuestion > 0 ? '<button class="btn-secondary" onclick="previousQuestion()">← Précédent</button>' : ''}
+                        <button class="btn-primary" onclick="nextQuestion()" id="nextBtn">Suivant →</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('quizContent').innerHTML = html;
+            document.getElementById('nextBtn').disabled = true;
+        }
+
+        function selectOption(index) {
+            userAnswers[currentQuestion] = index;
+            const question = quizData[currentQuestion];
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('.option')[index].classList.add('selected');
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById(`explanation${currentQuestion}`).classList.add('show');
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function showResults() {
+            score = userAnswers.filter((ans, i) => ans === quizData[i].correct).length;
+            const percentage = Math.round((score / quizData.length) * 100);
+            const stars = Math.ceil((percentage / 100) * 5);
+
+            const dt = new Date().toISOString();
+            const resultData = {
+                v: '2_histgeo',
+                dt: dt,
+                score: score,
+                total: quizData.length,
+                pct: percentage,
+                stars: stars
+            };
+
+            const resultCode = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('scoreDisplay').textContent = `${score}/${quizData.length}`;
+            document.getElementById('percentageText').innerHTML = `Résultat: ${percentage}%`;
+            document.getElementById('starsDisplay').textContent = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        window.addEventListener('load', initQuiz);
+    </script>
+</body>
+</html>

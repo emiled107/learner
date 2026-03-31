@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Philo : Concepts Clés - Terminale Bac</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            color: #fff;
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: linear-gradient(135deg, #1a1d2e 0%, #16111f 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(199, 125, 255, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #c77dff, #ff6b6b, #ffd93d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .header p {
+            color: #aaa;
+            font-size: 0.95em;
+        }
+
+        .mode-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .mode-btn {
+            padding: 15px;
+            border: 2px solid;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .mode-btn:nth-child(1) {
+            border-color: #c77dff;
+            color: #c77dff;
+        }
+
+        .mode-btn:nth-child(1):hover {
+            background: rgba(199, 125, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(199, 125, 255, 0.3);
+        }
+
+        .mode-btn:nth-child(2) {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .mode-btn:nth-child(2):hover {
+            background: rgba(255, 107, 107, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .mode-btn:nth-child(3) {
+            border-color: #6bcf7f;
+            color: #6bcf7f;
+        }
+
+        .mode-btn:nth-child(3):hover {
+            background: rgba(107, 207, 127, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(107, 207, 127, 0.3);
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .quiz-screen {
+            animation: fadeIn 0.5s ease;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #c77dff, #ff6b6b);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        .mode-badge {
+            background: rgba(199, 125, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: #c77dff;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            font-weight: 600;
+            line-height: 1.5;
+            color: #fff;
+        }
+
+        .question-emphasis {
+            color: #c77dff;
+            font-weight: 700;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .option.selected {
+            border-color: #c77dff;
+            background: rgba(199, 125, 255, 0.2);
+        }
+
+        .option.correct {
+            border-color: #6bcf7f;
+            background: rgba(107, 207, 127, 0.2);
+            animation: pulse 0.5s ease;
+        }
+
+        .option.incorrect {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.2);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #c77dff, #ff6b6b);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(199, 125, 255, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .explanation {
+            background: rgba(199, 125, 255, 0.1);
+            border-left: 4px solid #c77dff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.95em;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .explanation.show {
+            display: block;
+        }
+
+        .results-screen {
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #c77dff, #6bcf7f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+
+        .percentage {
+            font-size: 1.5em;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        .stars {
+            font-size: 3em;
+            margin: 20px 0;
+            letter-spacing: 10px;
+        }
+
+        .result-code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 0.85em;
+            word-break: break-all;
+            color: #c77dff;
+            font-family: monospace;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #c77dff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #ff6b6b;
+            transform: translateX(-3px);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .mode-selector {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .mode-btn {
+                padding: 12px;
+                font-size: 0.8em;
+            }
+
+            .question-text {
+                font-size: 1.1em;
+            }
+
+            .score-display {
+                font-size: 2.2em;
+            }
+
+            .stars {
+                font-size: 2em;
+                letter-spacing: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Mode Selection Screen -->
+        <div class="screen active" id="modeScreen">
+            <div class="header">
+                <h1>📚 Philo : Concepts Clés</h1>
+                <p>Maîtrise les 17 notions au programme - 25 questions par session</p>
+            </div>
+            <div class="mode-selector" id="modeSelector"></div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div class="screen" id="quizScreen">
+            <div class="question-info">
+                <span id="questionNumber"></span>
+                <span class="mode-badge" id="modeBadge"></span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-text" id="questionText"></div>
+            <div class="options" id="optionsContainer"></div>
+            <div class="explanation" id="explanation"></div>
+            <button class="btn" id="nextBtn">Vérifier</button>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="screen results-screen" id="resultsScreen">
+            <h2>Quiz Terminé!</h2>
+            <div class="score-display" id="scoreDisplay"></div>
+            <div class="percentage" id="percentageDisplay"></div>
+            <div class="stars" id="starsDisplay"></div>
+            <div class="result-code">
+                <strong>Code de résultat:</strong><br>
+                <span id="resultCode"></span>
+            </div>
+            <button class="btn" onclick="location.reload()">Rejouer</button>
+            <a href="/index.html" class="back-link">← Retour à l'accueil</a>
+        </div>
+    </div>
+
+    <script>
+        const concepts = {
+            'Notion → Définition': [
+                {q: 'Qu\'est-ce que la conscience?', a: ['Capacité à être conscient de soi et du monde', 'Morale innée', 'Instinct animal', 'Rationalité pure'], c: 0, exp: 'La conscience est la faculté de connaître et d\'avoir une représentation du monde et de soi-même.'},
+                {q: 'Qu\'est-ce que la liberté?', a: ['Absence de contraintes et pouvoir d\'agir selon sa volonté', 'Faire ce qu\'on veut sans limites', 'Indépendance totale', 'Droit naturel uniquement'], c: 0, exp: 'La liberté est le pouvoir d\'agir en fonction de sa propre détermination, souvent dans un cadre social et légal.'},
+                {q: 'Qu\'est-ce que la justice?', a: ['Ensemble de normes et principes garantissant l\'équité', 'Punition des coupables', 'Égalité absolue', 'Pouvoir judiciaire'], c: 0, exp: 'La justice est l\'équilibre et l\'équité dans les relations sociales, assurant à chacun ce qui lui est dû.'},
+                {q: 'Qu\'est-ce que la vérité?', a: ['Conformité entre nos idées et la réalité', 'Ce qu\'on croit vrai', 'Accord général', 'Absence d\'erreur'], c: 0, exp: 'La vérité est la correspondance exacte entre une proposition et ce qu\'elle représente dans la réalité.'},
+                {q: 'Qu\'est-ce que l\'art?', a: ['Expression créative et réflexive de l\'homme', 'Simple imitation de la réalité', 'Décoration', 'Technique uniquement'], c: 0, exp: 'L\'art est une création humaine visant à exprimer, communiquer ou susciter des émotions et réflexions.'},
+                {q: 'Qu\'est-ce que le bonheur?', a: ['État de satisfaction complète et durable', 'Plaisir immédiat', 'Absence de souffrance', 'Richesse matérielle'], c: 0, exp: 'Le bonheur est un état de plénitude et de satisfaction, résultant souvent de l\'accomplissement personnel.'},
+                {q: 'Qu\'est-ce que le devoir?', a: ['Obligation morale ou civique', 'Travail à faire', 'Impôt ou taxe', 'Force contraignante'], c: 0, exp: 'Le devoir est l\'obligation morale d\'agir de manière conforme à la raison ou à un ensemble de valeurs.'},
+                {q: 'Qu\'est-ce que l\'État?', a: ['Organisation politique souveraine d\'un territoire et de sa population', 'Gouvernement uniquement', 'Territoire', 'Ensemble des lois'], c: 0, exp: 'L\'État est une institution politique souveraine exerçant l\'autorité sur un territoire et une population.'},
+                {q: 'Qu\'est-ce que l\'inconscient?', a: ['Ensemble des contenus mentaux inaccessibles à la conscience', 'Absence de conscience', 'Instinct animal', 'Réflexe involontaire'], c: 0, exp: 'L\'inconscient est la partie de notre psyché dont nous n\'avons pas conscience directement mais qui influence nos comportements.'},
+                {q: 'Qu\'est-ce que le langage?', a: ['Système de signes permettant la communication', 'Parole uniquement', 'Écriture', 'Moyen de tromper'], c: 0, exp: 'Le langage est un système de signes et de règles permettant aux êtres de communiquer et d\'exprimer leurs pensées.'},
+                {q: 'Qu\'est-ce que la nature?', a: ['Ensemble du monde physique et vivant', 'Environnement naturel uniquement', 'Essence d\'une chose', 'Ce qui n\'est pas créé par l\'homme'], c: 0, exp: 'La nature est l\'ensemble de ce qui existe indépendamment de l\'action humaine, ou l\'essence d\'une chose.'},
+                {q: 'Qu\'est-ce que la raison?', a: ['Faculté de penser, de juger et de concevoir', 'Logique uniquement', 'Intelligence', 'Calcul mathématique'], c: 0, exp: 'La raison est la capacité à connaître, juger et comprendre le monde par la pensée rationnelle.'},
+                {q: 'Qu\'est-ce que la religion?', a: ['Système de croyances en des puissances sacrées', 'Ensemble de pratiques rituelles', 'Croyance en Dieu', 'Ensemble de dogmes'], c: 0, exp: 'La religion est un système de croyances, de pratiques et de valeurs centré sur le sacré et le transcendant.'},
+                {q: 'Qu\'est-ce que la science?', a: ['Connaissance systématique et vérifiable du réel', 'Ensemble de techniques', 'Mathématiques', 'Découvertes seulement'], c: 0, exp: 'La science est un ensemble de connaissances obtenues par observation, expérimentation et raisonnement logique.'},
+                {q: 'Qu\'est-ce que la technique?', a: ['Ensemble des méthodes et outils pour transformer la nature', 'Machine uniquement', 'Technologie', 'Compétence manuelle'], c: 0, exp: 'La technique est l\'ensemble des procédés, méthodes et outils permettant de transformer le monde.'},
+                {q: 'Qu\'est-ce que le temps?', a: ['Dimension permettant de situer les événements', 'Durée uniquement', 'Passé', 'Succession d\'instants'], c: 0, exp: 'Le temps est la dimension dans laquelle se situent les événements et qui permet de les ordonner.'},
+                {q: 'Qu\'est-ce que le travail?', a: ['Activité transformant la nature pour satisfaire les besoins', 'Effort physique', 'Emploi rémunéré', 'Obligation contraignante'], c: 0, exp: 'Le travail est l\'activité humaine visant à transformer la nature ou créer des biens et services.'},
+                {q: 'Qu\'est-ce que l\'inconsciemment?', a: ['De manière involontaire, sans conscience de l\'acte', 'Sans réfléchir', 'Par habitude', 'Sans intention'], c: 0, exp: 'L\'action inconsciente est celle faite sans être conscient de la faire ou de ses implications.'},
+                {q: 'Qu\'est-ce que l\'éthique?', a: ['Réflexion sur le bien et le mal', 'Ensemble de règles morales', 'Morale personnelle', 'Philosophie de l\'action'], c: 0, exp: 'L\'éthique est la branche de la philosophie étudiant la moralité et les valeurs qui guident l\'action humaine.'},
+                {q: 'Qu\'est-ce que l\'être?', a: ['Réalité fondamentale, ce qui existe', 'Existence seulement', 'Essence', 'Substance'], c: 0, exp: 'L\'être est la réalité fondamentale de tout ce qui existe, l\'objet central de la métaphysique.'},
+                {q: 'Qu\'est-ce que la connaissance?', a: ['Ensemble des idées et informations justifiées et vraies', 'Information seulement', 'Expérience', 'Savoir théorique'], c: 0, exp: 'La connaissance est une croyance vraie et justifiée, fruit de la compréhension du réel.'},
+                {q: 'Qu\'est-ce que la beauté?', a: ['Qualité qui suscite une appréciation esthétique', 'Apparence physique', 'Harmonie uniquement', 'Perfection formelle'], c: 0, exp: 'La beauté est la qualité de ce qui plaît aux sens et à l\'esprit, suscitant une appréciation esthétique.'},
+                {q: 'Qu\'est-ce que la mort?', a: ['Fin de la vie, passage de l\'être vivant à l\'inanimé', 'Néant absolu', 'Fin de la conscience', 'Passage à une autre vie'], c: 0, exp: 'La mort est la fin de la vie biologique et psychique d\'un organisme, interrogeant l\'existence et le sens.'},
+                {q: 'Qu\'est-ce que l\'amour?', a: ['Affection profonde envers une personne ou une cause', 'Sentiment émotionnel', 'Passion', 'Attirance physique'], c: 0, exp: 'L\'amour est un sentiment profond d\'affection et d\'attachement, valeur fondamentale en philosophie.'},
+                {q: 'Qu\'est-ce que le pouvoir?', a: ['Capacité à imposer sa volonté, à agir sur autrui', 'Autorité uniquement', 'Force brute', 'Domination'], c: 0, exp: 'Le pouvoir est la capacité à influencer, à déterminer les actions d\'autrui ou d\'imposer sa volonté.'}
+            ],
+            'Citation → Auteur': [
+                {q: '"Je pense, donc je suis"', a: ['René Descartes', 'Immanuel Kant', 'Arthur Schopenhauer', 'Edmund Husserl'], c: 0, exp: 'Descartes: Fondement du doute méthodique et de la conscience de soi comme certitude première.'},
+                {q: '"La liberté, c\'est l\'absence de contrainte"', a: ['Benjamin Constant', 'Jean-Paul Sartre', 'John Locke', 'Isaiah Berlin'], c: 0, exp: 'Constant distingue la liberté des Anciens (participation politique) de celle des Modernes (liberté individuelle).'},
+                {q: '"L\'homme est condamné à être libre"', a: ['Jean-Paul Sartre', 'Albert Camus', 'Maurice Merleau-Ponty', 'Simone Weil'], c: 0, exp: 'Sartre: L\'essence de la liberté humaine et la responsabilité qui en découle inévitablement.'},
+                {q: '"Le langage est le logement de l\'être"', a: ['Martin Heidegger', 'Ludwig Wittgenstein', 'Ferdinand de Saussure', 'Noam Chomsky'], c: 0, exp: 'Heidegger: L\'importance fondamentale du langage dans la révélation de l\'être et de la vérité.'},
+                {q: '"La vérité est une adéquation de l\'intellect et de la chose"', a: ['Thomas d\'Aquin', 'Platon', 'Aristote', 'Gottlob Frege'], c: 0, exp: 'Thomas d\'Aquin reprend Aristote: la vérité comme correspondance entre le pensé et le réel.'},
+                {q: '"L\'art lave l\'âme de la poussière du quotidien"', a: ['Pablo Picasso', 'Oscar Wilde', 'Arthur Schopenhauer', 'Walter Benjamin'], c: 0, exp: 'Picasso: L\'art comme purification et libération des contingences ordinaires.'},
+                {q: '"Le bonheur n\'est pas le but de la vie, c\'est le chemin"', a: ['Arthur Schopenhauer', 'Épicure', 'Aristote', 'Bertrand Russell'], c: 0, exp: 'Réflexion sur le bonheur comme processus plutôt que destination finale.'},
+                {q: '"L\'État c\'est moi"', a: ['Louis XIV', 'Thomas Hobbes', 'Jean-Jacques Rousseau', 'Machiavel'], c: 0, exp: 'Louis XIV: Identification du monarque à l\'autorité souveraine et à l\'État lui-même.'},
+                {q: '"Il y a plus de choses au ciel et à la terre que dans toute ta philosophie"', a: ['William Shakespeare (Hamlet)', 'Socrate', 'Montaigne', 'Pascal'], c: 0, exp: 'Hamlet: Limite de la raison face aux mystères existentiels et métaphysiques.'},
+                {q: '"Nul ne peut entrer ici s\'il n\'est géomètre"', a: ['Platon (inscription de l\'Académie)', 'Pythagore', 'Euclide', 'Archimède'], c: 0, exp: 'Platon: Importance des mathématiques et de la raison dans la compréhension de la vérité.'},
+                {q: '"La nature n\'a pas de fins"', a: ['Spinoza', 'Descartes', 'Leibniz', 'Kant'], c: 0, exp: 'Spinoza: La nature n\'agit pas en vue d\'un but, rejet du finalisme aristotélicien.'},
+                {q: '"La raison peut montrer les connexions"', a: ['Immanuel Kant', 'David Hume', 'Francis Bacon', 'Gottfried Leibniz'], c: 0, exp: 'Kant: Rôle de la raison dans l\'organisation et la compréhension de l\'expérience.'},
+                {q: '"Dieu est mort"', a: ['Friedrich Nietzsche', 'Arthur Schopenhauer', 'Auguste Comte', 'Jean-Paul Sartre'], c: 0, exp: 'Nietzsche: Critique de la religion et de la morale traditionnelles.'},
+                {q: '"La science donne du pouvoir mais pas des buts"', a: ['Albert Schweitzer', 'Bertrand Russell', 'Ludwig Wittgenstein', 'Willard Van Orman Quine'], c: 0, exp: 'Réflexion sur les limites de la science dans la détermination de nos fins et de notre éthique.'},
+                {q: '"La technique révèle le monde comme gisement de ressources"', a: ['Martin Heidegger', 'Jacques Ellul', 'Lewis Mumford', 'Marshall McLuhan'], c: 0, exp: 'Heidegger: La technologie change notre rapport au monde et à l\'être.'},
+                {q: '"Le temps est la substance dont je suis fait"', a: ['Jorge Luis Borges', 'Henri Bergson', 'Alfred North Whitehead', 'Process Theology'], c: 0, exp: 'Borges (reprenant la conscience métaphysique): Le temps comme essence de l\'existence humaine.'},
+                {q: '"Le travail est la forme de la liberté"', a: ['Karl Marx', 'Hegel', 'Jean-Jacques Rousseau', 'Adam Smith'], c: 0, exp: 'Marx: Le travail comme expression de la liberté humaine, bien qu\'aliéné dans le capitalisme.'},
+                {q: '"L\'inconscient, c\'est le discours de l\'Autre"', a: ['Jacques Lacan', 'Sigmund Freud', 'Carl Jung', 'Wilhelm Reich'], c: 0, exp: 'Lacan: L\'inconscient structuré comme un langage, marqué par l\'altérité.'},
+                {q: '"Les hommes naissent libres et égaux en droits"', a: ['Jean-Jacques Rousseau', 'Montesquieu', 'Voltaire', 'Condorcet'], c: 0, exp: 'Rousseau: Fondement du contrat social et de la justice politique moderne.'},
+                {q: '"La justice n\'existe que par convention"', a: ['Thomas Hobbes', 'Platon', 'Aristote', 'Socrate'], c: 0, exp: 'Hobbes: La justice est une construction sociale, née de la raison et du contrat.'},
+                {q: '"L\'homme est un animal politique"', a: ['Aristote', 'Platon', 'Thomas d\'Aquin', 'Cicéron'], c: 0, exp: 'Aristote: Affirmation que l\'homme réalise sa nature dans la communauté politique.'},
+                {q: '"Existence précède l\'essence"', a: ['Jean-Paul Sartre', 'Heidegger', 'Albert Camus', 'Maurice Merleau-Ponty'], c: 0, exp: 'Sartre: Fondement de l\'existentialisme et de la responsabilité humaine.'},
+                {q: '"Demandez et vous recevrez"', a: ['Bible (Mathieu 7:7)', 'Confucius', 'Bouddha', 'Taoïsme'], c: 0, exp: 'Sagesse religieuse et éthique: engagement et récompense en retour.'},
+                {q: '"Le diable est dans les détails"', a: ['Ludwig Mies van der Rohe / Gustave Flaubert', 'Descartes', 'Hegel', 'Nietzsche'], c: 0, exp: 'Importance de l\'attention aux détails, de la précision et de la rigueur.'},
+                {q: '"Rien ne peut être dit que ce qui peut être montré"', a: ['Ludwig Wittgenstein', 'Bertrand Russell', 'Frege', 'Alfred Tarski'], c: 0, exp: 'Wittgenstein: Limite du langage et de la logique dans l\'expression du monde.'}
+            ],
+            'Auteur → Thèse Principale': [
+                {q: 'Platon: qui croit que...', a: ['Les idées éternelles constituent la vraie réalité', 'Le monde matériel est seul réel', 'Seul ce qui change est réel', 'La raison n\'existe pas'], c: 0, exp: 'Platon: Théorie des idées/formes comme réalité immuable dont le monde sensible n\'est que reflet.'},
+                {q: 'Aristote: qui affirme que...', a: ['La substance est l\'essence fondamentale de la réalité', 'Les universaux n\'existent que dans l\'esprit', 'Le changement est illusion', 'Seul Dieu existe'], c: 0, exp: 'Aristote: Métaphysique de la substance et critique du platonisme, définition par genres et espèces.'},
+                {q: 'Descartes: qui propose que...', a: ['La conscience de soi est la certitude première et fondatrice', 'Seul le corps est réel', 'Dieu n\'existe pas', 'La raison est illusoire'], c: 0, exp: 'Descartes: Le cogito ergo sum comme point de départ indubitabledu savoir philosophique.'},
+                {q: 'David Hume: qui soutient que...', a: ['Les idées proviennent de l\'expérience sensible', 'La raison est souveraine', 'Les universaux sont réels', 'L\'expérience ne compte pas'], c: 0, exp: 'Hume: Empirisme radical, critique de la causalité et du concept de substance.'},
+                {q: 'Immanuel Kant: qui montre que...', a: ['La raison structure l\'expérience par des catégories a priori', 'Le monde existe indépendamment de nos catégories', 'Les phénomènes sont identiques aux noumènes', 'L\'expérience n\'existe pas'], c: 0, exp: 'Kant: Synthèse criticiste entre rationalisme et empirisme, révolution copernicienne de la philosophie.'},
+                {q: 'Georg Hegel: qui soutient que...', a: ['L\'histoire est réalisation progressive de la liberté par la raison', 'Le temps n\'existe pas', 'La conscience est isolée', 'La raison n\'existe qu\'individuellement'], c: 0, exp: 'Hegel: Dialectique historique, idéalisme absolu, reconnaissance mutuelle et fin de l\'histoire.'},
+                {q: 'Karl Marx: qui affirme que...', a: ['Le matérialisme historique explique les structures sociales et l\'idéologie', 'Les idées causent l\'histoire', 'La conscience détermine l\'économie', 'La classe n\'existe pas'], c: 0, exp: 'Marx: Matérialisme dialectique, critique du capitalisme et de l\'aliénation du travail.'},
+                {q: 'Søren Kierkegaard: qui croit que...', a: ['L\'existence individuelle prime l\'essence abstraite', 'La raison explique tout', 'La foi est déraisonnable', 'L\'expérience n\'a pas de valeur'], c: 0, exp: 'Kierkegaard: Existentialisme religieux, authenticité et "saut de foi", critique de l\'hégélianisme.'},
+                {q: 'Friedrich Nietzsche: qui affirme que...', a: ['La volonté de puissance est force motrice fondamentale', 'Les valeurs absolues existent', 'La science est la vérité ultime', 'L\'homme est altruiste par nature'], c: 0, exp: 'Nietzsche: Généalogie des valeurs, transvaluation, critique de la morale chrétienne et du pessimisme.'},
+                {q: 'Arthur Schopenhauer: qui pense que...', a: ['La volonté (irrational et aveugle) est l\'essence du monde', 'Le monde est raisonnable', 'Le bonheur est possible', 'La raison gouverne tout'], c: 0, exp: 'Schopenhauer: Pessimisme métaphysique, la volonté comme chose en soi, négation de la vie.'},
+                {q: 'Henri Bergson: qui propose que...', a: ['L\'intuition et la durée révèlent la réalité mieux que l\'intellect', 'Le temps n\'existe pas', 'L\'intuition trompe', 'La raison est parfaite'], c: 0, exp: 'Bergson: Critique du rationalisme cartésien, vision créatrice de l\'évolution, liberté créative.'},
+                {q: 'Bertrand Russell: qui soutient que...', a: ['L\'analyse logique révèle la structure du réel', 'La logique ne s\'applique pas au monde', 'Les universaux n\'existent pas', 'La philosophie est impossible'], c: 0, exp: 'Russell: Logique et analyse philosophique, réalisme, critique du monisme et de l\'idéalisme.'},
+                {q: 'Ludwig Wittgenstein: qui affirme que...', a: ['Les limites du langage sont les limites du monde pensable', 'Le langage exprime tout sans limite', 'La philosophie n\'existe pas', 'Le monde est simple'], c: 0, exp: 'Wittgenstein: Critique du langage ordinaire, jeux de langage, limites du dicible et du montrable.'},
+                {q: 'Sigmund Freud: qui propose que...', a: ['L\'inconscient détermine largement notre comportement et notre psyché', 'Tout est conscient', 'L\'inconscient n\'existe pas', 'Le rêve n\'a pas de sens'], c: 0, exp: 'Freud: Psychanalyse, inconscient dynamique, interprétation des rêves, pulsions sexuelles.'},
+                {q: 'Bertrand Russell (Éthique): qui croit que...', a: ['Les valeurs morales sont subjectives mais dignes d\'être poursuivies', 'La morale est absolue', 'L\'éthique n\'existe pas', 'Les valeurs sont seules objectives'], c: 0, exp: 'Russell: Réflexion éthique pragmatiste, importance du bonheur et de la connaissance.'},
+                {q: 'Jean-Paul Sartre: qui affirme que...', a: ['La liberté et la responsabilité humaines sont absolues, sans essence fixe', 'L\'essence précède l\'existence', 'L\'homme n\'est pas libre', 'La responsabilité n\'existe pas'], c: 0, exp: 'Sartre: Existentialisme athée, liberté radicale, mauvaise foi, responsabilité et absurdité.'},
+                {q: 'Albert Camus: qui soutient que...', a: ['L\'absurde est le conflit entre le désir de sens et un univers muet', 'La vie a un sens obvious', 'L\'absurde n\'existe pas', 'Le suicide est résonable'], c: 0, exp: 'Camus: Absurde, révolte lucide, liberté passionnée, critique du totalitarisme.'},
+                {q: 'Simone de Beauvoir: qui propose que...', a: ['La femme n\'existe qu\'en relation à l\'homme, aliénée comme Autrui', 'L\'égalité existe naturellement', 'La différence sexuelle n\'existe pas', 'Les femmes sont surélevées'], c: 0, exp: 'Beauvoir: Féminisme existentialiste, critique du patriarcat, liberté et construction sociale du genre.'},
+                {q: 'John Rawls: qui affirme que...', a: ['Une société juste repose sur le voile d\'ignorance et l\'équité', 'La justice est utilitaire', 'L\'égalité n\'existe pas', 'Le contrat social est faux'], c: 0, exp: 'Rawls: Théorie de la justice, voile d\'ignorance, principes d\'équité et de différence.'},
+                {q: 'Michel Foucault: qui montre que...', a: ['Le savoir et le pouvoir sont inséparablement liés, construisant la réalité', 'Le pouvoir ne lie pas à la connaissance', 'La vérité est indépendante du pouvoir', 'L\'archéologie est impossible'], c: 0, exp: 'Foucault: Généalogie du savoir, épistémè, biopolitique, critique des institutions disciplinaires.'},
+                {q: 'Jacques Derrida: qui propose que...', a: ['La déconstruction révèle l\'instabilité des significations et des hiérarchies binaires', 'Les textes ont un sens fixe', 'L\'interprétation n\'existe pas', 'Les binaires sont naturels'], c: 0, exp: 'Derrida: Déconstruction, différance, trace, critique de la présence et de l\'identité.'},
+                {q: 'Hannah Arendt: qui affirme que...', a: ['Le totalitarisme est une rupture avec la politique humaine et la pluralité', 'Le totalitarisme est un progrès', 'La politique n\'existe pas', 'L\'action est impossible'], c: 0, exp: 'Arendt: Critique du totalitarisme, vie active, pluralité, espace public et action politique.'},
+                {q: 'Gadamer: qui soutient que...', a: ['La compréhension est un processus de fusion des horizons herméneutiques', 'La compréhension est impossible', 'Les préjugés doivent être dépassés', 'Le texte est transparent'], c: 0, exp: 'Gadamer: Herméneutique philosophique, dialogue, tradition, application et fusion d\'horizons.'},
+                {q: 'Deleuze: qui propose que...', a: ['Le réel est devenir et multiplicité, rhizomatique, non hiérarchique', 'Le réel est une essence fixe', 'La différence n\'existe pas', 'L\'arborescence est fondamentale'], c: 0, exp: 'Deleuze: Philosophie du devenir, différence répétée, rhizome, critique de la hiérarchie binaire.'},
+                {q: 'Axel Honneth: qui affirme que...', a: ['La reconnaissance sociale est fondamentale à l\'identité et la justice', 'La reconnaissance n\'existe pas', 'L\'identité est innée', 'Le conflit social n\'a pas de base morale'], c: 0, exp: 'Honneth: Théorie de la reconnaissance, lutte pour la reconnaissance, justice comme reconnaissance.'}
+            ]
+        };
+
+        let currentMode = '';
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let modeQuestions = [];
+
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function startQuiz(mode) {
+            currentMode = mode;
+            modeQuestions = shuffle([...concepts[mode]]).slice(0, 25);
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('modeScreen').classList.remove('active');
+            document.getElementById('quizScreen').classList.add('active');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = modeQuestions[currentQuestionIndex];
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestionIndex + 1}/25`;
+            document.getElementById('modeBadge').textContent = currentMode;
+            document.getElementById('questionText').textContent = q.q;
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            q.a.forEach((option, index) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = option;
+                div.onclick = () => selectOption(index);
+                optionsContainer.appendChild(div);
+            });
+
+            document.getElementById('explanation').classList.remove('show');
+            document.getElementById('nextBtn').textContent = 'Vérifier';
+            document.getElementById('nextBtn').disabled = false;
+
+            updateProgress();
+        }
+
+        function selectOption(index) {
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                opt.classList.remove('selected');
+                if (i === index) opt.classList.add('selected');
+            });
+        }
+
+        function nextQuestion() {
+            const selectedIdx = Array.from(document.querySelectorAll('.option')).findIndex(o => o.classList.contains('selected'));
+
+            if (selectedIdx === -1) return;
+
+            const q = modeQuestions[currentQuestionIndex];
+            const isCorrect = selectedIdx === q.c;
+
+            if (isCorrect) score++;
+
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                opt.style.pointerEvents = 'none';
+                if (i === q.c) opt.classList.add('correct');
+                else if (i === selectedIdx && !isCorrect) opt.classList.add('incorrect');
+            });
+
+            document.getElementById('explanation').innerHTML = `
+                <strong>Explication:</strong><br>${q.exp}
+            `;
+            document.getElementById('explanation').classList.add('show');
+            document.getElementById('nextBtn').textContent = currentQuestionIndex < 24 ? 'Question suivante' : 'Résultats';
+
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < 25) {
+                setTimeout(() => showQuestion(), 2000);
+            } else {
+                document.getElementById('nextBtn').onclick = () => showResults();
+            }
+        }
+
+        document.getElementById('nextBtn').onclick = nextQuestion;
+
+        function updateProgress() {
+            const percentage = ((currentQuestionIndex) / 25) * 100;
+            document.getElementById('progressFill').style.width = percentage + '%';
+        }
+
+        function showResults() {
+            document.getElementById('quizScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+
+            const percentage = Math.round((score / 25) * 100);
+            let stars = '☆☆☆';
+            if (percentage >= 80) stars = '★★★';
+            else if (percentage >= 60) stars = '★★☆';
+            else if (percentage >= 40) stars = '★☆☆';
+
+            document.getElementById('scoreDisplay').textContent = score + '/25';
+            document.getElementById('percentageDisplay').textContent = percentage + '%';
+            document.getElementById('starsDisplay').textContent = stars;
+
+            const now = new Date();
+            const dt = now.toISOString().split('T')[0];
+            const resultCode = btoa(JSON.stringify({
+                v: 'l_philo',
+                dt: dt,
+                score: score + '/25',
+                pct: percentage,
+                stars: stars.includes('★') ? stars.match(/★/g).length : 0
+            }));
+
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        const selector = document.getElementById('modeSelector');
+        Object.keys(concepts).forEach(mode => {
+            const btn = document.createElement('button');
+            btn.className = 'mode-btn';
+            btn.textContent = mode;
+            btn.onclick = () => startQuiz(mode);
+            selector.appendChild(btn);
+        });
+    </script>
+</body>
+</html>

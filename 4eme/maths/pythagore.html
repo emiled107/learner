@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Théorème de Pythagore - 4ème</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #08090f;
+            color: #fff;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #1a1d2e;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff 0%, #0099ff 100%);
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        .score-display {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .score-card {
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid #667eea;
+            padding: 15px 25px;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .score-card.correct {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .score-card.incorrect {
+            border-color: #ff3366;
+            background: rgba(255, 51, 102, 0.1);
+        }
+
+        .score-number {
+            font-size: 2em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-label {
+            font-size: 0.9em;
+            color: #aaa;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .question-container {
+            background: rgba(26, 29, 46, 0.8);
+            border: 2px solid #667eea;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .triangle-diagram {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            font-family: monospace;
+            color: #00d4ff;
+            font-size: 0.95em;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .option {
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .option:hover {
+            background: rgba(102, 126, 234, 0.3);
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: #667eea;
+            border-color: #667eea;
+        }
+
+        .option.correct {
+            background: #00ff88;
+            color: #000;
+            border-color: #00ff88;
+        }
+
+        .option.incorrect {
+            background: #ff3366;
+            border-color: #ff3366;
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 255, 136, 0.1);
+            border-left: 4px solid #00ff88;
+            border-radius: 5px;
+            color: #ddd;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .explanation.show {
+            display: block;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #1a1d2e;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .result-screen {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .result-screen.show {
+            display: block;
+        }
+
+        .stars {
+            font-size: 4em;
+            margin: 20px 0;
+            letter-spacing: 10px;
+        }
+
+        .stars.one { color: #667eea; }
+        .stars.two { color: #00d4ff; }
+        .stars.three { color: #00ff88; }
+
+        .final-score {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+
+        .result-message {
+            font-size: 1.3em;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            .question-container { padding: 20px; }
+            .question-text { font-size: 1.1em; }
+            .option { font-size: 1em; }
+            .score-display { gap: 10px; }
+            .score-card { min-width: 120px; padding: 12px 15px; }
+            .score-number { font-size: 1.5em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/index.html" class="back-link">← Retour</a>
+
+        <header>
+            <h1>Théorème de Pythagore</h1>
+            <p class="subtitle">Maîtrise les calculs de triangles rectangles</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="score-display">
+            <div class="score-card correct">
+                <div class="score-number" id="correctCount">0</div>
+                <div class="score-label">Correctes</div>
+            </div>
+            <div class="score-card incorrect">
+                <div class="score-number" id="incorrectCount">0</div>
+                <div class="score-label">Incorrectes</div>
+            </div>
+            <div class="score-card">
+                <div class="score-number" id="percentDisplay">0%</div>
+                <div class="score-label">Réussite</div>
+            </div>
+        </div>
+
+        <div id="quizContainer">
+            <div class="question-container">
+                <div class="question-number" id="questionNumber"></div>
+                <div class="question-text" id="questionText"></div>
+                <div class="triangle-diagram" id="triangleDiagram"></div>
+                <div class="options" id="optionsContainer"></div>
+                <div class="explanation" id="explanation"></div>
+                <div class="button-group">
+                    <button class="btn btn-primary" id="submitBtn" onclick="submitAnswer()">Valider</button>
+                    <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()" style="display:none;">Suivant</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-screen" id="resultScreen">
+            <h2 style="font-size: 2em; margin-bottom: 20px;">Résultats</h2>
+            <div class="stars" id="starsDisplay"></div>
+            <div class="final-score" id="finalScore"></div>
+            <div class="result-message" id="resultMessage"></div>
+            <button class="btn btn-primary" onclick="location.reload()">Recommencer</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                type: 'hypotenuse',
+                text: 'Dans un triangle rectangle, les deux côtés de l\'angle droit mesurent 3 cm et 4 cm. Quelle est la longueur de l\'hypoténuse ?',
+                diagram: '    C\n   /|\n  / |\n /  | 4 cm\n/   |\nA---B\n 3 cm',
+                a: 3, b: 4,
+                options: ['5 cm', '6 cm', '7 cm', '8 cm'],
+                correct: 0,
+                explanation: 'Théorème de Pythagore : c² = a² + b² → c² = 3² + 4² = 9 + 16 = 25 → c = 5 cm'
+            },
+            {
+                type: 'hypotenuse',
+                text: 'Calcule l\'hypoténuse d\'un triangle rectangle avec les côtés 5 m et 12 m.',
+                diagram: '    C\n   /|\n  / |\n /  | 12 m\n/   |\nA---B\n 5 m',
+                a: 5, b: 12,
+                options: ['13 m', '14 m', '15 m', '17 m'],
+                correct: 0,
+                explanation: 'c² = 5² + 12² = 25 + 144 = 169 → c = 13 m'
+            },
+            {
+                type: 'hypotenuse',
+                text: 'Un triangle rectangle a des côtés de l\'angle droit de 6 cm et 8 cm. Quelle est l\'hypoténuse ?',
+                diagram: '    C\n   /|\n  / |\n /  | 8 cm\n/   |\nA---B\n 6 cm',
+                a: 6, b: 8,
+                options: ['10 cm', '11 cm', '12 cm', '14 cm'],
+                correct: 0,
+                explanation: 'c² = 6² + 8² = 36 + 64 = 100 → c = 10 cm'
+            },
+            {
+                type: 'cote',
+                text: 'L\'hypoténuse d\'un triangle rectangle mesure 13 cm et un côté 5 cm. Quel est l\'autre côté ?',
+                diagram: 'Hypoténuse = 13 cm, un côté = 5 cm',
+                c: 13, a: 5,
+                options: ['8 cm', '10 cm', '12 cm', '14 cm'],
+                correct: 2,
+                explanation: 'a² + b² = c² → 5² + b² = 13² → 25 + b² = 169 → b² = 144 → b = 12 cm'
+            },
+            {
+                type: 'cote',
+                text: 'Dans un triangle rectangle, l\'hypoténuse est 25 cm et un côté 7 cm. Trouve l\'autre côté.',
+                diagram: 'Hypoténuse = 25 cm, un côté = 7 cm',
+                c: 25, a: 7,
+                options: ['20 cm', '24 cm', '26 cm', '28 cm'],
+                correct: 1,
+                explanation: '7² + b² = 25² → 49 + b² = 625 → b² = 576 → b = 24 cm'
+            },
+            {
+                type: 'cote',
+                text: 'Un triangle rectangle a une hypoténuse de 10 cm et un côté de 6 cm. Calcule l\'autre côté.',
+                diagram: 'Hypoténuse = 10 cm, un côté = 6 cm',
+                c: 10, a: 6,
+                options: ['6 cm', '8 cm', '12 cm', '14 cm'],
+                correct: 1,
+                explanation: '6² + b² = 10² → 36 + b² = 100 → b² = 64 → b = 8 cm'
+            },
+            {
+                type: 'verify',
+                text: 'Est-ce que ce triangle avec les côtés 9 cm, 12 cm et 15 cm est rectangle ?',
+                diagram: 'Côtés : 9 cm, 12 cm, 15 cm',
+                a: 9, b: 12, c: 15,
+                options: ['Oui, c\'est rectangle', 'Non, ce n\'est pas rectangle', 'Impossible à déterminer', 'C\'est un triangle isocèle'],
+                correct: 0,
+                explanation: '9² + 12² = 81 + 144 = 225 = 15². Oui, le théorème de Pythagore est vérifié, c\'est un triangle rectangle.'
+            },
+            {
+                type: 'verify',
+                text: 'Le triangle avec les côtés 5 cm, 6 cm et 8 cm est-il rectangle ?',
+                diagram: 'Côtés : 5 cm, 6 cm, 8 cm',
+                a: 5, b: 6, c: 8,
+                options: ['Oui, c\'est rectangle', 'Non, ce n\'est pas rectangle', 'C\'est un triangle équilatéral', 'Données insuffisantes'],
+                correct: 1,
+                explanation: '5² + 6² = 25 + 36 = 61 ≠ 8² = 64. Non, le théorème de Pythagore n\'est pas vérifié.'
+            },
+            {
+                type: 'hypotenuse',
+                text: 'Calcule l\'hypoténuse : côtés de 9 cm et 12 cm.',
+                diagram: '    C\n   /|\n  / |\n /  | 12 cm\n/   |\nA---B\n 9 cm',
+                a: 9, b: 12,
+                options: ['15 cm', '18 cm', '20 cm', '21 cm'],
+                correct: 0,
+                explanation: 'c² = 9² + 12² = 81 + 144 = 225 → c = 15 cm'
+            },
+            {
+                type: 'cote',
+                text: 'L\'hypoténuse est 17 cm, un côté est 8 cm. Quel est l\'autre côté ?',
+                diagram: 'Hypoténuse = 17 cm, un côté = 8 cm',
+                c: 17, a: 8,
+                options: ['12 cm', '13 cm', '15 cm', '16 cm'],
+                correct: 2,
+                explanation: '8² + b² = 17² → 64 + b² = 289 → b² = 225 → b = 15 cm'
+            },
+            {
+                type: 'hypotenuse',
+                text: 'Triangle rectangle avec côtés 7 m et 24 m. Calcule l\'hypoténuse.',
+                diagram: '    C\n   /|\n  / |\n /  | 24 m\n/   |\nA---B\n 7 m',
+                a: 7, b: 24,
+                options: ['25 m', '26 m', '28 m', '31 m'],
+                correct: 0,
+                explanation: 'c² = 7² + 24² = 49 + 576 = 625 → c = 25 m'
+            },
+            {
+                type: 'verify',
+                text: 'Est-ce que le triangle 20 cm, 21 cm, 29 cm est rectangle ?',
+                diagram: 'Côtés : 20 cm, 21 cm, 29 cm',
+                a: 20, b: 21, c: 29,
+                options: ['Oui', 'Non', 'C\'est isocèle', 'Données insuffisantes'],
+                correct: 0,
+                explanation: '20² + 21² = 400 + 441 = 841 = 29². Oui, c\'est un triangle rectangle.'
+            },
+            {
+                type: 'cote',
+                text: 'Hypoténuse = 20 cm, un côté = 12 cm. L\'autre côté ?',
+                diagram: 'Hypoténuse = 20 cm, un côté = 12 cm',
+                c: 20, a: 12,
+                options: ['14 cm', '16 cm', '18 cm', '22 cm'],
+                correct: 1,
+                explanation: '12² + b² = 20² → 144 + b² = 400 → b² = 256 → b = 16 cm'
+            },
+            {
+                type: 'hypotenuse',
+                text: 'Calcule l\'hypoténuse pour les côtés 10 cm et 24 cm.',
+                diagram: '    C\n   /|\n  / |\n /  | 24 cm\n/   |\nA---B\n 10 cm',
+                a: 10, b: 24,
+                options: ['26 cm', '28 cm', '30 cm', '34 cm'],
+                correct: 0,
+                explanation: 'c² = 10² + 24² = 100 + 576 = 676 → c = 26 cm'
+            },
+            {
+                type: 'verify',
+                text: 'Le triangle 8, 15, 17 est-il rectangle ?',
+                diagram: 'Côtés : 8, 15, 17',
+                a: 8, b: 15, c: 17,
+                options: ['Oui', 'Non', 'Peut-être', 'Pas rectangle'],
+                correct: 0,
+                explanation: '8² + 15² = 64 + 225 = 289 = 17². Oui, c\'est un triangle rectangle.'
+            },
+            {
+                type: 'cote',
+                text: 'Hypoténuse = 15 cm, un côté = 9 cm. Calcule l\'autre côté.',
+                diagram: 'Hypoténuse = 15 cm, un côté = 9 cm',
+                c: 15, a: 9,
+                options: ['10 cm', '12 cm', '14 cm', '16 cm'],
+                correct: 1,
+                explanation: '9² + b² = 15² → 81 + b² = 225 → b² = 144 → b = 12 cm'
+            },
+            {
+                type: 'hypotenuse',
+                text: 'Côtés 11 m et 60 m. Quelle est l\'hypoténuse ?',
+                diagram: '    C\n   /|\n  / |\n /  | 60 m\n/   |\nA---B\n 11 m',
+                a: 11, b: 60,
+                options: ['61 m', '62 m', '63 m', '65 m'],
+                correct: 0,
+                explanation: 'c² = 11² + 60² = 121 + 3600 = 3721 → c = 61 m'
+            },
+            {
+                type: 'verify',
+                text: 'Le triangle 10, 10, 14 est-il rectangle ?',
+                diagram: 'Côtés : 10, 10, 14',
+                a: 10, b: 10, c: 14,
+                options: ['Oui, rectangle', 'Non, isocèle', 'Équilatéral', 'Impossible'],
+                correct: 1,
+                explanation: '10² + 10² = 100 + 100 = 200 ≠ 14² = 196. Ce n\'est pas rectangle (mais isocèle).'
+            },
+            {
+                type: 'cote',
+                text: 'Hypoténuse = 13 m, un côté = 12 m. L\'autre côté ?',
+                diagram: 'Hypoténuse = 13 m, un côté = 12 m',
+                c: 13, a: 12,
+                options: ['4 m', '5 m', '6 m', '7 m'],
+                correct: 1,
+                explanation: '12² + b² = 13² → 144 + b² = 169 → b² = 25 → b = 5 m'
+            },
+            {
+                type: 'hypotenuse',
+                text: 'Triangle avec côtés 20 cm et 21 cm. L\'hypoténuse ?',
+                diagram: '    C\n   /|\n  / |\n /  | 21 cm\n/   |\nA---B\n 20 cm',
+                a: 20, b: 21,
+                options: ['29 cm', '30 cm', '31 cm', '32 cm'],
+                correct: 0,
+                explanation: 'c² = 20² + 21² = 400 + 441 = 841 → c = 29 cm'
+            },
+            {
+                type: 'verify',
+                text: 'Est-ce que 6, 8, 10 forme un triangle rectangle ?',
+                diagram: 'Côtés : 6, 8, 10',
+                a: 6, b: 8, c: 10,
+                options: ['Oui', 'Non', 'Scalène', 'Acutangle'],
+                correct: 0,
+                explanation: '6² + 8² = 36 + 64 = 100 = 10². Oui, c\'est un triangle rectangle.'
+            },
+            {
+                type: 'cote',
+                text: 'L\'hypoténuse est 10 m, un côté est 8 m. Quel est l\'autre ?',
+                diagram: 'Hypoténuse = 10 m, un côté = 8 m',
+                c: 10, a: 8,
+                options: ['4 m', '6 m', '7 m', '8 m'],
+                correct: 1,
+                explanation: '8² + b² = 10² → 64 + b² = 100 → b² = 36 → b = 6 m'
+            },
+            {
+                type: 'hypotenuse',
+                text: 'Côtés : 15 m et 20 m. Hypoténuse ?',
+                diagram: '    C\n   /|\n  / |\n /  | 20 m\n/   |\nA---B\n 15 m',
+                a: 15, b: 20,
+                options: ['25 m', '30 m', '32 m', '35 m'],
+                correct: 0,
+                explanation: 'c² = 15² + 20² = 225 + 400 = 625 → c = 25 m'
+            },
+            {
+                type: 'verify',
+                text: 'Le triangle 7, 24, 25 est-il rectangle ?',
+                diagram: 'Côtés : 7, 24, 25',
+                a: 7, b: 24, c: 25,
+                options: ['Oui', 'Non', 'Obtus', 'Acutangle'],
+                correct: 0,
+                explanation: '7² + 24² = 49 + 576 = 625 = 25². Oui, c\'est un triangle rectangle.'
+            },
+            {
+                type: 'cote',
+                text: 'Hypoténuse = 29 cm, un côté = 21 cm. L\'autre côté ?',
+                diagram: 'Hypoténuse = 29 cm, un côté = 21 cm',
+                c: 29, a: 21,
+                options: ['18 cm', '20 cm', '22 cm', '24 cm'],
+                correct: 1,
+                explanation: '21² + b² = 29² → 441 + b² = 841 → b² = 400 → b = 20 cm'
+            },
+            {
+                type: 'hypotenuse',
+                text: 'Côtés 13 cm et 84 cm. Hypoténuse ?',
+                diagram: '    C\n   /|\n  / |\n /  | 84 cm\n/   |\nA---B\n 13 cm',
+                a: 13, b: 84,
+                options: ['85 cm', '86 cm', '87 cm', '90 cm'],
+                correct: 0,
+                explanation: 'c² = 13² + 84² = 169 + 7056 = 7225 → c = 85 cm'
+            },
+            {
+                type: 'verify',
+                text: 'Est-ce que 3, 4, 6 est un triangle rectangle ?',
+                diagram: 'Côtés : 3, 4, 6',
+                a: 3, b: 4, c: 6,
+                options: ['Oui', 'Non', 'Isocèle', 'Équilatéral'],
+                correct: 1,
+                explanation: '3² + 4² = 9 + 16 = 25 ≠ 6² = 36. Non, ce n\'est pas un triangle rectangle.'
+            },
+            {
+                type: 'cote',
+                text: 'Hypoténuse = 25 m, un côté = 15 m. L\'autre côté ?',
+                diagram: 'Hypoténuse = 25 m, un côté = 15 m',
+                c: 25, a: 15,
+                options: ['18 m', '20 m', '22 m', '24 m'],
+                correct: 1,
+                explanation: '15² + b² = 25² → 225 + b² = 625 → b² = 400 → b = 20 m'
+            },
+            {
+                type: 'hypotenuse',
+                text: 'Triangle rectangle : côtés 9 m et 40 m. Hypoténuse ?',
+                diagram: '    C\n   /|\n  / |\n /  | 40 m\n/   |\nA---B\n 9 m',
+                a: 9, b: 40,
+                options: ['41 m', '42 m', '43 m', '45 m'],
+                correct: 0,
+                explanation: 'c² = 9² + 40² = 81 + 1600 = 1681 → c = 41 m'
+            },
+            {
+                type: 'verify',
+                text: 'Le triangle 12, 16, 20 est-il rectangle ?',
+                diagram: 'Côtés : 12, 16, 20',
+                a: 12, b: 16, c: 20,
+                options: ['Oui', 'Non', 'Obtus', 'Scalène'],
+                correct: 0,
+                explanation: '12² + 16² = 144 + 256 = 400 = 20². Oui, c\'est un triangle rectangle.'
+            },
+            {
+                type: 'cote',
+                text: 'Hypoténuse = 35 cm, un côté = 21 cm. L\'autre côté ?',
+                diagram: 'Hypoténuse = 35 cm, un côté = 21 cm',
+                c: 35, a: 21,
+                options: ['26 cm', '28 cm', '30 cm', '32 cm'],
+                correct: 2,
+                explanation: '21² + b² = 35² → 441 + b² = 1225 → b² = 784 → b = 28 cm'
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+        const totalQuestions = 15;
+
+        function initQuiz() {
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1}/${totalQuestions}`;
+            document.getElementById('questionText').textContent = q.text;
+            document.getElementById('triangleDiagram').textContent = q.diagram;
+
+            const optionsHtml = q.options.map((opt, idx) =>
+                `<div class="option" data-index="${idx}" onclick="selectOption(${idx})">${opt}</div>`
+            ).join('');
+            document.getElementById('optionsContainer').innerHTML = optionsHtml;
+
+            document.getElementById('explanation').textContent = '';
+            document.getElementById('explanation').classList.remove('show');
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'none';
+            answered = false;
+
+            updateProgressBar();
+        }
+
+        function selectOption(index) {
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelector(`[data-index="${index}"]`).classList.add('selected');
+        }
+
+        function submitAnswer() {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestion];
+            const selected = document.querySelector('.option.selected');
+
+            if (!selected) return;
+
+            const selectedIndex = parseInt(selected.dataset.index);
+            const isCorrect = selectedIndex === q.correct;
+
+            if (isCorrect) {
+                score++;
+                selected.classList.add('correct');
+            } else {
+                selected.classList.add('incorrect');
+                document.querySelector(`[data-index="${q.correct}"]`).classList.add('correct');
+            }
+
+            document.getElementById('explanation').textContent = q.explanation;
+            document.getElementById('explanation').classList.add('show');
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'block';
+
+            updateScore();
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= totalQuestions) {
+                showResults();
+            } else {
+                showQuestion();
+            }
+        }
+
+        function updateScore() {
+            const correct = score;
+            const incorrect = currentQuestion + 1 - score;
+            const percent = Math.round((score / (currentQuestion + 1)) * 100);
+
+            document.getElementById('correctCount').textContent = correct;
+            document.getElementById('incorrectCount').textContent = incorrect;
+            document.getElementById('percentDisplay').textContent = percent + '%';
+        }
+
+        function updateProgressBar() {
+            const percent = ((currentQuestion + 1) / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = percent + '%';
+        }
+
+        function showResults() {
+            const percent = Math.round((score / totalQuestions) * 100);
+            let stars = '⭐';
+            if (percent >= 80) stars = '⭐⭐⭐';
+            else if (percent >= 60) stars = '⭐⭐';
+
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('resultScreen').classList.add('show');
+            document.getElementById('starsDisplay').textContent = stars;
+            document.getElementById('finalScore').textContent = `${score}/${totalQuestions}`;
+            document.getElementById('resultMessage').textContent = `Réussite : ${percent}%`;
+
+            // Generate result code
+            const resultData = {
+                v: '4_pytha',
+                dt: new Date().toISOString(),
+                score: `${score}/15`,
+                pct: percent,
+                stars: stars.length
+            };
+            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+            console.log('RESULT CODE:', encoded);
+        }
+
+        initQuiz();
+    </script>
+</body>
+</html>

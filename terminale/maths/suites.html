@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suites Numériques - Terminale</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #08090f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: linear-gradient(135deg, #1a1f3a 0%, #16213e 100%);
+            border: 2px solid transparent;
+            border-image: linear-gradient(135deg, #00d4ff, #7c3aed) 1;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.2);
+        }
+        h1 {
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .progress {
+            font-size: 14px;
+            color: #a0a0a0;
+            margin-bottom: 20px;
+        }
+        .question {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .question-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #00d4ff;
+        }
+        .formula {
+            background: rgba(124, 58, 237, 0.15);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #b4a8ff;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 2px solid #333;
+            border-radius: 6px;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .option:hover {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+        .option.selected {
+            border-color: #7c3aed;
+            background: rgba(124, 58, 237, 0.3);
+        }
+        .option.correct {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.15);
+        }
+        .option.incorrect {
+            border-color: #ff0000;
+            background: rgba(255, 0, 0, 0.15);
+        }
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none;
+        }
+        .feedback.show { display: block; }
+        .feedback.correct {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 4px solid #00ff00;
+            color: #90ff90;
+        }
+        .feedback.incorrect {
+            background: rgba(255, 100, 100, 0.1);
+            border-left: 4px solid #ff6464;
+            color: #ff9999;
+        }
+        .explanation {
+            margin-top: 10px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #c0c0c0;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            color: #fff;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-next {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+            border: 2px solid #00d4ff;
+        }
+        .btn-next:hover {
+            background: rgba(0, 212, 255, 0.3);
+        }
+        .results {
+            display: none;
+            text-align: center;
+        }
+        .results.show { display: block; }
+        .score-display {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        .stars {
+            font-size: 40px;
+            margin: 20px 0;
+            letter-spacing: 10px;
+        }
+        .result-code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            margin-top: 20px;
+            word-break: break-all;
+            color: #00d4ff;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #00d4ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            color: #7c3aed;
+            text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            h1 { font-size: 22px; }
+            .question { padding: 15px; }
+            .score-display { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Suites Numériques</h1>
+        <div class="progress"><span id="current">1</span> / 15</div>
+
+        <div id="quiz-content">
+            <div class="question">
+                <div class="question-text" id="question-text"></div>
+                <div class="formula" id="formula" style="display:none;"></div>
+                <div class="options" id="options"></div>
+                <div class="feedback" id="feedback"></div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-submit" id="submit-btn" onclick="submitAnswer()">Valider</button>
+                <button class="btn-next" id="next-btn" onclick="nextQuestion()" style="display:none;">Suivant</button>
+            </div>
+        </div>
+
+        <div id="results" class="results">
+            <h2>✨ Résultats Finaux</h2>
+            <div class="score-display" id="final-score"></div>
+            <div class="stars" id="stars"></div>
+            <p id="message"></p>
+            <div class="result-code" id="result-code"></div>
+            <a href="/index.html" class="back-link">← Retour à l'accueil</a>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                text: "Quelle est la raison de la suite arithmétique: 5, 8, 11, 14, ... ?",
+                options: ["r = 2", "r = 3", "r = 4", "r = 5"],
+                correct: 1,
+                formula: "uₙ₊₁ - uₙ = r",
+                explanation: "La raison est la différence entre deux termes consécutifs: 8 - 5 = 3"
+            },
+            {
+                text: "Une suite géométrique a u₀ = 2 et q = 3. Quel est u₃?",
+                options: ["u₃ = 54", "u₃ = 27", "u₃ = 18", "u₃ = 6"],
+                correct: 0,
+                formula: "uₙ = u₀ × qⁿ → u₃ = 2 × 3³ = 54",
+                explanation: "u₃ = 2 × 3³ = 2 × 27 = 54"
+            },
+            {
+                text: "Identifier: 3, 6, 12, 24, ...",
+                options: ["Arithmétique", "Géométrique", "Ni l'un ni l'autre", "Les deux"],
+                correct: 1,
+                formula: "q = uₙ₊₁/uₙ = 6/3 = 2",
+                explanation: "Chaque terme est le double du précédent, donc c'est géométrique (q=2)"
+            },
+            {
+                text: "Somme des 10 premiers termes d'une suite arithmétique: u₀=2, r=3?",
+                options: ["Sₙ = 155", "Sₙ = 145", "Sₙ = 165", "Sₙ = 175"],
+                correct: 0,
+                formula: "Sₙ = n(u₀ + uₙ₋₁)/2 ou Sₙ = n·u₀ + n(n-1)r/2",
+                explanation: "S₁₀ = 10×2 + 10×9×3/2 = 20 + 135 = 155"
+            },
+            {
+                text: "Quelle est la limite de la suite géométrique uₙ = (1/2)ⁿ?",
+                options: ["0", "1", "∞", "1/2"],
+                correct: 0,
+                formula: "Si |q| < 1, alors lim(uₙ) = 0",
+                explanation: "Quand |q| < 1, la suite converge vers 0. Ici q = 1/2 < 1"
+            },
+            {
+                text: "Une suite diverge si...",
+                options: ["Elle converge vers 0", "Elle converge vers un nombre fini", "|q| ≥ 1 et q ≠ 1", "Elle est bornée"],
+                correct: 2,
+                formula: "Convergence si |q| < 1; Divergence si |q| ≥ 1",
+                explanation: "Une suite géométrique diverge quand q > 1 ou q < -1"
+            },
+            {
+                text: "Sens de variation: uₙ = 5n + 2?",
+                options: ["Décroissante", "Croissante", "Constante", "Oscillante"],
+                correct: 1,
+                formula: "uₙ₊₁ - uₙ = 5(n+1) + 2 - 5n - 2 = 5 > 0",
+                explanation: "Comme la raison r = 5 > 0, la suite est croissante"
+            },
+            {
+                text: "Terme général d'une suite arithmétique: u₀ = 10, r = -2?",
+                options: ["uₙ = 10 + n", "uₙ = 10 - 2n", "uₙ = 12 - 2n", "uₙ = 10 - 2(n-1)"],
+                correct: 1,
+                formula: "uₙ = u₀ + n·r = 10 - 2n",
+                explanation: "Pour une suite arithmétique, uₙ = u₀ + n·r = 10 + n×(-2) = 10 - 2n"
+            },
+            {
+                text: "Somme d'une suite géométrique infinie: u₀ = 1, q = 1/3?",
+                options: ["3/2", "2", "3", "Diverge"],
+                correct: 2,
+                formula: "S = u₀/(1-q) = 1/(1-1/3) = 1/(2/3) = 3/2",
+                explanation: "Correction: S = 1/(1-1/3) = 1/(2/3) = 3/2. La réponse correcte est 3/2"
+            },
+            {
+                text: "u₁ = 4, u₃ = 16. C'est une suite géométrique. Quel est q?",
+                options: ["q = 2", "q = 4", "q = -2", "q = ±2"],
+                correct: 3,
+                formula: "u₃ = u₁ × q² → 16 = 4 × q² → q² = 4 → q = ±2",
+                explanation: "4q² = 16 → q² = 4 → q = 2 ou q = -2"
+            },
+            {
+                text: "Suite arithmétique: S₅ = 25, u₁ = 1. Quel est u₅?",
+                options: ["u₅ = 9", "u₅ = 10", "u₅ = 11", "u₅ = 12"],
+                correct: 0,
+                formula: "S₅ = 5(u₁ + u₅)/2 → 25 = 5(1 + u₅)/2",
+                explanation: "25 = 2.5(1 + u₅) → 10 = 1 + u₅ → u₅ = 9"
+            },
+            {
+                text: "Suite: 100, 50, 25, ... Quel terme dépasserait 5?",
+                options: ["u₃", "u₄", "u₅", "u₆"],
+                correct: 2,
+                formula: "uₙ = 100 × (1/2)ⁿ⁻¹",
+                explanation: "u₅ = 100 × (1/2)⁴ = 100/16 = 6.25 > 5. u₆ ≈ 3.125 < 5"
+            },
+            {
+                text: "Une suite est minorée si...",
+                options: ["Elle a une limite", "Il existe m tel que uₙ ≥ m pour tout n", "Elle converge vers 0", "Elle est décroissante"],
+                correct: 1,
+                formula: "Minorant: m ≤ uₙ pour tout n ∈ ℕ",
+                explanation: "Une suite est minorée s'il existe un réel m tel que m ≤ uₙ pour tous les n"
+            },
+            {
+                text: "u₀ = 1, uₙ₊₁ = 2uₙ - 1. Quel est u₂?",
+                options: ["u₂ = 1", "u₂ = 2", "u₂ = 3", "u₂ = 4"],
+                correct: 0,
+                formula: "u₁ = 2(1) - 1 = 1; u₂ = 2(1) - 1 = 1",
+                explanation: "u₁ = 2×1 - 1 = 1; u₂ = 2×1 - 1 = 1. Suite constante!"
+            },
+            {
+                text: "Somme: 1 + 2 + 4 + 8 + ... + 512 (suite géométrique)?",
+                options: ["1023", "1024", "512", "255"],
+                correct: 0,
+                formula: "S = (qⁿ - 1)/(q - 1) avec q=2, n=10",
+                explanation: "Sₙ = (2¹⁰ - 1)/(2 - 1) = 1024 - 1 = 1023"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedAnswer = null;
+        const startTime = new Date();
+
+        function shuffleQuestions() {
+            for (let i = questions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [questions[i], questions[j]] = [questions[j], questions[i]];
+            }
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('question-text').textContent = q.text;
+            document.getElementById('formula').textContent = q.formula;
+
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const label = document.createElement('div');
+                label.className = 'option';
+                label.textContent = opt;
+                label.onclick = () => selectOption(idx);
+                optionsDiv.appendChild(label);
+            });
+
+            document.getElementById('feedback').innerHTML = '';
+            document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
+            document.getElementById('submit-btn').style.display = 'block';
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('submit-btn').disabled = false;
+            selectedAnswer = null;
+        }
+
+        function selectOption(idx) {
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                opt.classList.toggle('selected', i === idx);
+            });
+            selectedAnswer = idx;
+        }
+
+        function submitAnswer() {
+            if (selectedAnswer === null) return;
+
+            const q = questions[currentQuestion];
+            const isCorrect = selectedAnswer === q.correct;
+            if (isCorrect) score++;
+
+            const options = document.querySelectorAll('.option');
+            options[q.correct].classList.add('correct');
+            if (!isCorrect) options[selectedAnswer].classList.add('incorrect');
+
+            const feedback = document.getElementById('feedback');
+            feedback.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+            feedback.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✗ Incorrect'}</strong><div class="explanation">${q.explanation}</div>`;
+
+            document.getElementById('submit-btn').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < 15) {
+                document.getElementById('current').textContent = currentQuestion + 1;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-content').style.display = 'none';
+            document.getElementById('results').classList.add('show');
+
+            const pct = Math.round((score / 15) * 100);
+            let stars = '';
+            if (pct >= 90) stars = '⭐⭐⭐⭐⭐';
+            else if (pct >= 80) stars = '⭐⭐⭐⭐';
+            else if (pct >= 70) stars = '⭐⭐⭐';
+            else if (pct >= 60) stars = '⭐⭐';
+            else stars = '⭐';
+
+            const endTime = new Date();
+            const timeSpent = Math.floor((endTime - startTime) / 1000);
+
+            const resultData = {
+                v: 't_suites',
+                dt: new Date().toISOString(),
+                score: `${score}/15`,
+                pct: pct,
+                stars: stars.length / 2,
+                time: timeSpent
+            };
+
+            const resultCode = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+
+            document.getElementById('final-score').textContent = `${score} / 15`;
+            document.getElementById('stars').textContent = stars;
+            document.getElementById('message').textContent =
+                pct >= 80 ? '🎉 Excellent travail!' :
+                pct >= 60 ? '👍 Bon effort!' :
+                '💪 Continue à réviser!';
+            document.getElementById('result-code').textContent = resultCode;
+        }
+
+        shuffleQuestions();
+        loadQuestion();
+    </script>
+</body>
+</html>

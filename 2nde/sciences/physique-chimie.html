@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physique-Chimie 2nde</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #08090f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #1dd1a1 0%, #10ac84 100%);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(29, 209, 161, 0.3);
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .subtitle {
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .question-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(29, 209, 161, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+        }
+        .question-number {
+            color: #1dd1a1;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        .question-text {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 12px;
+            background: rgba(29, 209, 161, 0.1);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            border-color: #1dd1a1;
+            background: rgba(29, 209, 161, 0.2);
+        }
+        .option.selected {
+            background: rgba(29, 209, 161, 0.3);
+            border-color: #1dd1a1;
+        }
+        .option.correct {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+        }
+        .option.incorrect {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #f44336;
+        }
+        .explanation {
+            background: rgba(255, 195, 0, 0.1);
+            border-left: 4px solid #ffc300;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 5px;
+            color: #d0d0d0;
+            font-size: 0.95em;
+            display: none;
+        }
+        .explanation.show {
+            display: block;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1dd1a1 0%, #10ac84 100%);
+            transition: width 0.3s;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Nunito', sans-serif;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #1dd1a1 0%, #10ac84 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(29, 209, 161, 0.4);
+        }
+        .btn-secondary {
+            background: rgba(29, 209, 161, 0.2);
+            color: #1dd1a1;
+            border: 2px solid #1dd1a1;
+        }
+        .btn-secondary:hover {
+            background: rgba(29, 209, 161, 0.3);
+        }
+        .results {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(29, 209, 161, 0.2) 0%, rgba(16, 172, 132, 0.2) 100%);
+            border-radius: 12px;
+            border: 2px solid rgba(29, 209, 161, 0.3);
+        }
+        .score-display {
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1dd1a1 0%, #10ac84 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        .stars {
+            font-size: 2.5em;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+        .result-code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            word-break: break-all;
+            font-size: 0.9em;
+            color: #4caf50;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #1dd1a1;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            color: #10ac84;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            .question-container {
+                padding: 18px;
+            }
+            .score-display {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Physique-Chimie</h1>
+            <p class="subtitle">Classe de 2nde - Programme complet</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div id="quizContent"></div>
+
+        <div id="resultsSection" style="display:none;">
+            <div class="results">
+                <h2>Résultats</h2>
+                <div class="score-display" id="scoreDisplay">0/0</div>
+                <div class="stars" id="starsDisplay">☆☆☆☆☆</div>
+                <p id="percentageText"></p>
+                <div class="result-code" id="resultCode"></div>
+                <a href="/index.html" class="back-link">← Retour à l'accueil</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Qu'est-ce qu'un atome?",
+                options: [
+                    "Une particule visible à l'œil nu",
+                    "La plus petite unité indivisible de la matière",
+                    "Un ensemble de molécules",
+                    "Une forme de lumière"
+                ],
+                correct: 1,
+                explanation: "Un atome est la plus petite unité de matière pouvant participer à une réaction chimique."
+            },
+            {
+                question: "Quel est le noyau d'un atome composé?",
+                options: [
+                    "D'électrons",
+                    "De protons et de neutrons",
+                    "De photons",
+                    "D'ondes"
+                ],
+                correct: 1,
+                explanation: "Le noyau contient des protons (chargés positivement) et des neutrons (neutres)."
+            },
+            {
+                question: "Qu'est-ce qu'un ion?",
+                options: [
+                    "Un atome neutre",
+                    "Un atome ou une molécule ayant perdu ou gagné des électrons",
+                    "Une particule de lumière",
+                    "Un type de molécule"
+                ],
+                correct: 1,
+                explanation: "Un ion est un atome ou une molécule chargée électriquement."
+            },
+            {
+                question: "Qu'est-ce qu'une molécule?",
+                options: [
+                    "Un seul atome",
+                    "Un ensemble d'atomes liés ensemble",
+                    "Un type de lumière",
+                    "Une vague"
+                ],
+                correct: 1,
+                explanation: "Une molécule est un assemblage d'atomes liés par des liaisons chimiques."
+            },
+            {
+                question: "Quelle est la différence entre une transformation physique et chimique?",
+                options: [
+                    "Il n'y a pas de différence",
+                    "Physique: changement d'état; Chimique: formation de nouvelles substances",
+                    "Physique: explosion; Chimique: fusion",
+                    "Physique: toujours visible; Chimique: toujours invisible"
+                ],
+                correct: 1,
+                explanation: "Une transformation physique change l'apparence sans créer de nouvelles substances. Une transformation chimique crée de nouvelles substances."
+            },
+            {
+                question: "Quel est l'exemple d'une transformation physique?",
+                options: [
+                    "La combustion",
+                    "La fusion du fer",
+                    "La rouille du fer",
+                    "La fermentation"
+                ],
+                correct: 1,
+                explanation: "La fusion change l'état physique sans modifier la composition chimique."
+            },
+            {
+                question: "Qu'est-ce que la conservation de la masse?",
+                options: [
+                    "La masse augmente lors d'une réaction",
+                    "La masse diminue lors d'une réaction",
+                    "La masse totale reste constante lors d'une réaction chimique",
+                    "La masse n'existe pas"
+                ],
+                correct: 2,
+                explanation: "En chimie, la masse des réactifs égale la masse des produits (loi de Lavoisier)."
+            },
+            {
+                question: "Qu'est-ce que la force en physique?",
+                options: [
+                    "L'énergie d'une personne",
+                    "Une interaction capable de modifier le mouvement ou la forme",
+                    "Un type d'énergie seulement",
+                    "Une vitesse"
+                ],
+                correct: 1,
+                explanation: "La force est une interaction qui peut modifier la vitesse ou la direction d'un objet, ou le déformer."
+            },
+            {
+                question: "Qu'énonce la première loi de Newton?",
+                options: [
+                    "F = m × a",
+                    "Un corps au repos ou en mouvement uniforme reste dans cet état sans force",
+                    "L'action égale la réaction",
+                    "L'énergie se crée ou se détruit"
+                ],
+                correct: 1,
+                explanation: "C'est le principe d'inertie: sans force, un objet conserve son état de mouvement."
+            },
+            {
+                question: "Qu'est-ce que l'accélération?",
+                options: [
+                    "La distance parcourue",
+                    "La variation de vitesse par rapport au temps",
+                    "La force appliquée",
+                    "Le poids d'un objet"
+                ],
+                correct: 1,
+                explanation: "L'accélération est le taux de changement de la vitesse."
+            },
+            {
+                question: "Qu'est-ce qu'une onde?",
+                options: [
+                    "Un objet physique",
+                    "Une perturbation qui se propage dans l'espace",
+                    "Un type de masse",
+                    "Un atome"
+                ],
+                correct: 1,
+                explanation: "Une onde est une perturbation qui propage de l'énergie à travers un milieu ou l'espace."
+            },
+            {
+                question: "Quelle est la vitesse de la lumière?",
+                options: [
+                    "300 000 m/s",
+                    "3 000 000 m/s",
+                    "3 m/s",
+                    "30 m/s"
+                ],
+                correct: 0,
+                explanation: "La vitesse de la lumière est d'environ 300 000 km/s ou 3 × 10⁸ m/s."
+            },
+            {
+                question: "Qu'est-ce que la fréquence d'une onde?",
+                options: [
+                    "La distance entre deux crêtes",
+                    "Le nombre de cycles par unité de temps",
+                    "La hauteur de l'onde",
+                    "La couleur de l'onde"
+                ],
+                correct: 1,
+                explanation: "La fréquence est le nombre d'oscillations complètes par seconde (en Hertz)."
+            },
+            {
+                question: "Quelle est la longueur d'onde?",
+                options: [
+                    "Le temps d'une oscillation",
+                    "La distance entre deux points identiques consécutifs d'une onde",
+                    "La vitesse de l'onde",
+                    "L'amplitude de l'onde"
+                ],
+                correct: 1,
+                explanation: "La longueur d'onde est la distance entre deux crêtes (ou deux creux) successifs."
+            },
+            {
+                question: "Qu'est-ce que le son?",
+                options: [
+                    "Une onde électromagnétique",
+                    "Une onde mécanique qui se propage dans les milieux matériels",
+                    "Une particule",
+                    "De la lumière invisible"
+                ],
+                correct: 1,
+                explanation: "Le son est une onde mécanique se propageant dans l'air, l'eau ou les solides."
+            },
+            {
+                question: "Qu'est-ce que la quantité de matière (la mole)?",
+                options: [
+                    "La masse d'une substance",
+                    "Une unité de quantité contenant 6,02 × 10²³ entités élémentaires",
+                    "Un type de molécule",
+                    "Un état physique"
+                ],
+                correct: 1,
+                explanation: "La mole (mol) est l'unité SI de quantité de matière. Le nombre d'Avogadro est 6,02 × 10²³."
+            },
+            {
+                question: "Qu'est-ce que la masse molaire?",
+                options: [
+                    "La masse d'une mole de substance",
+                    "La masse d'un atome",
+                    "La masse d'une molécule",
+                    "La masse totale"
+                ],
+                correct: 0,
+                explanation: "La masse molaire est la masse d'une mole d'une substance, exprimée en g/mol."
+            },
+            {
+                question: "Comment calcule-t-on la concentration molaire?",
+                options: [
+                    "C = n / V",
+                    "C = V / n",
+                    "C = n × V",
+                    "C = n - V"
+                ],
+                correct: 0,
+                explanation: "La concentration molaire C = n/V, où n est le nombre de moles et V le volume en litres."
+            },
+            {
+                question: "Qu'est-ce qu'une réaction chimique équilibrée?",
+                options: [
+                    "Une réaction sans produits",
+                    "Une réaction où le nombre d'atomes de chaque élément est identique des deux côtés",
+                    "Une réaction rapide",
+                    "Une réaction sans énergie"
+                ],
+                correct: 1,
+                explanation: "Une équation chimique équilibrée respecte la conservation de la masse."
+            },
+            {
+                question: "Qu'est-ce que la combustion?",
+                options: [
+                    "Une fusion de deux substances",
+                    "Une réaction d'une substance avec l'oxygène libérant de la chaleur et de la lumière",
+                    "Une dissolution",
+                    "Une transformation physique"
+                ],
+                correct: 1,
+                explanation: "La combustion est une réaction d'oxydation exothermique."
+            },
+            {
+                question: "Qu'est-ce qu'une réaction exothermique?",
+                options: [
+                    "Une réaction qui absorbe de la chaleur",
+                    "Une réaction qui libère de la chaleur",
+                    "Une réaction rapide",
+                    "Une réaction sans énergie"
+                ],
+                correct: 1,
+                explanation: "Une réaction exothermique libère de l'énergie thermique à l'environnement."
+            },
+            {
+                question: "Quel est le rôle d'un catalyseur?",
+                options: [
+                    "Augmenter la température",
+                    "Accélérer une réaction sans être consommé",
+                    "Arrêter une réaction",
+                    "Créer de l'énergie"
+                ],
+                correct: 1,
+                explanation: "Un catalyseur augmente la vitesse de réaction sans être modifié."
+            },
+            {
+                question: "Qu'est-ce que l'électrolyse?",
+                options: [
+                    "Une réaction de combustion",
+                    "Une décomposition d'une substance par passage d'un courant électrique",
+                    "Une fusion",
+                    "Une dissolution"
+                ],
+                correct: 1,
+                explanation: "L'électrolyse utilise un courant électrique pour décomposer une substance."
+            },
+            {
+                question: "Qu'est-ce qu'un acide?",
+                options: [
+                    "Une base",
+                    "Une substance qui libère des ions H+ en solution",
+                    "Un sel",
+                    "Une huile"
+                ],
+                correct: 1,
+                explanation: "Un acide est une substance produisant des ions hydrogène (H+) en solution."
+            },
+            {
+                question: "Qu'est-ce qu'une base?",
+                options: [
+                    "Un acide",
+                    "Une substance acceptant les ions H+ ou libérant des ions OH-",
+                    "Un gaz",
+                    "Un métal"
+                ],
+                correct: 1,
+                explanation: "Une base est une substance qui accepte les protons ou libère des ions hydroxyde (OH-)."
+            },
+            {
+                question: "Qu'est-ce que le pH?",
+                options: [
+                    "La température",
+                    "Une mesure de l'acidité ou de la basicité (0-14)",
+                    "La concentration de sel",
+                    "La densité"
+                ],
+                correct: 1,
+                explanation: "Le pH mesure le degré d'acidité: 7 = neutre, < 7 = acide, > 7 = basique."
+            },
+            {
+                question: "Qu'est-ce qu'une réaction de neutralisation?",
+                options: [
+                    "Une réaction sans produits",
+                    "La réaction entre un acide et une base produisant un sel et de l'eau",
+                    "Une absorption de chaleur",
+                    "Une réaction rapide"
+                ],
+                correct: 1,
+                explanation: "Une neutralisation produit un sel et de l'eau: acide + base → sel + H₂O."
+            },
+            {
+                question: "Qu'est-ce que la densité?",
+                options: [
+                    "La masse divisée par le volume",
+                    "La température d'un objet",
+                    "La couleur d'une substance",
+                    "L'énergie"
+                ],
+                correct: 0,
+                explanation: "La densité ρ = m/V (masse divisée par volume), exprimée en g/cm³ ou kg/m³."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        const userAnswers = [];
+        const startTime = Date.now();
+
+        function initQuiz() {
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const question = quizData[currentQuestion];
+            const total = quizData.length;
+            const progress = ((currentQuestion + 1) / total) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            let html = `
+                <div class="question-container">
+                    <div class="question-number">Question ${currentQuestion + 1}/${total}</div>
+                    <div class="question-text">${question.question}</div>
+                    <div class="options">
+            `;
+
+            question.options.forEach((option, index) => {
+                html += `
+                    <div class="option" onclick="selectOption(${index})">
+                        <input type="radio" name="question${currentQuestion}" value="${index}" id="opt${index}">
+                        <label for="opt${index}">${option}</label>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <div class="explanation" id="explanation${currentQuestion}">
+                        <strong>Explication:</strong> ${question.explanation}
+                    </div>
+                    <div class="button-group">
+                        ${currentQuestion > 0 ? '<button class="btn-secondary" onclick="previousQuestion()">← Précédent</button>' : ''}
+                        <button class="btn-primary" onclick="nextQuestion()" id="nextBtn">Suivant →</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('quizContent').innerHTML = html;
+            document.getElementById('nextBtn').disabled = true;
+        }
+
+        function selectOption(index) {
+            userAnswers[currentQuestion] = index;
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('.option')[index].classList.add('selected');
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById(`explanation${currentQuestion}`).classList.add('show');
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function showResults() {
+            score = userAnswers.filter((ans, i) => ans === quizData[i].correct).length;
+            const percentage = Math.round((score / quizData.length) * 100);
+            const stars = Math.ceil((percentage / 100) * 5);
+
+            const dt = new Date().toISOString();
+            const resultData = {
+                v: '2_pc',
+                dt: dt,
+                score: score,
+                total: quizData.length,
+                pct: percentage,
+                stars: stars
+            };
+
+            const resultCode = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('scoreDisplay').textContent = `${score}/${quizData.length}`;
+            document.getElementById('percentageText').innerHTML = `Résultat: ${percentage}%`;
+            document.getElementById('starsDisplay').textContent = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        window.addEventListener('load', initQuiz);
+    </script>
+</body>
+</html>

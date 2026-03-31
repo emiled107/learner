@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Les Révolutions - 4ème Histoire</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #08090f;
+            color: #fff;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #1dd1a1 0%, #00d2d3 100%);
+            color: #000;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #1dd1a1 0%, #00d2d3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #1a1d2e;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1dd1a1 0%, #00d2d3 100%);
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        .score-display {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .score-card {
+            background: rgba(29, 209, 161, 0.1);
+            border: 2px solid #1dd1a1;
+            padding: 15px 25px;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .score-card.correct {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .score-card.incorrect {
+            border-color: #ff3366;
+            background: rgba(255, 51, 102, 0.1);
+        }
+
+        .score-number {
+            font-size: 2em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1dd1a1 0%, #00d2d3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-label {
+            font-size: 0.9em;
+            color: #aaa;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .question-container {
+            background: rgba(26, 29, 46, 0.8);
+            border: 2px solid #1dd1a1;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .question-number {
+            color: #1dd1a1;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .context-box {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid #1dd1a1;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            color: #ddd;
+            line-height: 1.7;
+            font-size: 0.95em;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .option {
+            padding: 15px;
+            background: rgba(29, 209, 161, 0.1);
+            border: 2px solid #1dd1a1;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .option:hover {
+            background: rgba(29, 209, 161, 0.3);
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: #1dd1a1;
+            border-color: #1dd1a1;
+            color: #000;
+        }
+
+        .option.correct {
+            background: #00ff88;
+            color: #000;
+            border-color: #00ff88;
+        }
+
+        .option.incorrect {
+            background: #ff3366;
+            border-color: #ff3366;
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 255, 136, 0.1);
+            border-left: 4px solid #00ff88;
+            border-radius: 5px;
+            color: #ddd;
+            line-height: 1.6;
+            display: none;
+            font-size: 0.95em;
+        }
+
+        .explanation.show {
+            display: block;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1dd1a1 0%, #00d2d3 100%);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(29, 209, 161, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #1a1d2e;
+            color: #1dd1a1;
+            border: 2px solid #1dd1a1;
+        }
+
+        .btn-secondary:hover {
+            background: #1dd1a1;
+            color: #000;
+        }
+
+        .result-screen {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .result-screen.show {
+            display: block;
+        }
+
+        .stars {
+            font-size: 4em;
+            margin: 20px 0;
+            letter-spacing: 10px;
+        }
+
+        .stars.one { color: #1dd1a1; }
+        .stars.two { color: #00d2d3; }
+        .stars.three { color: #00ff88; }
+
+        .final-score {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1dd1a1 0%, #00d2d3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+
+        .result-message {
+            font-size: 1.3em;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            .question-container { padding: 20px; }
+            .question-text { font-size: 1.1em; }
+            .option { font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/index.html" class="back-link">← Retour</a>
+
+        <header>
+            <h1>Les Révolutions</h1>
+            <p class="subtitle">Comprendre les Lumières et les révolutions</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="score-display">
+            <div class="score-card correct">
+                <div class="score-number" id="correctCount">0</div>
+                <div class="score-label">Correctes</div>
+            </div>
+            <div class="score-card incorrect">
+                <div class="score-number" id="incorrectCount">0</div>
+                <div class="score-label">Incorrectes</div>
+            </div>
+            <div class="score-card">
+                <div class="score-number" id="percentDisplay">0%</div>
+                <div class="score-label">Réussite</div>
+            </div>
+        </div>
+
+        <div id="quizContainer">
+            <div class="question-container">
+                <div class="question-number" id="questionNumber"></div>
+                <div class="question-text" id="questionText"></div>
+                <div class="context-box" id="contextBox"></div>
+                <div class="options" id="optionsContainer"></div>
+                <div class="explanation" id="explanation"></div>
+                <div class="button-group">
+                    <button class="btn btn-primary" id="submitBtn" onclick="submitAnswer()">Valider</button>
+                    <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()" style="display:none;">Suivant</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-screen" id="resultScreen">
+            <h2 style="font-size: 2em; margin-bottom: 20px;">Résultats</h2>
+            <div class="stars" id="starsDisplay"></div>
+            <div class="final-score" id="finalScore"></div>
+            <div class="result-message" id="resultMessage"></div>
+            <button class="btn btn-primary" onclick="location.reload()">Recommencer</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                text: 'Quel philosophe des Lumières a théorisé la séparation des pouvoirs ?',
+                context: 'Au XVIIIe siècle, les philosophes français ont remis en question l\'ordre établi.',
+                options: ['Voltaire', 'Montesquieu', 'Rousseau', 'Diderot'],
+                correct: 1,
+                explanation: 'Montesquieu a développé la théorie de la séparation des pouvoirs (exécutif, législatif, judiciaire), fondamentale pour les démocraties modernes.'
+            },
+            {
+                text: 'Quelle est la principale contribution de Voltaire aux Lumières ?',
+                context: 'Voltaire (1694-1778) était un écrivain et penseur français influent.',
+                options: ['La théorie du contrat social', 'La défense de la liberté de conscience et d\'expression', 'L\'Encyclopédie', 'La critique de la monarchie absolue'],
+                correct: 1,
+                explanation: 'Voltaire s\'est battu pour la liberté de pensée et de parole, notamment contre l\'intolérance religieuse.'
+            },
+            {
+                text: 'Quel est le principe fondamental du "Contrat Social" de Rousseau ?',
+                context: 'Rousseau a proposé une vision du gouvernement basée sur le consentement du peuple.',
+                options: ['Le droit divin des rois', 'La souveraineté populaire', 'La séparation des pouvoirs', 'Le despotisme éclairé'],
+                correct: 1,
+                explanation: 'Rousseau a affirmé que le pouvoir légitime vient du peuple et de son consentement, en contraste avec la monarchie absolue.'
+            },
+            {
+                text: 'En quelle année la Déclaration d\'Indépendance américaine a-t-elle été signée ?',
+                context: 'La révolution américaine a marqué le premier succès des idées des Lumières en pratique.',
+                options: ['1776', '1789', '1783', '1775'],
+                correct: 0,
+                explanation: 'La Déclaration d\'Indépédance a été signée le 4 juillet 1776, marquant le début de la révolution américaine.'
+            },
+            {
+                text: 'Quel événement marque le début de la Révolution française ?',
+                context: 'La crise économique et politique en France a mené à des changements radicaux.',
+                options: ['Le couronnement de Louis XVI', 'La convocation des États généraux en 1789', 'La prise de la Bastille', 'L\'exécution du roi'],
+                correct: 1,
+                explanation: 'Les États généraux (1789) ont marqué le début de la Révolution française en rassemblant les trois états (clergé, noblesse, tiers état).'
+            },
+            {
+                text: 'Que symbolise la prise de la Bastille (14 juillet 1789) ?',
+                context: 'La Bastille était une prison royale qui symbolisait le pouvoir de la monarchie absolue.',
+                options: ['La fin de la monarchie', 'Le début de la liberté et l\'attaque du despotisme', 'La mort du roi', 'L\'établissement de la République'],
+                correct: 1,
+                explanation: 'La prise de la Bastille représente le début de la révolution et la lutte contre l\'absolutisme. C\'est devenu le symbole de la fin de l\'oppression.'
+            },
+            {
+                text: 'Quel texte fondamental a été voté le 26 août 1789 ?',
+                context: 'Peu après la prise de la Bastille, un document important a été adopté.',
+                options: ['La Constitution', 'La Déclaration des Droits de l\'Homme et du Citoyen', 'Le Code civil', 'La Charte de 1814'],
+                correct: 1,
+                explanation: 'La Déclaration des Droits de l\'Homme et du Citoyen (DDHC) énonce les droits fondamentaux de tous les citoyens et est basée sur les idées des Lumières.'
+            },
+            {
+                text: 'En quelle année la France est-elle devenue une République ?',
+                context: 'La monarchie a progressivement perdu son autorité au cours de la Révolution.',
+                options: ['1789', '1791', '1792', '1799'],
+                correct: 2,
+                explanation: 'La Première République française a été proclamée le 22 septembre 1792, après la chute de la monarchie constitutionnelle.'
+            },
+            {
+                text: 'Quel période révolutionnaire est caractérisée par les exécutions massives et la dictature de Robespierre ?',
+                context: 'La Révolution a connu une phase radicale et violente.',
+                options: ['L\'Ancien Régime', 'La Terreur (1793-1794)', 'Le Consulat', 'L\'Empire'],
+                correct: 1,
+                explanation: 'La Terreur (1793-1794) a été une période de répression radicale menée par le Comité de Salut Public. Robespierre et d\'autres révolutionnaires ont exécuté des milliers de personnes.'
+            },
+            {
+                text: 'Qui a pris le pouvoir après la Révolution française avec le "Coup du 18 Brumaire" ?',
+                context: 'Après les troubles de la Révolution, une personnalité militaire a émergé.',
+                options: ['Robespierre', 'Louis XVIII', 'Napoléon Bonaparte', 'Danton'],
+                correct: 2,
+                explanation: 'Napoléon Bonaparte a pris le pouvoir le 18 brumaire an VIII (9 novembre 1799), établissant le Consulat et mettant fin à la Révolution.'
+            },
+            {
+                text: 'Quel titre Napoléon a-t-il pris en 1804 ?',
+                context: 'Napoléon a considérablement augmenté son autorité au début du XIXe siècle.',
+                options: ['Président de la République', 'Empereur des Français', 'Roi de France', 'Dictateur perpétuel'],
+                correct: 1,
+                explanation: 'Napoléon s\'est proclamé Empereur des Français le 2 décembre 1804, marquant la fin de la République et le début de l\'Empire.'
+            },
+            {
+                text: 'Quel fut le principal accomplissement législatif de Napoléon ?',
+                context: 'Napoléon a réorganisé les lois de la France de manière systématique.',
+                options: ['La Déclaration des Droits', 'Le Code civil (Code Napoléon)', 'La Constitution de 1793', 'Les Réformes de Richelieu'],
+                correct: 1,
+                explanation: 'Le Code civil (1804), aussi appelé Code Napoléon, est un système de lois unifié qui a modernisé le droit français et influencé les systèmes légaux dans le monde entier.'
+            },
+            {
+                text: 'Quelle est la grande différence entre la révolution américaine et la française ?',
+                context: 'Les deux révolutions ont eu des impacts différents malgré des objectifs similaires.',
+                options: ['L\'américaine visait l\'indépendance, la française visait une transformation sociale radicale', 'La française a réussi, l\'américaine a échoué', 'L\'américaine a été pacifique, la française violente', 'Les deux ont mené à un régime démocratique'],
+                correct: 0,
+                explanation: 'La révolution américaine visait principalement l\'indépendance, tandis que la française cherchait à transformer radicalement la société, ce qui a mené à plus de violences.'
+            },
+            {
+                text: 'Quel encyclopédiste a produit l\'Encyclopédie, le grand projet intellectuel des Lumières ?',
+                context: 'L\'Encyclopédie était une œuvre collective majeure du XVIIIe siècle.',
+                options: ['Voltaire', 'Rousseau', 'Diderot et d\'Alembert', 'Montesquieu'],
+                correct: 2,
+                explanation: 'Denis Diderot et Jean le Rond d\'Alembert ont dirigé la publication de l\'Encyclopédie (1751-1772), qui synthétisait le savoir des Lumières.'
+            },
+            {
+                text: 'Quel est l\'autre nom de la période napoléonienne en France ?',
+                context: 'Cette période a duré de 1799 à 1815 environ.',
+                options: ['La Restauration', 'L\'Ancien Régime', 'L\'Empire', 'Le Consulat'],
+                correct: 2,
+                explanation: 'La période 1804-1815 s\'appelle l\'Empire (ou le Premier Empire). Elle a été caractérisée par le gouvernement autoritaire de Napoléon.'
+            },
+            {
+                text: 'Quelle position Napoléon maintenait-il concernant les idéaux révolutionnaires ?',
+                context: 'Napoléon n\'a pas complètement rejeté la Révolution.',
+                options: ['Il les a complètement abandonnés', 'Il les a conservés tout en établissant une autorité forte', 'Il a essayé de restaurer l\'Ancien Régime', 'Il les a étendus à la dictature populaire'],
+                correct: 1,
+                explanation: 'Napoléon a préservé certains principes révolutionnaires (égalité civile, Code civil) tout en établissant un gouvernement centralisé et autoritaire.'
+            },
+            {
+                text: 'Quel droit fondamental la DDHC (1789) affirmait-elle ?',
+                context: 'La Déclaration établissait des principes sur lesquels devraient reposer les gouvernements.',
+                options: ['Le droit divin des rois', 'La liberté, l\'égalité, la fraternité', 'L\'égalité absolue des biens', 'Le droit à la propriété privée sans limites'],
+                correct: 1,
+                explanation: 'La DDHC affirme que tous les hommes naissent libres et égaux en droits, incluant la liberté d\'expression, de conscience et d\'association.'
+            },
+            {
+                text: 'Quelle était la position sociale du Tiers État avant 1789 ?',
+                context: 'La société française était divisée en trois ordres.',
+                options: ['Les dirigeants de la France', 'Le clergé et les nobles', 'La majorité de la population sans privilèges politiques', 'Les fonctionnaires royaux'],
+                correct: 2,
+                explanation: 'Le Tiers État comprenait le peuple (bourgeoisie, artisans, paysans) et ne possédait pas les privilèges du clergé et de la noblesse, d\'où le ressentiment.'
+            },
+            {
+                text: 'Quel était l\'objectif principal des philosophes des Lumières ?',
+                context: 'Ces penseurs cherchaient à réformer la société par la raison.',
+                options: ['Maintenir le pouvoir des rois', 'Utiliser la raison et les sciences pour combattre l\'obscurantisme et l\'intolérance', 'Promouvoir la religion', 'Restaurer le féodalisme'],
+                correct: 1,
+                explanation: 'Les Lumières promouvaient la raison, la science et la critique rationnelle comme moyens de progrès et de liberté, contre l\'absolutisme et les superstitions.'
+            },
+            {
+                text: 'Quel pouvoir Napoléon donnait-il aux institutions démocratiques ?',
+                context: 'Napoléon a maintenu certaines formes d\'institutions démocratiques.',
+                options: ['Un pouvoir complet et illimité', 'Un pouvoir consultatif, mais le vrai pouvoir restait à Napoléon', 'Un pouvoir égal au sien', 'Aucune institution n\'existait'],
+                correct: 1,
+                explanation: 'Sous Napoléon, il y avait un Sénat et un Corps législatif, mais c\'étaient principalement des organes consultatifs. Napoléon retenait l\'essentiel du pouvoir exécutif.'
+            },
+            {
+                text: 'En quelle année Napoléon a-t-il été définitivement vaincu ?',
+                context: 'Napoléon a connu deux défaites majeures.',
+                options: ['1812 (Russie)', '1813 (Leipzig)', '1815 (Waterloo)', '1810 (Espagne)'],
+                correct: 2,
+                explanation: 'Bien que Napoléon ait abdiqué en 1814, il revient au pouvoir en 1815 mais est définitivement vaincu à la bataille de Waterloo le 18 juin 1815.'
+            },
+            {
+                text: 'Quel impact la Révolution française a-t-elle eu sur l\'Europe ?',
+                context: 'Les guerres napoléoniennes ont eu des conséquences majeures.',
+                options: ['Elle a stabilisé l\'Europe', 'Elle a propagé les idées révolutionnaires mais aussi causé des guerres et du chaos', 'Elle a renforcé les monarchies absolues', 'Elle n\'a eu aucun impact'],
+                correct: 1,
+                explanation: 'La Révolution et les guerres napoléoniennes ont diffusé les idées révolutionnaires en Europe mais ont aussi causé des millions de morts et du chaos politique.'
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+        const totalQuestions = 25;
+
+        function initQuiz() {
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1}/${totalQuestions}`;
+            document.getElementById('questionText').textContent = q.text;
+            document.getElementById('contextBox').textContent = q.context;
+
+            const optionsHtml = q.options.map((opt, idx) =>
+                `<div class="option" data-index="${idx}" onclick="selectOption(${idx})">${opt}</div>`
+            ).join('');
+            document.getElementById('optionsContainer').innerHTML = optionsHtml;
+
+            document.getElementById('explanation').textContent = '';
+            document.getElementById('explanation').classList.remove('show');
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'none';
+            answered = false;
+
+            updateProgressBar();
+        }
+
+        function selectOption(index) {
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelector(`[data-index="${index}"]`).classList.add('selected');
+        }
+
+        function submitAnswer() {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestion];
+            const selected = document.querySelector('.option.selected');
+
+            if (!selected) return;
+
+            const selectedIndex = parseInt(selected.dataset.index);
+            const isCorrect = selectedIndex === q.correct;
+
+            if (isCorrect) {
+                score++;
+                selected.classList.add('correct');
+            } else {
+                selected.classList.add('incorrect');
+                document.querySelector(`[data-index="${q.correct}"]`).classList.add('correct');
+            }
+
+            document.getElementById('explanation').textContent = q.explanation;
+            document.getElementById('explanation').classList.add('show');
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'block';
+
+            updateScore();
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= totalQuestions) {
+                showResults();
+            } else {
+                showQuestion();
+            }
+        }
+
+        function updateScore() {
+            const correct = score;
+            const incorrect = currentQuestion + 1 - score;
+            const percent = Math.round((score / (currentQuestion + 1)) * 100);
+
+            document.getElementById('correctCount').textContent = correct;
+            document.getElementById('incorrectCount').textContent = incorrect;
+            document.getElementById('percentDisplay').textContent = percent + '%';
+        }
+
+        function updateProgressBar() {
+            const percent = ((currentQuestion + 1) / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = percent + '%';
+        }
+
+        function showResults() {
+            const percent = Math.round((score / totalQuestions) * 100);
+            let stars = '⭐';
+            if (percent >= 80) stars = '⭐⭐⭐';
+            else if (percent >= 60) stars = '⭐⭐';
+
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('resultScreen').classList.add('show');
+            document.getElementById('starsDisplay').textContent = stars;
+            document.getElementById('finalScore').textContent = `${score}/${totalQuestions}`;
+            document.getElementById('resultMessage').textContent = `Réussite : ${percent}%`;
+
+            const resultData = {
+                v: '4_rev',
+                dt: new Date().toISOString(),
+                score: `${score}/25`,
+                pct: percent,
+                stars: stars.length
+            };
+            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+            console.log('RESULT CODE:', encoded);
+        }
+
+        initQuiz();
+    </script>
+</body>
+</html>

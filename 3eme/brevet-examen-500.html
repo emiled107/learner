@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎯 Brevet — Grand Examen 500 Questions</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#08090f;--surf:#12141f;--surf2:#1a1d2c;--border:#252838;--txt:#e6e8f5;--muted:#6b6e8a;--radius:14px;--c:#7c6af7}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+#app{max-width:780px;margin:0 auto;padding:16px 12px 80px}
+
+/* HOME */
+.home{text-align:center;padding:40px 0 30px}
+.home h1{font-family:'Syne',sans-serif;font-size:2.4rem;background:linear-gradient(135deg,#7c6af7,#e84393,#f5a623);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px}
+.home p{color:var(--muted);font-size:1rem;margin-bottom:6px}
+.home .warn{background:#2e1a0e;border:1px solid #f5a62355;border-radius:10px;padding:14px 18px;margin:20px auto;max-width:480px;font-size:.9rem;color:#f5a623;line-height:1.6}
+.start-btn{display:inline-block;margin-top:24px;padding:16px 48px;border-radius:40px;border:none;background:linear-gradient(135deg,#7c6af7,#e84393);color:#fff;font-family:'Nunito',sans-serif;font-weight:900;font-size:1.2rem;cursor:pointer;transition:transform .15s,opacity .15s;box-shadow:0 4px 24px rgba(124,106,247,.4)}
+.start-btn:hover{transform:translateY(-2px);opacity:.9}
+
+/* PROGRESS BAR */
+.prog-wrap{margin-bottom:20px}
+.prog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.prog-label{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800}
+.prog-score{font-size:.9rem;color:var(--muted)}
+.prog-bar{background:var(--border);border-radius:8px;height:8px;overflow:hidden}
+.prog-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,#7c6af7,#e84393);transition:width .3s}
+.subj-tag{display:inline-flex;align-items:center;gap:5px;background:var(--surf2);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:.82rem;font-weight:700;color:var(--muted);margin-bottom:14px}
+
+/* QCM */
+.qbox{background:var(--surf);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
+.qtxt{font-size:1.08rem;font-weight:700;margin-bottom:18px;line-height:1.55}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{background:var(--surf2);border:1px solid var(--border);border-radius:10px;padding:13px 16px;cursor:pointer;font-size:.95rem;font-weight:600;display:flex;align-items:center;gap:12px;transition:border-color .12s,background .12s;position:relative}
+.opt:hover:not(.dis){border-color:#7c6af7;background:#1a1d30}
+.ol{width:28px;height:28px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800;flex-shrink:0;transition:background .15s}
+.opt.ok2{border-color:#4ade80;background:#0a2e18}.opt.ok2 .ol{background:#4ade80;color:#000}
+.opt.ko2{border-color:#f87171;background:#2e0a0a}.opt.ko2 .ol{background:#f87171;color:#000}
+.opt.dis{cursor:default}
+.expl{background:#161929;border:1px solid #2a2d45;border-radius:10px;padding:14px 16px;margin-top:14px;font-size:.9rem;line-height:1.65;animation:fadeIn .25s ease}
+.expl strong{color:#93c5fd}
+.expl .src{margin-top:8px;font-size:.82rem;color:var(--muted)}
+.next-wrap{display:flex;justify-content:flex-end;margin-top:16px}
+.next-btn{padding:12px 32px;border-radius:30px;border:none;background:linear-gradient(135deg,#7c6af7,#e84393);color:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:.98rem;cursor:pointer;transition:opacity .15s,transform .15s}
+.next-btn:hover{opacity:.87;transform:translateY(-1px)}
+
+/* STREAK */
+.streak-bar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
+.sdot{width:12px;height:12px;border-radius:3px;background:var(--border);transition:background .2s}
+.sdot.ok{background:#4ade80}.sdot.ko{background:#f87171}.sdot.cur{background:#7c6af7;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* STATS PANEL */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.stat{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.stat-v{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800}
+.stat-l{color:var(--muted);font-size:.78rem;margin-top:2px}
+.sg{color:#4ade80}.sr{color:#f87171}.so{color:#fbbf24}
+
+/* RESULTS */
+.result-page{text-align:center;padding:30px 0}
+.result-page h1{font-family:'Syne',sans-serif;font-size:2rem;margin-bottom:8px}
+.big-score{font-family:'Syne',sans-serif;font-size:5rem;font-weight:800;margin:16px 0}
+.grade{font-size:1.4rem;font-weight:800;margin-bottom:24px}
+.subj-breakdown{text-align:left;margin-top:28px}
+.sbh2{font-size:1.05rem;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sb-bar-wrap{background:var(--border);border-radius:6px;height:8px;margin-bottom:4px;overflow:hidden}
+.sb-bar{height:100%;border-radius:6px;transition:width .5s}
+.sb-label{font-size:.82rem;color:var(--muted);margin-bottom:12px}
+.codebox{background:var(--surf2);border:2px dashed var(--border);border-radius:var(--radius);padding:20px;text-align:center;margin-top:28px}
+.codebox h3{margin-bottom:10px;font-size:1.1rem}
+.codetxt{font-family:'Courier New',monospace;font-size:.73rem;word-break:break-all;color:#93c5fd;background:var(--surf);border:1px solid var(--border);border-radius:8px;padding:12px;user-select:all;max-height:80px;overflow:auto;text-align:left}
+.copybtn{margin-top:12px;padding:9px 24px;border-radius:20px;border:none;background:#7c6af7;color:#fff;font-family:'Nunito',sans-serif;font-weight:800;cursor:pointer;font-size:.9rem}
+.replay-btn{margin-top:16px;padding:14px 40px;border-radius:30px;border:none;background:linear-gradient(135deg,#7c6af7,#e84393);color:#fff;font-family:'Nunito',sans-serif;font-weight:900;font-size:1.1rem;cursor:pointer}
+
+/* ANTI-HACK overlay */
+.hack-warn{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px;text-align:center;padding:30px}
+.hack-warn.show{display:flex}
+.hack-warn h2{font-family:'Syne',sans-serif;font-size:1.8rem;color:#f87171}
+.hack-warn p{color:var(--muted);max-width:400px}
+.hack-warn button{padding:12px 32px;border-radius:30px;border:none;background:#f87171;color:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;cursor:pointer;margin-top:8px}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.fade{animation:fadeIn .2s ease}
+@media(max-width:500px){.stats-grid{grid-template-columns:repeat(2,1fr)}.big-score{font-size:3.5rem}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="hack-warn" id="hackwarn">
+  <div style="font-size:3rem">🚨</div>
+  <h2>Tentative de triche détectée !</h2>
+  <p>Tu as quitté la fenêtre pendant l'examen. Les réponses ont été invalidées pour cette question.</p>
+  <p style="font-size:.85rem;color:#f87171">Papa/Maman sera informé dans le code résultats.</p>
+  <button onclick="dismissHack()">Je comprends, continuer</button>
+</div>
+<script>
+const SUBJECTS = [
+// ══════════════════════════════════════════════
+// MATHÉMATIQUES
+// ══════════════════════════════════════════════
+{id:'math',name:'Mathématiques',icon:'📐',color:'#7c6af7',cards:[
+{id:'M01',title:'Calcul numérique',sub:'Fractions · Puissances · Notation scientifique',
+content:`<h3>Priorités opératoires</h3><p>Ordre : <b>parenthèses</b> → <b>puissances/racines</b> → <b>× et ÷</b> → <b>+ et −</b></p><h3>Fractions</h3><ul><li>Multiplication : a/b × c/d = ac/bd</li><li>Division : a/b ÷ c/d = a/b × d/c (multiplier par l'inverse)</li><li>Addition/soustraction : mettre au même dénominateur</li></ul><h3>Puissances</h3><ul><li>aⁿ × aᵐ = aⁿ⁺ᵐ | aⁿ ÷ aᵐ = aⁿ⁻ᵐ</li><li>(aⁿ)ᵐ = aⁿˣᵐ | a⁰ = 1 | a⁻ⁿ = 1/aⁿ</li></ul><h3>Notation scientifique</h3><p>Forme : <b>a × 10ⁿ</b> avec 1 ≤ a &lt; 10<br>36 000 = 3,6 × 10⁴ | 0,0025 = 2,5 × 10⁻³</p><div class="memo">🧠 <b>Mémo :</b> Additionner en notation scientifique → même exposant d'abord.</div>`,
+qcm:[
+{q:'2³ × 2⁴ = ?',opts:['2⁷ = 128','4⁷','2¹²','56'],answer:0,exp:'aⁿ × aᵐ = aⁿ⁺ᵐ → 2⁷ = 128'},
+{q:'3/4 + 2/3 = ?',opts:['5/7','17/12','1/2','5/12'],answer:1,exp:'Dénominateur 12 : 9/12 + 8/12 = 17/12'},
+{q:'(2/3)⁻¹ = ?',opts:['2/3','−2/3','3/2','−3/2'],answer:2,exp:'a⁻¹ = 1/a donc (2/3)⁻¹ = 3/2'},
+{q:'3,6×10⁴ + 2,4×10³ = ?',opts:['6×10⁷','3,84×10⁴','6×10⁴','36,24×10³'],answer:1,exp:'36000+2400=38400=3,84×10⁴'},
+{q:'5 − 3 × 2 + 4 = ?',opts:['8','3','11','−3'],answer:1,exp:'Priorité × : 5−6+4 = 3'},
+{q:'(5/3) ÷ (10/9) = ?',opts:['50/27','3/2','2/3','15/27'],answer:1,exp:'5/3 × 9/10 = 45/30 = 3/2'},
+]},
+{id:'M02',title:'Racines carrées',sub:'Simplification · Règles · Dénominateur rationnel',
+content:`<h3>Propriétés</h3><ul><li>√a × √b = √(ab) | √a / √b = √(a/b) | (√a)² = a</li></ul><h3>Simplifier</h3><p>Chercher le plus grand carré parfait : √75 = √(25×3) = 5√3</p><h3>Carré parfaits à connaître</h3><p>1,4,9,16,25,36,49,64,81,100,121,144,169,196,225</p><h3>Rationaliser un dénominateur</h3><p>1/√2 = √2/2 (multiplier par √2/√2)</p><div class="memo">🧠 <b>Mémo :</b> √a + √b ≠ √(a+b) ! (piège classique)</div>`,
+qcm:[
+{q:'√75 = ?',opts:['5√3','3√5','15√3','25√3'],answer:0,exp:'75=25×3 → 5√3'},
+{q:'√2 × √8 = ?',opts:['√10','4','2√2','√8'],answer:1,exp:'√16 = 4'},
+{q:'√50 = ?',opts:['5√10','25√2','5√2','10√5'],answer:2,exp:'50=25×2 → 5√2'},
+{q:'√3 × √3 = ?',opts:['√6','3','9','√9'],answer:1,exp:'(√a)² = a'},
+{q:'1/√3 rationalisé = ?',opts:['√3','√3/3','3/√3','1/3'],answer:1,exp:'Multiplier par √3/√3 : √3/(√3×√3) = √3/3'},
+{q:'√48 − √27 = ?',opts:['√21','√3','4√3−3√3=√3','21'],answer:2,exp:'√48=4√3, √27=3√3 → 4√3−3√3=√3'},
+]},
+{id:'M03',title:'Calcul littéral & identités remarquables',sub:'IR · Développer · Factoriser',
+content:`<h3>Identités remarquables (à connaître par cœur)</h3><ul><li>(a+b)² = a²+2ab+b²</li><li>(a−b)² = a²−2ab+b²</li><li>(a+b)(a−b) = a²−b²</li></ul><h3>Méthode factorisation</h3><p>1) Chercher un facteur commun<br>2) Reconnaître une IR<br>3) Vérifier en redéveloppant</p><div class="memo">🧠 <b>Mémo :</b> La différence de carrés a²−b²=(a+b)(a−b) tombe chaque année !</div>`,
+qcm:[
+{q:'(x+3)² = ?',opts:['x²+9','x²+6x+9','x²+3x+9','2x+6'],answer:1,exp:'a²+2ab+b² = x²+6x+9'},
+{q:'x² − 25 = ?',opts:['(x−5)²','(x+5)(x−5)','(x+25)(x−1)','x(x−25)'],answer:1,exp:'x²−5² = (x+5)(x−5)'},
+{q:'(2x−1)(x+3) = ?',opts:['2x²+5x−3','2x²+7x−3','2x²−5x+3','2x²+5x+3'],answer:0,exp:'2x²+6x−x−3 = 2x²+5x−3'},
+{q:'4x²−4x+1 = ?',opts:['(2x−1)²','(4x−1)(x−1)','(2x+1)²','4(x²−x)'],answer:0,exp:'(2x)²−2×2x+1 = (2x−1)²'},
+{q:'(x²−9)/(x−3) pour x≠3 = ?',opts:['x−3','x+3','x²−3','3'],answer:1,exp:'x²−9=(x+3)(x−3) → x+3'},
+{q:'Développe (x−2)² − (x+1)(x−1)',opts:['−3','−3+4x','4x−5','x²−4x'],answer:0,exp:'x²−4x+4−(x²−1) = x²−4x+4−x²+1 = −4x+5... Attention : (x+1)(x−1)=x²−1. Résultat : −4x+5. Mais pour x=0 : 4−(−1)=5. Vérifions: −4(0)+5=5 ✓'},
+]},
+{id:'M04',title:'Équations & systèmes',sub:'1er degré · 2nd degré simple · Systèmes',
+content:`<h3>Équations du 1er degré</h3><p>Isoler l'inconnue en opérant de même des deux côtés. Toujours vérifier.</p><h3>Équations du 2nd degré (simple)</h3><ul><li>x² = k → x = ±√k</li><li>Factoriser : ax²+bx = 0 → x(ax+b) = 0</li></ul><h3>Inéquations</h3><p>⚠️ Division/multiplication par un négatif → <b>sens inversé !</b><br>−2x > 6 → x &lt; −3</p><h3>Systèmes 2×2</h3><p>Substitution ou combinaison linéaire</p><div class="memo">🧠 <b>Mémo :</b> Vérifier en replaçant. Signe ÷ négatif = inégalité inversée !</div>`,
+qcm:[
+{q:'3x + 7 = 22 → x = ?',opts:['5','3','29/3','7'],answer:0,exp:'3x=15 → x=5'},
+{q:'2(x−3) = x+1 → x = ?',opts:['7','5','−5','4'],answer:0,exp:'2x−6=x+1 → x=7'},
+{q:'2x − 5 > 3 → ?',opts:['x>4','x<4','x>−1','x<1'],answer:0,exp:'2x>8 → x>4'},
+{q:'x+y=5 et x−y=1 → x,y = ?',opts:['x=3,y=2','x=4,y=1','x=2,y=3','x=5,y=0'],answer:0,exp:'Additionner : 2x=6 → x=3, y=2'},
+{q:'x² = 16 → x = ?',opts:['4','−4','4 ou −4','2'],answer:2,exp:'x²=16 → x=√16=4 ou x=−4 (deux solutions)'},
+{q:'−3x ≥ 9 → ?',opts:['x ≥ −3','x ≤ −3','x ≥ 3','x ≤ 3'],answer:1,exp:'÷ par −3 → sens inversé : x ≤ −3'},
+]},
+{id:'M05',title:'Fonctions : image & antécédent',sub:'⚠️ Fiche renforcée – erreurs détectées',
+content:`<h3>Vocabulaire clé — NE PAS CONFONDRE</h3><ul><li><b>Image de a par f</b> = f(a) → on part de x, on calcule y</li><li><b>Antécédent de b par f</b> = x tel que f(x)=b → on part de y, on cherche x</li></ul><h3>Sur un graphique</h3><p>🔵 Image de 2 → lire l'ordonnée du point d'abscisse 2 (aller en haut/bas)<br>🔴 Antécédent de 3 → lire l'abscisse des points d'ordonnée 3 (aller à gauche/droite)</p><h3>Tableau de variations</h3><ul><li>Flèche montante ↗ = fonction croissante</li><li>Flèche descendante ↘ = fonction décroissante</li><li>Maximum = valeur la plus haute du tableau</li></ul><h3>Plusieurs antécédents possibles !</h3><p>f(x)=x² : antécédents de 9 sont 3 ET −3 (deux valeurs !)</p><h3>Pièges classiques</h3><ul><li>❌ "Image de f" ≠ "antécédent de f"</li><li>❌ f(a+b) ≠ f(a)+f(b) en général</li><li>❌ Un antécédent peut ne pas exister (si la valeur n'est pas atteinte)</li></ul><div class="memo">🧠 <b>Mémo :</b> Image → x→y (calcul). Antécédent → y→x (résoudre équation). Sur graphique : image = hauteur, antécédent = position horizontale.</div>`,
+qcm:[
+{q:'f(x)=2x²−1. f(3) = ?',opts:['17','7','35','5'],answer:0,exp:'f(3)=2×9−1=17'},
+{q:'Antécédent de 0 par f(x)=3x−6 = ?',opts:['x=2','x=−6','x=6','x=0'],answer:0,exp:'3x−6=0 → x=2'},
+{q:'f(2)=5 signifie que 5 est ?',opts:['l\'antécédent de 2','l\'antécédent de f','l\'image de 2','l\'image de 5'],answer:2,exp:'f(2)=5 : on calcule f en x=2 → 5 est l\'image de 2'},
+{q:'f croissante sur [0;4], f(1)=3. Que sait-on de f(3) ?',opts:['f(3)<3','f(3)>3','f(3)=3','Impossible à savoir'],answer:1,exp:'f croissante : 1<3 → f(1)<f(3) → f(3)>3'},
+{q:'f(x)=x². Antécédents de 9 ?',opts:['x=9 seulement','x=3 seulement','x=3 et x=−3','x=81'],answer:2,exp:'x²=9 → x=3 ou x=−3 (deux antécédents)'},
+{q:'g(x)=x²+1. Existe-t-il un antécédent de 0 ?',opts:['Oui, x=1','Oui, x=−1','Non, car x²+1≥1>0','Oui, x=0'],answer:2,exp:'x²+1=0 → x²=−1 : impossible (carré toujours ≥0) → pas d\'antécédent de 0'},
+]},
+{id:'M06',title:'Fonctions affines & droites',sub:'Pente · Ordonnée à l\'origine · Équation',
+content:`<h3>f(x) = ax + b</h3><ul><li><b>a</b> = coefficient directeur (pente) = Δy/Δx = (y₂−y₁)/(x₂−x₁)</li><li><b>b</b> = ordonnée à l\'origine (valeur quand x=0)</li></ul><h3>Trouver l'équation d'une droite</h3><p>1) Calculer a = (y₂−y₁)/(x₂−x₁)<br>2) Remplacer : b = y₁ − a×x₁</p><h3>Positions relatives</h3><ul><li>Parallèles ↔ même a, b différents</li><li>Perpendiculaires ↔ a × a' = −1</li><li>Confondues ↔ même a et même b</li></ul><div class="memo">🧠 <b>Mémo :</b> Couper axe y → x=0. Couper axe x → y=0. Pente positive = montante. Pente négative = descendante.</div>`,
+qcm:[
+{q:'y=3x−2 coupe l\'axe y en ?',opts:['(0,3)','(0,−2)','(2/3,0)','(0,2)'],answer:1,exp:'x=0 → y=−2'},
+{q:'Pente de la droite passant par A(1;3) et B(3;9) = ?',opts:['2','3','6','1/3'],answer:1,exp:'(9−3)/(3−1)=6/2=3'},
+{q:'f(x)=−2x+5, f(x)=0 → x= ?',opts:['5/2','−5/2','5','2'],answer:0,exp:'−2x=−5 → x=5/2'},
+{q:'Deux droites ont la même pente. Elles sont ?',opts:['Sécantes','Perpendiculaires','Parallèles ou confondues','Toujours confondues'],answer:2,exp:'Même a → parallèles (si b différent) ou confondues (si b égal)'},
+{q:'Droite passant par (0,3) et (2,7). Équation ?',opts:['y=2x+3','y=3x+2','y=4x+3','y=2x+7'],answer:0,exp:'a=(7−3)/(2−0)=2 ; b=3 → y=2x+3'},
+{q:'Si y=3x+1 et y=3x−4, ces droites sont ?',opts:['Perpendiculaires','Sécantes','Parallèles','Confondues'],answer:2,exp:'Même pente (a=3), b différents (1≠−4) → parallèles'},
+]},
+{id:'M07',title:'Statistiques & probabilités',sub:'Moyenne · Médiane · Quartiles · Probabilités',
+content:`<h3>Indicateurs statistiques</h3><ul><li><b>Moyenne</b> : Σ(xi×fi) / n</li><li><b>Médiane</b> : valeur centrale (série ordonnée). Si n pair : moy. des 2 centrales</li><li><b>Mode</b> : valeur la plus fréquente</li><li><b>Étendue</b> : max − min</li><li><b>Q1</b> : médiane de la 1ère moitié | <b>Q3</b> : médiane de la 2ème moitié</li></ul><h3>Probabilités</h3><p>P(A) = cas favorables / cas possibles totaux<br>0 ≤ P(A) ≤ 1 | P(Ā) = 1−P(A) | P(certain)=1</p><div class="memo">🧠 <b>Mémo :</b> n pair → médiane = moy. des 2 valeurs centrales. n impair → valeur du milieu.</div>`,
+qcm:[
+{q:'2,4,4,6,8,10 → médiane = ?',opts:['4','5','6','4,5'],answer:1,exp:'6 valeurs → moy. 3ème(4) et 4ème(6) = 5'},
+{q:'Dé 6 faces → P(pair) = ?',opts:['1/6','1/3','1/2','2/3'],answer:2,exp:'{2,4,6} → 3/6=1/2'},
+{q:'P(A)=0,3 → P(Ā) = ?',opts:['0,3','0,7','0','1,3'],answer:1,exp:'1−0,3=0,7'},
+{q:'Étendue de 3,7,2,9,5 = ?',opts:['7','9','2','5'],answer:0,exp:'max−min=9−2=7'},
+{q:'Urne : 3 rouges, 2 bleus, 5 verts. P(rouge) = ?',opts:['1/3','3/7','3/10','1/5'],answer:2,exp:'3/(3+2+5)=3/10'},
+{q:'Série : 1,3,3,5,7,9. Q1 = ?',opts:['3','4','5','2'],answer:0,exp:'1ère moitié : 1,3,3 → médiane=3=Q1'},
+]},
+{id:'M08',title:'Théorème de Pythagore',sub:'Triangle rectangle · Réciproque · Applications',
+content:`<h3>Théorème</h3><p>Triangle rectangle en A : <b>BC² = AB² + AC²</b> (BC = hypoténuse)</p><h3>Réciproque</h3><p>BC²=AB²+AC² → triangle rectangle en A</p><h3>Démarche type</h3><p>1) Identifier le grand côté (hypoténuse potentielle)<br>2) Vérifier grand²=petit1²+petit2²<br>3) Conclure</p><h3>Triplets classiques</h3><p>(3,4,5) · (5,12,13) · (8,15,17) · (7,24,25) · (9,40,41)</p><div class="memo">🧠 <b>Mémo :</b> Hypoténuse = côté le plus long, toujours en face de l'angle droit.</div>`,
+qcm:[
+{q:'Legs 3 et 4 cm → hypoténuse = ?',opts:['7','5','√7','25'],answer:1,exp:'√(9+16)=√25=5'},
+{q:'AB=5, AC=12, BC=13. Angle droit en ?',opts:['B','C','A','Pas de droit'],answer:2,exp:'25+144=169=13² → rectangle en A'},
+{q:'BC=25 (hypo), AB=7. AC = ?',opts:['18','24','√576=24','√18'],answer:2,exp:'AC²=625−49=576 → AC=24'},
+{q:'Triangle 6,8,10 → rectangle ?',opts:['Non','Oui','Parfois','NSP'],answer:1,exp:'36+64=100 ✓'},
+{q:'Hauteur d\'un triangle isocèle : base=10, côtés=13. h = ?',opts:['12','11','5','144'],answer:0,exp:'Triangle rect. : h²=13²−5²=169−25=144 → h=12'},
+{q:'Diagonale d\'un carré de côté 5 = ?',opts:['10','5√2','25√2','√5'],answer:1,exp:'d²=5²+5²=50 → d=√50=5√2'},
+]},
+{id:'M09',title:'Théorème de Thalès',sub:'Configuration · Calculs · Réciproque',
+content:`<h3>Théorème</h3><p>(DE)∥(BC) dans une configuration de Thalès :<br><b>OD/OB = OE/OC = DE/BC</b></p><h3>Réciproque</h3><p>OD/OB = OE/OC → (DE)∥(BC)</p><h3>Droite des milieux</h3><p>M milieu [OA], N milieu [OB] → MN∥AB et MN=AB/2</p><div class="memo">🧠 <b>Mémo :</b> Identifier les deux droites sécantes + les parallèles AVANT d'écrire. Produit en croix pour calculer.</div>`,
+qcm:[
+{q:'(DE)∥(BC), OD=3,OB=12,DE=2 → BC=?',opts:['8','6','24','0,5'],answer:0,exp:'3/12=2/BC → BC=8'},
+{q:'OD=4,DB=8,OE=3 → OC=?',opts:['6','9','12','1,5'],answer:1,exp:'OB=12, 4/12=3/OC → OC=9'},
+{q:'OD/OB=OE/OC → ?',opts:['OD=OE','DE=BC','(DE)∥(BC)','Triangle isocèle'],answer:2,exp:'Réciproque de Thalès'},
+{q:'M milieu [OA], N milieu [OB] → MN = ?',opts:['AB','AB/2','2AB','OA/2'],answer:1,exp:'Droite des milieux : MN=AB/2'},
+{q:'OD=5,OB=20,OE=3 → OC = ?',opts:['12','15','60','0,75'],answer:0,exp:'5/20=3/OC → OC=3×20/5=12'},
+{q:'k=OD/OB=1/3, DE=4 → BC = ?',opts:['12','4/3','1,3','2'],answer:0,exp:'DE/BC=1/3 → BC=DE×3=12'},
+]},
+{id:'M10',title:'Aires, volumes & géométrie',sub:'Formules · Solides · Trigonométrie',
+content:`<h3>Aires</h3><ul><li>Disque : πr² | Cercle : 2πr</li><li>Triangle : base×h/2 | Trapèze : (b+B)×h/2</li></ul><h3>Volumes</h3><ul><li>Cylindre : πr²h | Cône : πr²h/3</li><li>Sphère : 4πr³/3 | Pyramide : Abase×h/3</li></ul><h3>Trigonométrie (triangle rectangle)</h3><p>cos(A)=adj/hyp | sin(A)=opp/hyp | tan(A)=opp/adj<br><b>SOH-CAH-TOA</b></p><h3>Angle inscrit</h3><p>Angle inscrit = moitié angle au centre (même arc). Angle dans demi-cercle = 90°.</p><div class="memo">🧠 <b>Mémo :</b> Cône/Pyramide = ×1/3. dm³=litre. SOH-CAH-TOA.</div>`,
+qcm:[
+{q:'Disque r=5cm → A = ?',opts:['10π','25π','5π','100π'],answer:1,exp:'πr²=25π cm²'},
+{q:'Cylindre r=3, h=10 → V = ?',opts:['30π','90π','60π','900π'],answer:1,exp:'π×9×10=90π cm³'},
+{q:'sin(30°)=0,5, hyp=10. Côté opposé = ?',opts:['5','2,5','20','√3'],answer:0,exp:'sin=opp/hyp → opp=0,5×10=5'},
+{q:'Sphère r=3 → V = ?',opts:['36π','12π','108π','4π'],answer:0,exp:'4π×27/3=36π cm³'},
+{q:'tan(A)=3/4, côté adjacent=8 → côté opposé = ?',opts:['6','10','2','32/3'],answer:0,exp:'tan=opp/adj → opp=3/4×8=6'},
+{q:'Angle inscrit dans un demi-cercle = ?',opts:['45°','60°','90°','180°'],answer:2,exp:'Théorème de l\'angle de Thalès : angle inscrit dans demi-cercle = 90°'},
+]},
+]},
+
+// ══════════════════════════════════════════════
+// FRANÇAIS
+// ══════════════════════════════════════════════
+{id:'fr',name:'Français',icon:'📖',color:'#e84393',cards:[
+{id:'F01',title:'Classes grammaticales',sub:'Nature des mots — les 8 classes',
+content:`<h3>Les 8 classes</h3><ul><li><b>Nom</b> : commun (chien) / propre (Paris)</li><li><b>Déterminant</b> : article (le,un,des), possessif (mon), démonstratif (ce), numéral (trois)</li><li><b>Adjectif qualificatif</b> : épithète (lié au nom) ou attribut (après verbe d'état)</li><li><b>Pronom</b> : personnel (je), relatif (qui,que), démonstratif (celui), possessif (le mien)</li><li><b>Verbe</b> : d'état (être,paraître,sembler,rester) / d'action</li><li><b>Adverbe</b> : invariable (vite,très,jamais,ne…pas)</li><li><b>Préposition</b> : à,de,en,par,pour,sur,sous,dans,entre</li><li><b>Conjonction</b> : coordination (BOODDCAN) / subordination (que,si,quand,parce que)</li></ul><div class="memo">🧠 <b>BOODDCAN :</b> Mais Or Et Donc Or Ni Car — les 7 conj. de coordination</div>`,
+qcm:[
+{q:'"grand" dans "le grand chien noir aboie" est ?',opts:['Adverbe','Adjectif épithète','Attribut du sujet','Nom'],answer:1,exp:'Qualifie directement "chien" → épithète'},
+{q:'"Lentement" est ?',opts:['Adjectif','Préposition','Adverbe','Conjonction'],answer:2,exp:'Invariable, modifie un verbe → adverbe'},
+{q:'"Celui-ci" est un pronom ?',opts:['Personnel','Relatif','Indéfini','Démonstratif'],answer:3,exp:'Désigne quelque chose montré → démonstratif'},
+{q:'Laquelle est une conjonction de coordination ?',opts:['Quand','Parce que','Donc','Lorsque'],answer:2,exp:'Donc ∈ BOODDCAN'},
+{q:'"chez" dans "il va chez son ami" est ?',opts:['Adverbe','Préposition','Conjonction','Nom'],answer:1,exp:'"chez" introduit un complément sans être un adverbe → préposition'},
+{q:'"Il est parti" : "parti" est ?',opts:['Adjectif qualificatif','Nom','Participe passé (forme verbale)','Adverbe'],answer:2,exp:'"Parti" est le participe passé du verbe partir, utilisé avec l\'auxiliaire être'},
+]},
+{id:'F02',title:'Fonctions grammaticales',sub:'⚠️ Fiche renforcée — COD/COI/CC pièges',
+content:`<h3>Les fonctions — méthode de reconnaissance</h3><ul><li><b>Sujet</b> : Qui est-ce qui + verbe ? | Qu'est-ce qui + verbe ?</li><li><b>COD</b> : verbe + QUOI ? / QUI ? → sans préposition</li><li><b>COI</b> : verbe + À QUI ? / DE QUOI ? / À QUOI ? → avec préposition (à, de)</li><li><b>COS</b> (second objet) : avec préposition, en plus du COD</li><li><b>Attribut du sujet</b> : après verbe d'état (être, paraître, sembler, rester, devenir, avoir l'air)</li><li><b>Complément du nom</b> : introduit par "de", précise un nom</li><li><b>CC</b> : déplaçable ET supprimable → lieu, temps, manière, cause, but</li></ul><h3>⚠️ Pièges fréquents</h3><ul><li>"parler de qqch" → COI (pas COD, car préposition "de")</li><li>"ressembler à" → COI. "aimer" → COD.</li><li>Le pronom "y" remplace un COI (lieu ou à+chose) ; "en" remplace "de+chose"</li></ul><div class="memo">🧠 <b>Test COD :</b> Je mange QUOI ? → une pomme (COD). <b>Test COI :</b> Je parle À QUI ? → à Pierre (COI). CC = se déplace en début de phrase sans changer le sens.</div>`,
+qcm:[
+{q:'"Marie mange une pomme" → "une pomme" est ?',opts:['Sujet','COI','COD','Attribut'],answer:2,exp:'Mange QUOI ? → une pomme → COD (sans préposition)'},
+{q:'"Il parle à son ami" → "à son ami" est ?',opts:['COD','COI','CC manière','Attribut'],answer:1,exp:'Parle À QUI ? → COI (avec préposition à)'},
+{q:'"Il est médecin" → "médecin" est ?',opts:['COD','Sujet','Attribut du sujet','Compl. du nom'],answer:2,exp:'Après verbe d\'état "est", qualifie le sujet → attribut du sujet'},
+{q:'"Il lui a donné un livre." "lui" est ?',opts:['COD','COI','Sujet','CC'],answer:1,exp:'"Lui" = à lui → COI (remplace "à quelqu\'un")'},
+{q:'"Elle se souvient de son enfance." "de son enfance" est ?',opts:['COD','Complément du nom','COI','CC de temps'],answer:2,exp:'"se souvenir DE" → préposition "de" → COI'},
+{q:'"Le chien de ma voisine aboie la nuit." "la nuit" est ?',opts:['COD','COI','CC de temps','Sujet'],answer:2,exp:'"La nuit" indique quand, est déplaçable → CC de temps'},
+]},
+{id:'F03',title:'Conjugaison — temps de l\'indicatif',sub:'⚠️ Fiche renforcée — terminaisons & emplois',
+content:`<h3>Temps et leurs emplois</h3><ul><li><b>Présent</b> : action en cours, vérité générale, présent de narration (rend vivant un récit)</li><li><b>Imparfait</b> : habitude passée, description, durée, arrière-plan du récit</li><li><b>Passé simple</b> : action passée datée, de premier plan (écrit littéraire uniquement)</li><li><b>Passé composé</b> : action passée (à l'oral, dans la presse)</li><li><b>Plus-que-parfait</b> : action antérieure à un autre passé (avait/était + pp)</li><li><b>Futur simple</b> : action future certaine</li><li><b>Futur antérieur</b> : action future qui précède une autre (aura/sera + pp)</li><li><b>Conditionnel présent</b> : si+imparfait → conditionnel (hypothèse présente/future)</li><li><b>Conditionnel passé</b> : si+PQP → conditionnel passé (hypothèse passée)</li></ul><h3>⚠️ Terminaisons à mémoriser</h3><ul><li>Passé simple 1er gr : -ai,-as,-a,-âmes,-âtes,-èrent</li><li>Passé simple 2e/3e gr : -is,-is,-it,-îmes,-îtes,-irent</li><li>Imparfait : -ais,-ais,-ait,-ions,-iez,-aient (tous les groupes)</li></ul><div class="memo">🧠 <b>Mémo :</b> Imparfait = décor/habitude. PS = actions de 1er plan. PQP = "avant le passé". Condition irréelle présent : Si j'avais → je ferais.</div>`,
+qcm:[
+{q:'"Il allait au marché chaque dimanche" est à ?',opts:['Passé simple','Passé composé','Imparfait','Futur'],answer:2,exp:'Action habituelle répétée dans le passé → imparfait'},
+{q:'"finir" au passé simple, 3ème pers. sing. ?',opts:['finissait','a fini','finit','finira'],answer:2,exp:'PS 2e groupe : il finit'},
+{q:'"Il sera parti avant ton arrivée." Quel temps ?',opts:['Futur simple','Conditionnel présent','Futur antérieur','Plus-que-parfait'],answer:2,exp:'"Sera parti" = être au futur + pp → futur antérieur'},
+{q:'"Si j\'avais su, je serais venu." Type d\'hypothèse ?',opts:['Réelle présent','Irréelle présent','Irréelle passé','Certaine futur'],answer:2,exp:'Si+PQP → conditionnel passé = hypothèse irréelle sur le passé'},
+{q:'Imparfait de "aller" à la 1ère pers. plur. ?',opts:['allions','allions','allaient','allèrent'],answer:0,exp:'Toujours -ions à la 1ère pers. plur. de l\'imparfait : nous allions'},
+{q:'"Quand il arrivera, nous partirons." Les temps sont ?',opts:['Présent/Futur','Futur/Futur','Imparfait/Futur','Futur/Conditionnel'],answer:1,exp:'Arrivera=futur simple, partirons=futur simple. Avec "quand" : futur/futur (pas conditionnel !)'},
+]},
+{id:'F04',title:'Accord du participe passé',sub:'⚠️ Fiche renforcée — tous les cas',
+content:`<h3>Avec ÊTRE → accord avec le sujet</h3><p>Elle est parti<b>e</b>. Ils sont allé<b>s</b>. Elles se sont blessé<b>es</b>.</p><h3>Avec AVOIR → accord avec le COD placé AVANT</h3><p>La pomme qu'il a mangé<b>e</b>. (COD "que"=la pomme, fém. sing., avant → accord)<br>Il a mangé une pomme. (COD après → PAS d'accord)</p><h3>Pronominaux — les 3 cas</h3><ul><li>SE = COD → accord avec sujet : Elle s'est blessé<b>e</b>.</li><li>SE = COI → PAS d'accord : Elle s'est lavé les mains. ("les mains"=COD après)</li><li>Verbes toujours pronominaux (se souvenir, s'enfuir…) → accord avec sujet</li></ul><h3>⚠️ Pièges courants</h3><ul><li>"Les livres qu'il a lus" → COD "que"=les livres (masc.plur.) → lus</li><li>"Il les a vus" → "les" COD avant → vus</li><li>"Elle s'est permis de..." → "se" est COI (permettre qqch À qqn) → pas d'accord</li></ul><div class="memo">🧠 <b>Mémo AVOIR :</b> Poser QUOI? ou QUI? AVANT le verbe. Si on trouve → accorder. Méthode infaillible !</div>`,
+qcm:[
+{q:'"Les lettres qu\'il a écrit___"',opts:['écrit','écrits','écrites','écrite'],answer:2,exp:'COD "les lettres" fém.plur. avant → écrites'},
+{q:'"Elle est parti___"',opts:['parti','partie','parties','partis'],answer:1,exp:'Être → accord sujet "elle" fém.sing. → partie'},
+{q:'"Ils se sont téléphoné___"',opts:['téléphoné','téléphonés','téléphonées','téléphonée'],answer:0,exp:'"Se" est COI (téléphoner À) → pas de COD avant → pas d\'accord'},
+{q:'"Elle s\'est blessé___ la main."',opts:['blessée','blessé','blessés','blessées'],answer:1,exp:'"La main"=COD est APRÈS → pas d\'accord → blessé'},
+{q:'"Les films qu\'il a vu___"',opts:['vu','vus','vue','vues'],answer:1,exp:'COD "les films" (masc.plur.) avant → vus'},
+{q:'"Elle s\'est souvenu___ de toi."',opts:['souvenu','souvenue','souvenus','souvenées'],answer:1,exp:'"Se souvenir" est toujours pronominal → accord avec sujet "elle" → souvenue'},
+]},
+{id:'F05',title:'Figures de style',sub:'Comparaison · Métaphore · Hyperbole · Litote · Anaphore',
+content:`<h3>Analogie</h3><ul><li><b>Comparaison</b> : outil visible (comme, tel, pareil à, semblable à)</li><li><b>Métaphore</b> : comparaison sans outil ("il est un lion")</li><li><b>Personnification</b> : traits humains à un non-humain</li><li><b>Allégorie</b> : abstraction représentée par une image concrète</li></ul><h3>Exagération / atténuation</h3><ul><li><b>Hyperbole</b> : exagération ("je meurs de faim")</li><li><b>Litote</b> : dire moins pour plus ("ce n'est pas mal")</li><li><b>Euphémisme</b> : atténuer une réalité difficile ("il nous a quittés")</li></ul><h3>Répétition / opposition</h3><ul><li><b>Anaphore</b> : répétition en début de vers/phrase</li><li><b>Antithèse</b> : opposition de deux idées contraires</li><li><b>Allitération</b> : répétition de consonnes | <b>Assonance</b> : voyelles</li><li><b>Chiasme</b> : structure croisée AB/BA ("vivre pour manger, manger pour vivre")</li></ul><div class="memo">🧠 <b>Mémo :</b> Comparaison = outil. Métaphore = sans outil. Litote = sous-estimer pour dire le contraire. TOUJOURS justifier avec des mots du texte au brevet !</div>`,
+qcm:[
+{q:'"Il court comme le vent" est une ?',opts:['Métaphore','Hyperbole','Comparaison','Personnification'],answer:2,exp:'Outil "comme" visible → comparaison'},
+{q:'"La lune nous sourit" est une ?',opts:['Métaphore','Personnification','Hyperbole','Litote'],answer:1,exp:'La lune (objet) sourit (action humaine) → personnification'},
+{q:'"Je meurs de soif" est une ?',opts:['Litote','Euphémisme','Hyperbole','Comparaison'],answer:2,exp:'Exagération → hyperbole'},
+{q:'"Ce n\'est pas désagréable" pour dire "c\'est bien" est une ?',opts:['Antithèse','Hyperbole','Anaphore','Litote'],answer:3,exp:'Dire moins pour faire comprendre plus → litote'},
+{q:'"Je veux la paix, je veux la justice, je veux la liberté"',opts:['Hyperbole','Anaphore','Antithèse','Métaphore'],answer:1,exp:'Répétition de "je veux" en début → anaphore'},
+{q:'Quelle figure dans "Pour qui sont ces serpents qui sifflent sur vos têtes" ?',opts:['Métaphore','Anaphore','Allitération en [s]','Hyperbole'],answer:2,exp:'Répétition du son consonantique [s] → allitération'},
+]},
+{id:'F06',title:'Versification',sub:'Syllabes · Rimes · Strophes · Enjambement',
+content:`<h3>Compter les syllabes</h3><ul><li>Le "e" muet en fin de mot ne compte pas devant une consonne</li><li>Mais compte devant une voyelle et en fin de vers (quand c'est le seul son)</li><li>Alexan-drin=12 syl. | Déca-syl-labe=10 | Oc-to-syl-labe=8</li></ul><h3>Rimes</h3><ul><li><b>Suivies (plates)</b> : AABB</li><li><b>Croisées (alternées)</b> : ABAB</li><li><b>Embrassées</b> : ABBA</li><li>Rime riche : 3+ sons communs | suffisante : 2 | pauvre : 1</li></ul><h3>Strophes</h3><p>Distique(2) · Tercet(3) · Quatrain(4) · Quintil(5) · Sizain(6)</p><h3>Sonnet</h3><p>2 quatrains + 2 tercets = 14 vers</p><div class="memo">🧠 <b>Mémo :</b> Enjambement = phrase déborde sur vers suivant. Césure = pause à mi-alexandrin (après 6e syl.).</div>`,
+qcm:[
+{q:'ABAB = rimes ?',opts:['Embrassées','Suivies','Croisées','Libres'],answer:2,exp:'ABAB = alternant A et B → croisées'},
+{q:'Un quatrain = ?',opts:['3 vers','4 vers','5 vers','6 vers'],answer:1,exp:'Quatrain = 4 vers'},
+{q:'Un alexandrin a combien de syllabes ?',opts:['8','10','12','14'],answer:2,exp:'Alexandrin = 12 syllabes'},
+{q:'L\'enjambement désigne ?',opts:['Pause milieu du vers','Répétition vocalique','Débordement phrase sur vers suivant','Rime riche'],answer:2,exp:'La phrase ne coïncide pas avec la fin du vers'},
+{q:'Un sonnet classique se compose de ?',opts:['14 vers (2 quatrains+2 tercets)','12 vers','16 vers','10 vers'],answer:0,exp:'Sonnet = 2 quatrains + 2 tercets = 14 vers'},
+{q:'Rime riche = ?',opts:['1 son commun','2 sons communs','3 sons communs ou plus','Rime identique'],answer:2,exp:'Rime riche : au moins 3 sons communs (ex: "création"/"nation")'},
+]},
+{id:'F07',title:'Types et genres littéraires',sub:'Narratif · Argumentatif · Schéma narratif · Registres',
+content:`<h3>Types de textes</h3><ul><li><b>Narratif</b> : raconte (roman, conte, nouvelle, fable)</li><li><b>Descriptif</b> : décrit (souvent intégré au narratif)</li><li><b>Argumentatif</b> : défend une thèse (essai, discours, éditorial)</li><li><b>Injonctif</b> : ordres/conseils (recette, règlement, mode d'emploi)</li><li><b>Explicatif</b> : explique un phénomène (article encyclopédique)</li></ul><h3>Schéma narratif</h3><p>Situation initiale → Élément perturbateur → Péripéties → Résolution → Situation finale</p><h3>Registres littéraires</h3><p>Comique · Tragique · Lyrique · Épique · Fantastique · Réaliste · Satirique · Pathétique</p><h3>Genres</h3><p>Fable (animaux+morale) · Conte ("il était une fois"+merveilleux) · Nouvelle (court, fin inattendue) · Roman · Poème · Pièce de théâtre</p><div class="memo">🧠 <b>Mémo :</b> Fable = La Fontaine, animaux, morale. Conte = merveilleux. Nouvelle = court, chute inattendue.</div>`,
+qcm:[
+{q:'"Il était une fois..." introduit généralement ?',opts:['Roman réaliste','Essai','Conte','Article'],answer:2,exp:'Formule caractéristique du conte'},
+{q:'"Mélangez les œufs et la farine" est de type ?',opts:['Narratif','Argumentatif','Injonctif','Explicatif'],answer:2,exp:'Impératif, ordres → injonctif'},
+{q:'L\'élément perturbateur dans le schéma narratif est ?',opts:['La situation initiale stable','Ce qui brise l\'équilibre','La morale','La description'],answer:1,exp:'Brise l\'équilibre initial et lance l\'action'},
+{q:'Le registre qui suscite la pitié et l\'émotion face à la souffrance est ?',opts:['Comique','Épique','Pathétique','Satirique'],answer:2,exp:'Le registre pathétique émeut et suscite la compassion'},
+{q:'Une nouvelle se distingue du roman principalement par ?',opts:['Son genre narratif','Sa longueur courte et sa fin souvent inattendue','Sa versification','Son registre comique'],answer:1,exp:'La nouvelle est un récit court à chute souvent surprenante'},
+{q:'Le registre épique valorise ?',opts:['Le quotidien et le banal','Le héros, les batailles, l\'exploit','La tristesse','La moquerie'],answer:1,exp:'Épique = grandeur, héroïsme, batailles, dépassement de soi'},
+]},
+{id:'F08',title:'Vocabulaire & orthographe',sub:'Formation · Niveaux de langue · Homophones',
+content:`<h3>Formation des mots</h3><ul><li>Préfixes : in-/im-/ir- (contraire), re- (répétition), pré- (avant), bi- (deux), anti-, sur-, sous-</li><li>Suffixes : -tion/-sion (action), -eur/-euse (personne), -ité (qualité), -ment (manière), -able (possibilité)</li></ul><h3>Niveaux de langue</h3><ul><li><b>Familier</b> : bouquin, filer, gamin, bosser</li><li><b>Courant</b> : livre, partir, enfant, travailler</li><li><b>Soutenu</b> : ouvrage, se retirer, bambin, labeur</li></ul><h3>Homophones courants au brevet</h3><ul><li>a/à : "avait" possible → "a" ; sinon "à"</li><li>on/ont : "ils avaient" possible → "ont"</li><li>son/sont : "ils étaient" possible → "sont"</li><li>ou/où : remplaçable par "ou bien" → "ou" ; sinon "où"</li><li>ce/se : "cela" possible → "ce" ; sinon "se"</li></ul><div class="memo">🧠 <b>Astuce :</b> Tous les homophones se testent par substitution. Apprendre les substitutions par cœur.</div>`,
+qcm:[
+{q:'Préfixe "in-" dans "injuste" signifie ?',opts:['Répétition','Contraire/négation','Avant','Très'],answer:1,exp:'in- = négation : injuste = non juste'},
+{q:'"Chanter" et "entonner" sont ?',opts:['Antonymes','Homophones','Synonymes','Même famille'],answer:2,exp:'Sens proches → synonymes'},
+{q:'Bon homophone : "Il ___ parti tôt."',opts:['a','à','as','â'],answer:0,exp:'"avait parti" marche → verbe avoir → "a"'},
+{q:'Bon homophone : "Je ne sais pas ___ il est allé."',opts:['ou','où','au','à'],answer:1,exp:'"Ou bien" ne marche pas ici → "où" (lieu)'},
+{q:'Suffixe "-able" dans "lisible" exprime ?',opts:['La qualité','La possibilité (qu\'on peut lire)','L\'action','La personne'],answer:1,exp:'-able/-ible = possibilité : lisible = qu\'on peut lire'},
+{q:'Niveau de langue de "Il a cassé sa pipe" (= il est mort) ?',opts:['Soutenu','Courant','Familier','Technique'],answer:2,exp:'Expression imagée populaire → familier'},
+]},
+]},
+
+// ══════════════════════════════════════════════
+// HISTOIRE
+// ══════════════════════════════════════════════
+{id:'hist',name:'Histoire',icon:'🏛️',color:'#f5a623',cards:[
+{id:'H01',title:'La 1ʳᵉ Guerre mondiale',sub:'1914-1918 · Causes · Tranchées · Bilan',
+content:`<h3>Causes</h3><ul><li>Rivalités + course aux armements entre grandes puissances</li><li>Triple Entente (Fr,RU,Russie) vs Triple Alliance (All.,A-H,Italie)</li><li>Nationalismes (pangermanisme, panslavisme)</li><li>Déclencheur : <b>assassinat de François-Ferdinand</b> à Sarajevo, 28 juin 1914</li></ul><h3>Le conflit</h3><ul><li>Guerre de mouvement (1914) → guerre de position dans les tranchées</li><li>Verdun et Somme (1916) : boucheries</li><li>Nouvelles armes : gaz, chars, avions, artillerie lourde</li><li>USA entrent : avril 1917 | Russie sort : révolution 1917</li></ul><h3>Fin et bilan</h3><ul><li>Armistice : <b>11 novembre 1918</b></li><li>Traité de Versailles (1919) : culpabilité allemande, réparations, perte de territoires</li><li>~18 millions de morts | Grippe espagnole 1918-1919</li></ul><div class="memo">🧠 28 juin 1914=assassinat. 11 nov 1918=armistice. Verdun=1916. USA=1917. SDN créée 1919.</div>`,
+qcm:[
+{q:'L\'assassinat de François-Ferdinand a eu lieu à ?',opts:['Belgrade','Vienne','Sarajevo','Paris'],answer:2,exp:'Sarajevo, 28 juin 1914 → déclenchement'},
+{q:'Les USA entrent en guerre en ?',opts:['1914','1916','1917','1918'],answer:2,exp:'Après la guerre sous-marine, USA déclarent la guerre en avril 1917'},
+{q:'L\'armistice est signé le ?',opts:['11 nov 1916','28 juin 1918','11 nov 1918','4 août 1914'],answer:2,exp:'11 novembre 1918 à 11h'},
+{q:'Le Traité de Versailles 1919 impose à l\'Allemagne de ?',opts:['Récupérer l\'Alsace-Lorraine','Payer des réparations + accepter sa culpabilité','Garder ses colonies','Rejoindre la SDN'],answer:1,exp:'Article 231 : culpabilité + réparations'},
+{q:'La bataille de Verdun date de ?',opts:['1914','1915','1916','1917'],answer:2,exp:'Verdun fév.-déc. 1916, ~300 000 morts'},
+{q:'Quelle organisation internationale est créée après la 1ère GM ?',opts:['ONU','OTAN','SDN (Société des Nations)','CEE'],answer:2,exp:'La SDN est créée en 1919 par le Traité de Versailles (ancêtre de l\'ONU)'},
+]},
+{id:'H02',title:'Les régimes totalitaires',sub:'Nazisme · Fascisme · Stalinisme · Années 30',
+content:`<h3>Points communs à tous</h3><ul><li>Parti unique + chef tout-puissant (Führer, Duce, Guide)</li><li>Culte de la personnalité + propagande massive</li><li>Police politique et terreur (Gestapo, NKVD, OVRA)</li><li>Censure, contrôle de l'information et de la jeunesse</li></ul><h3>Nazisme (Allemagne)</h3><p>Hitler chancelier <b>1933</b>. Racisme biologique, antisémitisme, espace vital. Lois de Nuremberg <b>1935</b>. Nuit de Cristal <b>nov. 1938</b>.</p><h3>Fascisme (Italie)</h3><p>Mussolini au pouvoir <b>1922</b>. Nationalisme, corporatisme, culte de l'État fort.</p><h3>Stalinisme (URSS)</h3><p>Collectivisation forcée → famines. <b>Goulag</b> (camps de travail). Grands Procès 1936-38.</p><div class="memo">🧠 Mussolini=1922, Hitler=1933. Goulag=URSS. Lois Nuremberg=1935. Nuit Cristal=1938. Différence : nazisme=racisme, stalinisme=lutte des classes.</div>`,
+qcm:[
+{q:'Hitler devient chancelier en ?',opts:['1929','1931','1933','1935'],answer:2,exp:'30 janvier 1933, puis Führer en 1934'},
+{q:'Le Goulag désigne ?',opts:['Police secrète nazie','Camps de travail forcé soviétiques','Milices fascistes','Centres de propagande'],answer:1,exp:'Goulag = camps de travail forcé URSS'},
+{q:'Les Lois de Nuremberg 1935 visaient à ?',opts:['Réarmer l\'Allemagne','Exclure les Juifs de la citoyenneté','Créer l\'Axe Rome-Berlin','Annexer l\'Autriche'],answer:1,exp:'Lois raciales privant les Juifs de leur nationalité'},
+{q:'Quel point commun à tous les totalitarismes ?',opts:['Même idéologie économique','Parti unique + chef tout-puissant','Rejet du nationalisme','Presse libre'],answer:1,exp:'Parti unique, chef charismatique, terreur et propagande'},
+{q:'La Nuit de Cristal (nov. 1938) est ?',opts:['Un défilé nazi','Un pogrom anti-juif','La signature d\'un traité','L\'annexion de l\'Autriche'],answer:1,exp:'9-10 nov. 1938 : commerces et synagogues juifs attaqués'},
+{q:'La collectivisation forcée en URSS a provoqué ?',opts:['Une grande prospérité','Des famines importantes','Le développement de l\'industrie privée','La démocratie'],answer:1,exp:'La collectivisation des terres sous Staline provoqua de terribles famines (ex: Holodomor en Ukraine)'},
+]},
+{id:'H03',title:'La 2ᵉ Guerre mondiale',sub:'1939-1945 · Shoah · Résistance · Bilan',
+content:`<h3>Déclenchement</h3><ul><li>1er sept. 1939 : invasion Pologne → Fr et UK déclarent la guerre</li><li>Juin 1940 : défaite France, armistice, Vichy (Pétain)</li><li><b>Appel du 18 juin 1940</b> : De Gaulle depuis Londres (BBC)</li></ul><h3>Extension mondiale</h3><ul><li>Barbarossa (juin 1941) : Hitler attaque l'URSS</li><li>Pearl Harbor (déc. 1941) → USA entrent</li></ul><h3>La Shoah</h3><p>Génocide des Juifs d'Europe : ~6 millions de victimes. "Solution finale" (conférence de Wannsee, 1942). Camps d'extermination (Auschwitz, Treblinka, Sobibor…).</p><h3>Résistance</h3><p>France libre (De Gaulle, Londres) + Résistance intérieure (Jean Moulin, CNR). Collaboration de Vichy (rafle du Vel d'Hiv, juil. 1942).</p><h3>Fin du conflit</h3><ul><li>Tournant : Stalingrad 1942-43</li><li>Débarquement Normandie <b>6 juin 1944</b></li><li>Capitulation allemande : <b>8 mai 1945</b></li><li>Hiroshima 6 août + Nagasaki 9 août → Japon capitule 2 sept. 1945</li></ul><div class="memo">🧠 18 juin 1940=De Gaulle. 6 juin 1944=D-Day. 8 mai 1945=Victoire Europe. Shoah=6 millions.</div>`,
+qcm:[
+{q:'L\'Appel du 18 juin 1940 est lancé par ?',opts:['Pétain depuis Vichy','De Gaulle depuis Londres','Churchill','Roosevelt'],answer:1,exp:'De Gaulle, BBC Londres'},
+{q:'Le D-Day (débarquement en Normandie) date du ?',opts:['8 mai 1944','6 juin 1944','6 juin 1945','11 nov. 1944'],answer:1,exp:'Opération Overlord, 6 juin 1944'},
+{q:'La Shoah désigne ?',opts:['Défaite française 1940','Occupation allemande','Génocide des Juifs d\'Europe','Résistance française'],answer:2,exp:'~6 millions de Juifs exterminés systématiquement'},
+{q:'L\'Allemagne capitule le ?',opts:['6 juin 1944','2 sept. 1945','8 mai 1945','11 nov. 1944'],answer:2,exp:'8 mai 1945 = Victoire en Europe'},
+{q:'La rafle du Vel d\'Hiv (juillet 1942) a été organisée par ?',opts:['Les Allemands seuls','La police française avec la complicité de Vichy','La Résistance','Les Américains'],answer:1,exp:'La police française a arrêté ~13 000 Juifs sous les ordres du gouvernement de Vichy'},
+{q:'Jean Moulin est connu pour avoir ?',opts:['Signé l\'armistice','Unifié les mouvements de résistance intérieure au nom de De Gaulle','Libéré Paris','Lancé le débarquement'],answer:1,exp:'Jean Moulin unifia la Résistance intérieure en créant le CNR (Conseil National de la Résistance) en 1943'},
+]},
+{id:'H04',title:'La Guerre froide',sub:'1947-1991 · Deux blocs · Crises · Fin',
+content:`<h3>Contexte</h3><p>USA (capitalisme libéral) vs URSS (communisme). Jamais de conflit direct = "guerre froide".</p><h3>Structuration des blocs</h3><ul><li>Ouest : Plan Marshall 1947, OTAN 1949</li><li>Est : COMECON 1949, Pacte de Varsovie 1955</li><li>Blocus Berlin 1948-49 + pont aérien</li></ul><h3>Crises majeures</h3><ul><li>Guerre de Corée 1950-53</li><li>Mur de Berlin : <b>1961</b></li><li>Crise missiles Cuba : <b>oct. 1962</b> (pic de tension)</li><li>Guerre du Vietnam 1955-75</li><li>Printemps de Prague 1968 (écrasé par URSS)</li></ul><h3>Fin</h3><ul><li>Gorbatchev : glasnost et perestroïka</li><li>Chute du Mur : <b>9 nov. 1989</b></li><li>Dissolution URSS : <b>25 déc. 1991</b></li></ul><div class="memo">🧠 1947→1991. Mur construit 1961, tombé 1989. Cuba 1962=pic tension. OTAN=Ouest, Varsovie=Est.</div>`,
+qcm:[
+{q:'Le Mur de Berlin est construit en ?',opts:['1947','1955','1961','1968'],answer:2,exp:'Nuit du 12-13 août 1961'},
+{q:'La crise des missiles de Cuba a lieu en ?',opts:['1956','1959','1962','1968'],answer:2,exp:'Octobre 1962 : 13 jours au bord du nucléaire'},
+{q:'Le Mur de Berlin tombe le ?',opts:['9 nov. 1989','25 déc. 1991','8 mai 1945','3 oct. 1990'],answer:0,exp:'9 novembre 1989'},
+{q:'L\'URSS se dissout en ?',opts:['1989','1990','1991','1992'],answer:2,exp:'25 décembre 1991'},
+{q:'La doctrine Truman (1947) consiste à ?',opts:['Envahir l\'URSS','Contenir le communisme (endiguement)','Abandonner l\'Europe','Réarmer l\'Allemagne'],answer:1,exp:'Containment : empêcher la propagation du communisme'},
+{q:'Glasnost et perestroïka sont des réformes lancées par ?',opts:['Staline','Khrouchtchev','Brejnev','Gorbatchev'],answer:3,exp:'Gorbatchev (à partir de 1985) : glasnost=transparence, perestroïka=restructuration'},
+]},
+{id:'H05',title:'Décolonisation & construction européenne',sub:'1945-1975 · CEE · UE · Institutions',
+content:`<h3>Décolonisation</h3><ul><li>Inde 1947 (Gandhi, non-violence)</li><li>Indochine : défaite Diên Biên Phu <b>1954</b> → accords Genève</li><li>Algérie <b>1954-1962</b> : guerre FLN → accords d'Évian</li><li>Afrique : décolonisation surtout pacifique années 1960</li><li>Conférence de Bandung <b>1955</b> : Tiers-Monde, non-alignés</li></ul><h3>Construction européenne</h3><ul><li>Déclaration Schuman : <b>9 mai 1950</b></li><li>CECA 1951 : 6 pays</li><li>Traité de Rome <b>1957</b> : CEE (Fr,RFA,Italie,Bel,PB,Lux)</li><li>Traité de Maastricht <b>1992</b> → UE</li><li>Euro billets : <b>2002</b> | Brexit 2020</li></ul><div class="memo">🧠 Inde=1947. Diên Biên Phu=1954. Algérie=1962. Rome=1957 (6 pays). Maastricht=1992. Euro=2002.</div>`,
+qcm:[
+{q:'Les accords d\'Évian (1962) mettent fin à ?',opts:['Guerre d\'Indochine','Guerre de Corée','Guerre d\'Algérie','Crise de Suez'],answer:2,exp:'Accords du 18 mars 1962 → indépendance Algérie'},
+{q:'Le Traité de Rome 1957 crée ?',opts:['L\'OTAN','La CEE','L\'Union Européenne','La zone euro'],answer:1,exp:'Communauté Économique Européenne entre 6 pays fondateurs'},
+{q:'L\'euro est introduit en billets/pièces en ?',opts:['1999','2000','2002','2004'],answer:2,exp:'1er janvier 2002'},
+{q:'La conférence de Bandung 1955 est associée à ?',opts:['L\'OTAN','L\'émergence du Tiers-Monde','Le Plan Marshall','L\'ONU'],answer:1,exp:'29 pays d\'Asie-Afrique → Tiers-Monde, non-alignés'},
+{q:'Combien de pays fondateurs compte la CEE ?',opts:['4','6','9','12'],answer:1,exp:'6 : France, RFA, Italie, Belgique, Pays-Bas, Luxembourg'},
+{q:'Le Brexit désigne ?',opts:['Entrée du RU dans l\'UE','Sortie du RU de l\'UE','Référendum français sur Maastricht','Adhésion RU à l\'euro'],answer:1,exp:'British Exit : RU quitte l\'UE, effectif 31 jan. 2020'},
+]},
+{id:'H06',title:'Ve République & EMC',sub:'1958 · Institutions · Droits fondamentaux · Laïcité',
+content:`<h3>Ve République</h3><ul><li>Constitution <b>4 oct. 1958</b> : régime semi-présidentiel</li><li>Président élu au SU direct depuis <b>1962</b></li><li>Parlement : Assemblée nationale (577 déput.) + Sénat (348)</li><li>Mai 68 : grèves étudiantes + grève générale (~10M)</li><li>Quinquennat : <b>2000</b></li></ul><h3>Textes fondateurs des droits</h3><ul><li>DDHC : <b>1789</b></li><li>DUDH (ONU) : <b>1948</b></li><li>Convention droits enfant : <b>1989</b></li></ul><h3>Valeurs de la République</h3><p>Liberté · Égalité · Fraternité · <b>Laïcité</b> (loi 1905 : séparation Églises/État)</p><h3>Séparation des pouvoirs (Montesquieu)</h3><p>Législatif (vote lois) · Exécutif (applique) · Judiciaire (fait respecter)</p><div class="memo">🧠 Ve Rép.=1958. SU direct=1962. Vote femmes=1944. Laïcité=1905. DDHC=1789. DUDH=1948.</div>`,
+qcm:[
+{q:'La Ve République est fondée en ?',opts:['1946','1954','1958','1962'],answer:2,exp:'Constitution du 4 oct. 1958'},
+{q:'La DDHC est adoptée en ?',opts:['1776','1789','1848','1905'],answer:1,exp:'26 août 1789 par l\'Assemblée nationale'},
+{q:'Le droit de vote des femmes en France date de ?',opts:['1919','1936','1944','1958'],answer:2,exp:'Ordonnance du 21 avril 1944'},
+{q:'La laïcité signifie ?',opts:['Religion obligatoire à l\'école','Séparation Églises et État','Religions interdites','État finance les cultes'],answer:1,exp:'Loi du 9 déc. 1905 : séparation des Églises et de l\'État'},
+{q:'Les 3 pouvoirs de Montesquieu sont ?',opts:['Fédéral,régional,local','Législatif,exécutif,judiciaire','Militaire,civil,religieux','National,européen,international'],answer:1,exp:'De l\'Esprit des Lois (1748)'},
+{q:'Le quinquennat est instauré en ?',opts:['1958','1981','2000','2002'],answer:2,exp:'Référendum de sept. 2000 → mandat de 5 ans (avant : 7 ans)'},
+]},
+]},
+
+// ══════════════════════════════════════════════
+// GÉOGRAPHIE
+// ══════════════════════════════════════════════
+{id:'geo',name:'Géographie',icon:'🌍',color:'#1dd1a1',cards:[
+{id:'G01',title:'La France : territoire & population',sub:'Hexagone · DROM · Population · Répartition',
+content:`<h3>Le territoire français</h3><ul><li>France métropolitaine : <b>~551 000 km²</b></li><li><b>5 DROM</b> : Guadeloupe, Martinique, Guyane, Réunion, Mayotte</li><li>COM : Polynésie française, Nouvelle-Calédonie, Saint-Martin…</li><li><b>2e ZEE mondiale</b> (zones économiques exclusives) grâce à l'outre-mer</li></ul><h3>Population et répartition</h3><ul><li><b>~68 millions</b> d'habitants</li><li>Île-de-France : ~20% de la population nationale</li><li>~80% de population urbaine (littoralisation, métropolisation)</li><li>Vieillissement de la population, solde migratoire positif</li></ul><h3>Organisation du territoire</h3><p>18 régions (13 en métropole + 5 DROM) | 101 départements | 36 000 communes</p><div class="memo">🧠 5 DROM = Guadeloupe, Martinique, Guyane, Réunion, Mayotte. ZEE France = 2e mondiale. IDF = 1ère région en population.</div>`,
+qcm:[
+{q:'La superficie de la France métropolitaine est d\'environ ?',opts:['270 000 km²','400 000 km²','551 000 km²','675 000 km²'],answer:2,exp:'~551 695 km²'},
+{q:'Quel est un DROM français ?',opts:['Polynésie française','Nouvelle-Calédonie','La Réunion','Saint-Barthélemy'],answer:2,exp:'Les 5 DROM : Guadeloupe, Martinique, Guyane, Réunion, Mayotte'},
+{q:'La région française la plus peuplée est ?',opts:['PACA','Auvergne-Rhône-Alpes','Île-de-France','Grand Est'],answer:2,exp:'IDF concentre ~12 millions d\'habitants (~18-20% de la pop.)'},
+{q:'La ZEE française est la ?',opts:['1ère mondiale','2e mondiale','5e mondiale','10e mondiale'],answer:1,exp:'Grâce à l\'outre-mer, la France a la 2e ZEE mondiale (~11 millions km²)'},
+{q:'Quel % de la population française vit en ville ?',opts:['50%','65%','80%','95%'],answer:2,exp:'Environ 80% de la population est urbaine (mouvement continu depuis les années 1950)'},
+{q:'Combien de régions compte la France ?',opts:['13','18','22','27'],answer:1,exp:'18 régions depuis la réforme de 2016 : 13 en métropole + 5 DROM'},
+]},
+{id:'G02',title:'La mondialisation',sub:'Flux · Acteurs · Triade · FMN · Inégalités',
+content:`<h3>Définition</h3><p>Processus d'intégration croissante des économies, sociétés et cultures à l'échelle mondiale.</p><h3>Facteurs</h3><ul><li>Révolution des transports (conteneurs, avions low-cost)</li><li>Révolution numérique (internet, télécommunications)</li><li>Libéralisation des échanges (OMC depuis 1995)</li></ul><h3>Acteurs</h3><ul><li><b>FMN</b> (Firmes MultiNationales) : Apple, Toyota, Total… acteurs principaux</li><li>États, ONG, organisations internationales</li></ul><h3>Pôles et flux</h3><ul><li>La <b>Triade</b> : Am. du Nord + Europe de l'Ouest + Asie orientale → 80% des échanges</li><li>Flux de marchandises (maritime ~80%), capitaux (finance), personnes (migrations, tourisme), informations</li><li>Pays émergents : Chine (1ère puissance commerciale), Inde, Brésil</li></ul><div class="memo">🧠 Triade=3 pôles dominants. FMN=firmes dans plusieurs pays. 80% commerce=maritime. OMC=régulation internationale.</div>`,
+qcm:[
+{q:'La "triade" désigne ?',opts:['USA+Chine+Inde','Europe+Am.Nord+Asie orientale','G7','BRICS'],answer:1,exp:'3 pôles dominants de l\'économie mondiale'},
+{q:'Quelle part du commerce mondial transite par voie maritime ?',opts:['40%','60%','80%','95%'],answer:2,exp:'~80% des marchandises → voie maritime (conteneurs)'},
+{q:'FMN signifie ?',opts:['Fonds Monétaire National','Firme MultiNationale','Flux Mondiaux Normalisés','Finance Mondiale Numérique'],answer:1,exp:'Entreprise avec filiales dans plusieurs pays'},
+{q:'L\'OMC régule ?',opts:['Les migrations internationales','Le commerce international','Le financement des pays pauvres','Le climat'],answer:1,exp:'Organisation Mondiale du Commerce (1995)'},
+{q:'Les BRICS regroupent ?',opts:['Les pays les plus pauvres','Les pays pétroliers','Brésil,Russie,Inde,Chine,Afrique du Sud','Les pays fondateurs de l\'ONU'],answer:2,exp:'BRICS = grands pays émergents contestant l\'ordre mondial'},
+{q:'Le port le plus important du commerce mondial est situé ?',opts:['À Rotterdam','À Los Angeles','En Asie (Shanghai, Singapour)','À New York'],answer:2,exp:'Les plus grands ports mondiaux sont asiatiques : Shanghai, Singapour, Rotterdam (1er européen)'},
+]},
+{id:'G03',title:'Inégalités de développement',sub:'IDH · PED · PMA · Pays émergents · Nord/Sud',
+content:`<h3>Indicateurs</h3><ul><li><b>PIB/habitant</b> : richesse produite par personne</li><li><b>IDH</b> : 3 critères = espérance de vie + éducation + revenu. De 0 à 1 (PNUD)</li></ul><h3>Catégories de pays</h3><ul><li><b>Pays développés</b> : IDH élevé (USA, Europe, Japon)</li><li><b>Pays émergents</b> : croissance rapide, IDH intermédiaire (Chine, Inde, Brésil)</li><li><b>PED</b> : Pays En Développement, IDH moyen</li><li><b>PMA</b> : Pays les Moins Avancés, IDH très faible, surtout Afrique subsaharienne</li></ul><h3>Nuances</h3><p>Nord/Sud ≠ frontière géographique. Inégalités aussi à l'intérieur des pays (ex: Chine : littoral riche vs intérieur pauvre). APD = aide publique au développement.</p><div class="memo">🧠 IDH = 3 critères. PMA = les plus pauvres (→Afrique). Pays émergents = croissance forte + inégalités internes. Norvège = IDH le + haut.</div>`,
+qcm:[
+{q:'L\'IDH mesure ?',opts:['Uniquement le PIB/hab','Espérance de vie + éducation + revenu','Bonheur subjectif','Croissance économique annuelle'],answer:1,exp:'IDH (1990, PNUD) : 3 critères combinés'},
+{q:'Les PMA sont principalement situés ?',opts:['En Amérique latine','En Asie du Sud-Est','En Afrique subsaharienne','En Europe de l\'Est'],answer:2,exp:'La majorité des 46 PMA sont en Afrique subsaharienne'},
+{q:'La Chine est classée comme ?',opts:['Pays développé','Pays émergent','PMA','Pays pétrolier'],answer:1,exp:'Chine = pays émergent : 2e puissance éco. mondiale mais IDH intermédiaire'},
+{q:'L\'APD désigne ?',opts:['Alliance des PED','Aide Publique au Développement','Agence de Protection Durable','Association des Pays Démocratiques'],answer:1,exp:'APD = aide financière des pays riches vers pays en développement'},
+{q:'IDH de 1 signifie ?',opts:['Développement inexistant','Développement humain maximal (théorique)','PIB nul','Espérance de vie de 100 ans'],answer:1,exp:'IDH de 0 à 1. Le plus haut est la Norvège (~0,96)'},
+{q:'Les inégalités de développement existent-elles à l\'intérieur des pays émergents ?',opts:['Non, ces pays sont homogènes','Oui, ex: Chine littoral riche vs intérieur pauvre','Seulement dans les PED','Seulement dans les PMA'],answer:1,exp:'Les pays émergents connaissent de fortes inégalités internes (ex: Chine : côte riche vs intérieur)'},
+]},
+{id:'G04',title:'Urbanisation & métropolisation mondiale',sub:'Mégapoles · Villes globales · Bidonvilles · Défis',
+content:`<h3>L'urbanisation mondiale</h3><ul><li>>57% de la population mondiale vit en ville (tendance à la hausse)</li><li>Urbanisation rapide dans les pays du Sud (Asie, Afrique)</li></ul><h3>Hiérarchie urbaine</h3><ul><li><b>Mégapole</b> : agglomération >10 millions d'hab (Tokyo, Delhi, Mumbai, Lagos, Shanghai)</li><li><b>Ville globale/mondiale</b> : influence planétaire en finance, culture, politique (NY, Londres, Tokyo, Paris = "villes alpha")</li></ul><h3>Les défis urbains</h3><ul><li><b>Bidonvilles</b> : ~1 milliard de personnes (favelas au Brésil, slums en Inde, townships en Afrique du Sud)</li><li>Étalement urbain, pollution, congestion</li><li><b>Ville durable</b> : transports en commun, espaces verts, densification</li></ul><div class="memo">🧠 Mégapole >10M. Tokyo=1ère (~37M). Bidonvilles=1 milliard. Favela=Brésil. Slum=Inde. Ville globale = influence mondiale.</div>`,
+qcm:[
+{q:'Quelle part de la pop. mondiale vit en ville aujourd\'hui ?',opts:['25%','40%','57%','75%'],answer:2,exp:'Environ 57% et en hausse continue'},
+{q:'Une mégapole = ville de ?',opts:['>1 million','>5 millions','>10 millions','>20 millions'],answer:2,exp:'Mégapole = agglomération dépassant 10 millions d\'habitants'},
+{q:'Quelle est la ville la plus peuplée au monde ?',opts:['New York','Paris','Mumbai','Tokyo'],answer:3,exp:'Tokyo = 1ère aire urbaine mondiale (~37-38 millions)'},
+{q:'Un bidonville est caractérisé par ?',opts:['Riches villas privées','Habitations précaires sans services de base','Zones industrielles','Quartiers historiques classés'],answer:1,exp:'Logements précaires, sans eau courante, électricité, égouts réguliers'},
+{q:'L\'étalement urbain désigne ?',opts:['Densification du centre-ville','Extension de la ville vers sa périphérie','Rénovation des quartiers anciens','Croissance de la pop. urbaine seule'],answer:1,exp:'Expansion des zones construites en périphérie, consommant espaces agricoles et naturels'},
+{q:'Les "favelas" sont des bidonvilles de quel pays ?',opts:['Inde','Afrique du Sud','Brésil','Mexique'],answer:2,exp:'Les favelas sont les bidonvilles brésiliens (Rio, São Paulo). Inde=slums, Afrique du Sud=townships'},
+]},
+{id:'G05',title:'Développement durable & ressources',sub:'Définition · Énergie · Climat · Biodiversité',
+content:`<h3>Développement durable</h3><p>Défini en <b>1987</b> (rapport Brundtland) : "répondre aux besoins du présent sans compromettre la capacité des générations futures à répondre aux leurs".</p><p><b>3 piliers</b> : économique · social · environnemental</p><h3>Ressources et énergie</h3><ul><li>Renouvelables : solaire, éolien, hydraulique, géothermie, biomasse</li><li>Non renouvelables : pétrole, gaz, charbon, uranium</li><li>Transition énergétique : passage vers les renouvelables</li></ul><h3>Changement climatique</h3><ul><li>Effet de serre renforcé par CO₂ → réchauffement global</li><li>Accords de Paris (COP21, <b>2015</b>) : limiter à +2°C (idéalement +1,5°C)</li><li>Conséquences : montée des eaux, événements extrêmes, migration climatique</li></ul><h3>Biodiversité</h3><p>Menaces : déforestation, pollution, urbanisation, espèces invasives, changement climatique</p><div class="memo">🧠 Brundtland=1987. 3 piliers. Accord Paris=2015 (COP21). CO₂→effet de serre→réchauffement. Renouvelables vs fossiles.</div>`,
+qcm:[
+{q:'Le concept de développement durable est défini en ?',opts:['1972','1980','1987','1992'],answer:2,exp:'Rapport Brundtland "Notre avenir à tous", 1987'},
+{q:'Les 3 piliers du DD sont ?',opts:['Éducation,santé,logement','Économique,social,environnemental','Agriculture,industrie,services','National,européen,mondial'],answer:1,exp:'Économique + Social + Environnemental'},
+{q:'L\'Accord de Paris (COP21, 2015) vise à ?',opts:['Stopper toutes émissions CO₂','Limiter réchauffement à +2°C','Interdire voitures thermiques','Planter 1 milliard d\'arbres'],answer:1,exp:'Limiter à +2°C, viser +1,5°C vs ère préindustrielle'},
+{q:'Quelle est une énergie renouvelable ?',opts:['Pétrole','Gaz naturel','Uranium','Énergie solaire'],answer:3,exp:'Solaire = inépuisable à l\'échelle humaine'},
+{q:'La déforestation principale se situe dans ?',opts:['Forêts boréales sibériennes','Forêts tempérées européennes','Forêts tropicales humides','Forêts méditerranéennes'],answer:2,exp:'Amazonie, bassin Congo, Bornéo : forêts tropicales les plus menacées'},
+{q:'La transition énergétique désigne ?',opts:['Le passage du bois au charbon','Le passage des fossiles vers les renouvelables','L\'augmentation de la consommation d\'énergie','La suppression de toute énergie'],answer:1,exp:'Transition = réduire les fossiles (CO₂) et développer les renouvelables (propres)'},
+]},
+{id:'G06',title:'L\'Union européenne et la France dans le monde',sub:'UE · Puissance française · Institutions mondiales',
+content:`<h3>L'Union Européenne</h3><ul><li>27 membres (après Brexit 2020), ~450 millions d'habitants</li><li>1ère puissance commerciale mondiale (exportations + importations)</li><li>Institutions : Parlement (Strasbourg), Commission (Bruxelles), BCE (Francfort)</li><li>Espace Schengen : libre circulation sans passeport</li></ul><h3>La France dans le monde</h3><ul><li>Membre permanent du Conseil de Sécurité de l'ONU (P5 avec USA, UK, Chine, Russie)</li><li>Puissance nucléaire, 2e armée de l'OTAN</li><li>Influence culturelle et linguistique mondiale (Francophonie)</li><li>Aide au développement, présence dans les organisations internationales</li></ul><h3>Organisations internationales clés</h3><p>ONU (1945) · FMI · Banque Mondiale · OMC · G7 · G20</p><div class="memo">🧠 UE=27 pays, ~450M habitants. France=P5 à l'ONU. Schengen=libre circulation. Siège ONU=New York.</div>`,
+qcm:[
+{q:'Combien de pays membres compte l\'UE aujourd\'hui ?',opts:['25','27','28','30'],answer:1,exp:'27 membres depuis le Brexit (sortie du Royaume-Uni en 2020)'},
+{q:'La France est membre permanent du ?',opts:['G7 uniquement','Conseil de Sécurité de l\'ONU','Conseil de l\'Europe seulement','Conseil Européen seulement'],answer:1,exp:'La France fait partie des 5 membres permanents (P5) du Conseil de Sécurité de l\'ONU'},
+{q:'L\'espace Schengen permet ?',opts:['Le commerce sans taxe','La libre circulation des personnes sans passeport','L\'euro dans tous les pays membres','La défense collective'],answer:1,exp:'Schengen (1985, en vigueur 1995) : libre circulation sans contrôle aux frontières'},
+{q:'Où siège le Parlement européen ?',opts:['Bruxelles','Strasbourg','Frankfurt','Luxembourg'],answer:1,exp:'Le Parlement européen siège à Strasbourg (avec des sessions à Bruxelles)'},
+{q:'L\'ONU a été créée en ?',opts:['1918','1939','1945','1947'],answer:2,exp:'L\'ONU (Organisation des Nations Unies) est fondée le 24 octobre 1945 après la 2ème GM'},
+{q:'La Francophonie regroupe ?',opts:['Seulement la France','Les pays où le français est langue officielle ou très parlée','Les pays européens','Les anciennes colonies françaises uniquement'],answer:1,exp:'La Francophonie = Organisation internationale des pays francophones (~88 États et gouvernements)'},
+]},
+{id:'G07',title:'Espaces et acteurs du développement',sub:'Agriculture · Industrie · Territoires · Aménagement',
+content:`<h3>Agriculture mondiale</h3><ul><li>Agriculture vivrière (subsistance) dans les PED vs agriculture commerciale (exportation) dans les pays riches</li><li>Révolution verte : augmentation des rendements (engrais, OGM, irrigation)</li><li>Enjeux : alimentation mondiale (~800M de personnes sous-alimentées), eau, pesticides</li></ul><h3>Industrie et désindustrialisation</h3><ul><li>Désindustrialisation des pays riches → délocalisations vers les pays à bas coûts (Chine, Bangladesh, Vietnam)</li><li>Industries de haute technologie restent dans les pays développés (Silicon Valley, Sophia Antipolis)</li></ul><h3>Aménagement du territoire</h3><ul><li>Déserts et hypercentres en France : diagonale du vide (du Nord-Est à l'Aquitaine)</li><li>Politiques d'aménagement : décentralisation, pôles de compétitivité</li></ul><div class="memo">🧠 Diagonale du vide = arc NE→SO de la France peu peuplé. Délocalisation = usines déplacées vers pays à bas salaires. Agriculture vivrière = pour manger. Agriculture commerciale = pour vendre.</div>`,
+qcm:[
+{q:'L\'agriculture vivrière est pratiquée principalement pour ?',opts:['L\'exportation','La nourriture de la famille/communauté locale','La spéculation financière','L\'industrie alimentaire'],answer:1,exp:'Agriculture vivrière = production destinée à nourrir les agriculteurs et leur communauté (PED surtout)'},
+{q:'La désindustrialisation des pays riches s\'accompagne généralement de ?',opts:['Augmentation des emplois industriels','Délocalisations vers pays à bas coûts','Développement de toutes les industries','Hausse des salaires industriels'],answer:1,exp:'Désindustrialisation = fermetures d\'usines, transferts de production vers pays moins chers'},
+{q:'La "diagonale du vide" en France désigne ?',opts:['Une autoroute','Un arc peu peuplé du Nord-Est au Sud-Ouest','La frontière avec l\'Espagne','La zone côtière Atlantique'],answer:1,exp:'Arc allant du Nord-Est (Ardennes) au Sud-Ouest (Landes) : zones peu denses, rurales'},
+{q:'Les pôles de compétitivité sont des ?',opts:['Zones agricoles intensives','Regroupements d\'entreprises, labos et universités sur un même territoire','Nouvelles villes construites','Zones franches fiscales'],answer:1,exp:'Pôles de compétitivité = clusters territoriaux associant entreprises, recherche et formation pour innover'},
+{q:'Environ combien de personnes souffrent de sous-alimentation dans le monde ?',opts:['~50 millions','~200 millions','~800 millions','~3 milliards'],answer:2,exp:'~820 millions de personnes souffrent de la faim dans le monde (FAO, données récentes)'},
+{q:'La Silicon Valley est connue pour concentrer ?',opts:['Des industries textiles','Des industries pétrolières','Des entreprises de haute technologie (informatique, numérique)','Des industries agroalimentaires'],answer:2,exp:'Silicon Valley (Californie) = pôle mondial des technologies numériques (Apple, Google, Meta…)'},
+]},
+]},
+
+// ══════════════════════════════════════════════
+// SVT
+// ══════════════════════════════════════════════
+{id:'svt',name:'SVT',icon:'🧬',color:'#26de81',cards:[
+{id:'SVT01',title:'La cellule, unité du vivant',sub:'⚠️ Fiche renforcée — organites & fonctions',
+content:`<h3>Procaryote vs Eucaryote — NE PAS CONFONDRE</h3><ul><li><b>Procaryote</b> (bactérie) : pas de noyau délimité, ADN libre dans le cytoplasme, pas de mitochondrie</li><li><b>Eucaryote</b> (animaux, végétaux, champignons) : noyau entouré d'une membrane nucléaire</li></ul><h3>Organites et leurs fonctions précises</h3><ul><li><b>Membrane plasmique</b> : sélectivement perméable, contrôle les échanges avec l'extérieur</li><li><b>Noyau</b> : contient l'ADN (information génétique), enveloppé de la membrane nucléaire</li><li><b>Cytoplasme</b> : gel intracellulaire où baignent les organites</li><li><b>Mitochondries</b> : respiration cellulaire → production d'ATP (énergie). Présentes dans TOUTES les cellules eucaryotes</li><li><b>Ribosomes</b> : synthèse des protéines (présents chez tous les êtres vivants)</li><li><b>REG</b> (réticulum endoplasmique granulaire) : transport des protéines</li></ul><h3>Spécificités végétales (les 3 à connaître)</h3><ul><li><b>Paroi cellulosique</b> : rigide, à l'extérieur de la membrane → forme de la cellule</li><li><b>Chloroplastes</b> : photosynthèse uniquement (pas dans les cellules animales !) contiennent la chlorophylle</li><li><b>Grande vacuole centrale</b> : réservoir d'eau et de nutriments, pression de turgescence</li></ul><h3>⚠️ Pièges fréquents</h3><ul><li>Les plantes ont DES mitochondries ET des chloroplastes (les deux !)</li><li>Les bactéries PEUVENT avoir des ribosomes mais PAS de mitochondries</li></ul><div class="memo">🧠 <b>Mémo :</b> Végétale = PAROI + CHLOROPLASTE + VACUOLE en plus. Mitochondrie = énergie (TOUTES les eucaryotes). Chloroplaste = photosynthèse (végétaux seulement).</div>`,
+qcm:[
+{q:'Différence principale procaryote/eucaryote ?',opts:['La taille seulement','Présence d\'un noyau délimité','Présence de mitochondries','Capacité à se diviser'],answer:1,exp:'Eucaryote = noyau entouré d\'une membrane. Procaryote = ADN libre'},
+{q:'La photosynthèse se déroule dans ?',opts:['Le noyau','Les mitochondries','Les chloroplastes','La vacuole'],answer:2,exp:'Chloroplastes (contenant la chlorophylle) = siège exclusif de la photosynthèse'},
+{q:'Rôle des mitochondries ?',opts:['Photosynthèse','Synthèse des protéines','Respiration cellulaire → production d\'ATP','Stockage de l\'ADN'],answer:2,exp:'Mitochondries → respiration → ATP (énergie). Présentes dans TOUTES les cellules eucaryotes'},
+{q:'Structure présente dans cellule végétale MAIS PAS animale ?',opts:['Membrane plasmique','Ribosomes','Noyau','Paroi cellulosique'],answer:3,exp:'Paroi cellulosique + chloroplastes + grande vacuole = UNIQUEMENT chez les végétaux'},
+{q:'Les plantes possèdent-elles des mitochondries ?',opts:['Non, seulement des chloroplastes','Oui, les deux (mitochondries ET chloroplastes)','Seulement dans les feuilles','Non, elles n\'ont pas besoin d\'énergie'],answer:1,exp:'Les cellules végétales ont TOUTES les structures des eucaryotes + en plus les chloroplastes et la paroi'},
+{q:'Le réticulum endoplasmique granulaire sert à ?',opts:['La photosynthèse','La respiration cellulaire','Le transport et la maturation des protéines','La division cellulaire'],answer:2,exp:'Le REG est couvert de ribosomes → synthèse et transport des protéines vers l\'extérieur ou d\'autres organites'},
+]},
+{id:'SVT02',title:'Génétique & hérédité',sub:'ADN · Chromosomes · Allèles · Dominant/Récessif',
+content:`<h3>Structure de l'information génétique</h3><ul><li><b>ADN</b> : double hélice, paires de bases A-T et C-G</li><li><b>Gène</b> : séquence d'ADN codant une protéine (information héréditaire)</li><li><b>Chromosome</b> : molécule d'ADN condensée (visible lors de la division)</li></ul><h3>Chromosomes humains</h3><ul><li>Cellule somatique : <b>46 chromosomes</b> (23 paires)</li><li>Paires 1-22 : autosomes | Paire 23 : sexuels (XX=femme, XY=homme)</li><li>Gamètes (ovule, spermatozoïde) : <b>23 chromosomes</b> (haploïdes, après méiose)</li></ul><h3>Allèles, dominant, récessif</h3><ul><li><b>Allèle</b> : version d'un gène</li><li><b>Dominant</b> (A) : s'exprime même à 1 exemplaire (hétérozygote Aa)</li><li><b>Récessif</b> (a) : s'exprime seulement si homozygote (aa)</li><li>Génotype → phénotype</li></ul><div class="memo">🧠 Cellule=46 chr. Gamète=23 chr. XX=femme, XY=homme. Dominant=majuscule A, récessif=minuscule a. Aa → phénotype A (dominant).</div>`,
+qcm:[
+{q:'Combien de chromosomes dans une cellule humaine normale ?',opts:['23','44','46','48'],answer:2,exp:'46 chromosomes en 23 paires'},
+{q:'Chromosomes sexuels chez la femme ?',opts:['XY','YY','XX','X seulement'],answer:2,exp:'Femme=XX, Homme=XY'},
+{q:'Un allèle dominant ?',opts:['Ne s\'exprime jamais','S\'exprime seulement en double','S\'exprime même en un seul exemplaire','Cause toujours une maladie'],answer:2,exp:'Dominant : s\'exprime en Aa (hétérozygote). Récessif : s\'exprime seulement en aa.'},
+{q:'La méiose produit des cellules avec ?',opts:['46 chromosomes','23 chromosomes','92 chromosomes','12 chromosomes'],answer:1,exp:'Méiose = division réductionnelle → gamètes à 23 chromosomes (haploïdes)'},
+{q:'Génotype Aa avec A dominant → phénotype ?',opts:['Phénotype a (récessif)','Phénotype A (dominant)','Mélange des deux','Ni l\'un ni l\'autre'],answer:1,exp:'En présence d\'un allèle dominant A, le phénotype dominant s\'exprime toujours'},
+{q:'Une mutation est ?',opts:['Toujours mortelle','Une modification de la séquence ADN','Un chromosome en trop','Uniquement héréditaire'],answer:1,exp:'Une mutation = modification de la séquence d\'ADN. Peut être neutre, bénéfique ou néfaste, et peut être héréditaire si dans les gamètes'},
+]},
+{id:'SVT03',title:'Évolution des êtres vivants',sub:'Darwin · Sélection naturelle · Preuves · Spéciation',
+content:`<h3>Théorie de Darwin (1859)</h3><p><i>L\'Origine des espèces</i> : les espèces descendent d'ancêtres communs et évoluent par <b>sélection naturelle</b>.</p><h3>Mécanisme de la sélection naturelle</h3><ol><li>Variations héritables dans la population (mutations, recombinaisons)</li><li>Certaines variations augmentent les chances de survie et reproduction</li><li>Ces individus se reproduisent davantage → transmission de l'allèle avantageux</li><li>Fréquence de l'allèle augmente dans la population au fil des générations</li></ol><h3>Preuves de l'évolution</h3><ul><li><b>Fossiles</b> : formes intermédiaires, espèces disparues</li><li><b>Homologies de structure</b> : même plan de base → ancêtre commun (aile d'oiseau = nageoire de baleine = main humaine)</li><li><b>Séquences ADN</b> : similitudes entre espèces proches (98% humain/chimpanzé)</li></ul><div class="memo">🧠 Darwin 1859. Sélection naturelle = les mieux adaptés se reproduisent plus. Fossiles + homologies + ADN = 3 types de preuves. Spéciation = isolement → nouvelle espèce.</div>`,
+qcm:[
+{q:'L\'évolution par sélection naturelle est proposée par ?',opts:['Mendel','Lamarck','Darwin','Pasteur'],answer:2,exp:'Darwin, "De l\'origine des espèces", 1859'},
+{q:'La sélection naturelle signifie ?',opts:['Humains sélectionnent les animaux','Les mieux adaptés survivent et se reproduisent davantage','Toutes les mutations sont éliminées','Les espèces ne changent jamais'],answer:1,exp:'Les individus portant des variations avantageuses transmettent plus leurs allèles'},
+{q:'Les fossiles servent à ?',opts:['Démontrer que les espèces ne changent pas','Prouver l\'évolution et reconstituer l\'histoire du vivant','Montrer que Darwin avait tort','Expliquer les mutations génétiques'],answer:1,exp:'Fossiles = archives de la vie passée, montrent des formes intermédiaires'},
+{q:'L\'homologie de structure (membres antérieurs vertébrés) prouve ?',opts:['Pas de lien entre espèces','Un ancêtre commun à tous les vertébrés','Que la sélection n\'existe pas','Que les espèces ont toujours existé'],answer:1,exp:'Même plan de base → ancêtre commun malgré des fonctions différentes'},
+{q:'Similitudes ADN humain/chimpanzé = ?',opts:['~50%','~75%','~98%','~100%'],answer:2,exp:'~98% de l\'ADN est commun entre humain et chimpanzé → ancêtre commun récent'},
+{q:'La spéciation est ?',opts:['Disparition d\'une espèce','Formation de nouvelles espèces par isolement','Une mutation létale','Sélection artificielle'],answer:1,exp:'Spéciation : des populations isolées accumulent des différences → ne peuvent plus se reproduire ensemble'},
+]},
+{id:'SVT04',title:'Corps humain : digestion, respiration & circulation',sub:'⚠️ Fiche renforcée — fonctions & organes',
+content:`<h3>Appareil digestif</h3><p>Bouche → œsophage → estomac → intestin grêle → côlon → rectum</p><ul><li>Digestion mécanique (mastication) + chimique (enzymes)</li><li><b>Absorption</b> : nutriments passent dans le sang au niveau de l'intestin grêle (villosités)</li><li>Foie : métabolise les nutriments absorbés | Pancréas : produit des enzymes ET l'insuline</li></ul><h3>Appareil respiratoire</h3><p>Nez → trachée → bronches → bronchioles → alvéoles pulmonaires</p><ul><li><b>Échanges gazeux</b> dans les alvéoles : O₂ → sang, CO₂ → air</li><li>Diaphragme : muscle qui permet l'inspiration/expiration</li></ul><h3>Appareil circulatoire</h3><ul><li>Cœur : 4 cavités (2 oreillettes + 2 ventricules)</li><li><b>Artères</b> : partent DU cœur | <b>Veines</b> : arrivent AU cœur</li><li><b>Double circulation</b> : pulmonaire (cœur↔poumons) + systémique (cœur↔corps)</li><li>Glycémie normale : 1g/L. <b>Insuline</b> (pancréas) → baisse glycémie. <b>Glucagon</b> → hausse</li></ul><h3>⚠️ Pièges fréquents</h3><ul><li>Artère pulmonaire transporte du sang PAUVRE en O₂ (vers les poumons) — exception !</li><li>Le pancréas a 2 fonctions : enzymes digestives ET hormones (insuline, glucagon)</li></ul><div class="memo">🧠 Absorption=intestin grêle. Échanges gazeux=alvéoles. Artère PART du cœur. Insuline BAISSE glycémie. Glucagon HAUSSE glycémie.</div>`,
+qcm:[
+{q:'Où se produit principalement l\'absorption des nutriments ?',opts:['L\'estomac','Le côlon','L\'intestin grêle','La bouche'],answer:2,exp:'L\'intestin grêle et ses villosités absorbent les nutriments vers le sang'},
+{q:'Échanges gazeux pulmonaires dans ?',opts:['La trachée','Les bronches','Les alvéoles','La plèvre'],answer:2,exp:'Alvéoles : O₂→sang, CO₂→air. Surface énorme (~70m²)'},
+{q:'L\'insuline ?',opts:['Fait monter la glycémie','Fait baisser la glycémie','Est produite par l\'estomac','Transporte l\'O₂'],answer:1,exp:'L\'insuline (pancréas) fait entrer le glucose dans les cellules → baisse glycémie'},
+{q:'Les artères transportent le sang ?',opts:['Toujours riche en O₂','En partant du cœur','En arrivant au cœur','Pauvre en O₂ seulement'],answer:1,exp:'Artères = sang quittant le cœur (vers les organes)'},
+{q:'L\'artère pulmonaire transporte du sang ?',opts:['Riche en O₂ vers les poumons','Pauvre en O₂ vers les poumons','Riche en O₂ vers le corps','Pauvre en O₂ vers le corps'],answer:1,exp:'Exception : l\'artère pulmonaire transporte du sang pauvre en O₂ du cœur vers les poumons pour l\'oxygéner'},
+{q:'La digestion des protéines commence dans ?',opts:['La bouche','L\'œsophage','L\'estomac','L\'intestin grêle'],answer:2,exp:'La pepsine (enzyme gastrique) commence la digestion des protéines dans l\'estomac (milieu acide)'},
+]},
+{id:'SVT05',title:'Immunité et défenses du corps',sub:'Barrières · Phagocytose · Anticorps · Vaccin vs Sérum',
+content:`<h3>3 lignes de défense</h3><ul><li><b>1ère</b> : barrières physiques (peau, muqueuses, larmes, mucus)</li><li><b>2ème</b> : réaction inflammatoire non spécifique → <b>phagocytose</b> (macrophages et neutrophiles engloutissent les agents pathogènes)</li><li><b>3ème</b> : immunité spécifique (adaptative)<br>→ <b>Lymphocytes B</b> → plasmocytes → <b>anticorps</b> (spécifiques à l'antigène)<br>→ <b>Lymphocytes T cytotoxiques</b> → détruisent les cellules infectées<br>→ <b>Mémoire immunitaire</b> : 2e contact → réponse + rapide et + forte</li></ul><h3>Vaccination vs sérothérapie</h3><ul><li><b>Vaccin</b> : injection d'antigènes inoffensifs → stimule la mémoire immunitaire → protection longue durée</li><li><b>Sérum</b> : injection d'anticorps prêts → protection immédiate mais SANS mémoire → courte durée</li></ul><div class="memo">🧠 Anticorps=lymphocyte B. Tueuses=lymphocyte T. Vaccin=mémoire (long terme). Sérum=anticorps prêts (court terme, pas de mémoire).</div>`,
+qcm:[
+{q:'La phagocytose est effectuée par ?',opts:['Lymphocytes B','Lymphocytes T','Macrophages et neutrophiles','Plaquettes'],answer:2,exp:'Phagocytes (macrophages, neutrophiles) = ingèrent et détruisent les pathogènes'},
+{q:'Les anticorps sont produits par ?',opts:['Phagocytes','Lymphocytes B','Lymphocytes T','Globules rouges'],answer:1,exp:'Lymphocytes B → plasmocytes → anticorps spécifiques'},
+{q:'La vaccination repose sur ?',opts:['La phagocytose immédiate','La mémoire immunitaire','La production de sérum','Des anticorps prêts'],answer:1,exp:'Vaccin = antigènes inoffensifs → mémoire → réponse rapide lors d\'une vraie infection'},
+{q:'Différence vaccin/sérum ?',opts:['Aucune','Vaccin guérit, sérum prévient','Vaccin=mémoire durable ; sérum=anticorps prêts (court terme)','Sérum plus efficace'],answer:2,exp:'Vaccin = prévention long terme (mémoire). Sérum = urgence court terme (pas de mémoire)'},
+{q:'Un antigène est ?',opts:['Une cellule immunitaire','Un antibiotique','Molécule étrangère déclenchant une réponse immunitaire','Un vaccin'],answer:2,exp:'Antigène = substance reconnue comme étrangère → production d\'anticorps spécifiques'},
+{q:'Lors d\'un 2ème contact avec un agent pathogène déjà rencontré, la réponse immunitaire est ?',opts:['Identique à la 1ère fois','Plus lente et moins efficace','Plus rapide et plus intense (mémoire)','Absente'],answer:2,exp:'La mémoire immunitaire permet une réponse 2ndaire plus rapide et plus forte que la réponse primaire'},
+]},
+{id:'SVT06',title:'Écosystèmes & biodiversité',sub:'Chaînes alimentaires · Biocénose · Menaces · Services',
+content:`<h3>L'écosystème</h3><p><b>Biocénose</b> (ensemble des vivants) + <b>Biotope</b> (milieu physique) + leurs interactions</p><h3>Chaînes et réseaux alimentaires</h3><ul><li><b>Producteurs</b> : végétaux (photosynthèse, autotrophes)</li><li><b>Consommateurs I</b> : herbivores</li><li><b>Consommateurs II</b> : carnivores mangeant des herbivores</li><li><b>Décomposeurs</b> : champignons, bactéries → recyclent la matière organique morte en sels minéraux</li></ul><h3>Biodiversité</h3><ul><li>3 niveaux : diversité génétique, des espèces, des écosystèmes</li><li>Menaces : déforestation, pollution, surexploitation, changement climatique, espèces invasives</li><li>Services écosystémiques : pollinisation (abeilles), épuration de l'eau, régulation CO₂</li></ul><div class="memo">🧠 Producteurs=végétaux. Décomposeurs=recyclent tout. Abeilles=pollinisateurs essentiels. Perte d\'un maillon → déséquilibre en cascade.</div>`,
+qcm:[
+{q:'Un écosystème comprend ?',opts:['Animaux seulement','Végétaux seulement','Biocénose + biotope','Sol uniquement'],answer:2,exp:'Biocénose (vivants) + biotope (milieu abiotique) + interactions'},
+{q:'Les plantes sont les ? dans une chaîne alimentaire',opts:['Consommateurs primaires','Décomposeurs','Producteurs (autotrophes)','Consommateurs secondaires'],answer:2,exp:'Végétaux → production par photosynthèse = producteurs primaires'},
+{q:'Rôle des décomposeurs ?',opts:['Manger les herbivores','Faire la photosynthèse','Décomposer matière morte → sels minéraux réutilisables','Réguler les prédateurs'],answer:2,exp:'Champignons et bactéries décomposent → nutriments recyclés pour les plantes'},
+{q:'Principale menace de la biodiversité ?',opts:['Tourisme durable','Déforestation, pollution, changement climatique','Création de réserves naturelles','Reboisement'],answer:1,exp:'Destruction des habitats, pollution, surexploitation, espèces invasives'},
+{q:'La pollinisation par insectes est un exemple de ?',opts:['Chaîne alimentaire','Service écosystémique','Compétition','Décomposition'],answer:1,exp:'Service écosystémique : abeilles pollinisent ~75% des plantes cultivées'},
+{q:'Si une espèce disparaît dans un réseau trophique, cela provoque ?',opts:['Aucun effet','Un déséquilibre pouvant affecter l\'ensemble du réseau','Uniquement l\'extinction des prédateurs directs','Une amélioration de la biodiversité'],answer:1,exp:'Disparition d\'un maillon → cascade : surpopulation des proies, raréfaction des prédateurs = déséquilibre global'},
+]},
+{id:'SVT07',title:'Tectonique des plaques',sub:'Structure Terre · Mouvements · Volcans · Séismes',
+content:`<h3>Structure interne de la Terre</h3><ul><li><b>Croûte terrestre</b> : continentale (épaisse ~35km, légère) ou océanique (mince ~7km, dense)</li><li><b>Manteau</b> : solide mais déformable (convection thermique → moteur des plaques)</li><li><b>Noyau</b> : externe liquide (alliage Fe-Ni) → champ magnétique ; interne solide</li></ul><h3>Mouvements des plaques (~12 grandes plaques)</h3><ul><li><b>Divergence</b> (dorsales) : plaques s'écartent → création croûte océanique (rift)</li><li><b>Subduction</b> : plaque océanique (dense) plonge sous une autre → fosses, volcans, séismes</li><li><b>Collision</b> : deux croûtes continentales → chaînes de montagnes (Himalaya=Inde vs Eurasie)</li><li><b>Coulissage</b> : plaques glissent latéralement (faille de San Andreas)</li></ul><div class="memo">🧠 Dorsale=création. Subduction=enfoncement+volcans+séismes. Collision=montagnes. Himalaya=Inde vs Eurasie. Vitesse=quelques cm/an.</div>`,
+qcm:[
+{q:'Croûte océanique vs continentale ?',opts:['Plus épaisse et plus légère','Plus mince et plus dense','Identique','Plus épaisse et plus dense'],answer:1,exp:'Croûte océanique ~7km = fine et dense. Continentale ~35km = épaisse et légère'},
+{q:'La subduction se produit quand ?',opts:['2 plaques continentales entrent en collision','Plaque océanique plonge sous une autre','Une dorsale se forme','Un continent se divise'],answer:1,exp:'La plaque océanique (plus dense) plonge → fosses, volcanisme, séismes'},
+{q:'Les dorsales océaniques sont des zones de ?',opts:['Destruction de croûte','Collision','Création de croûte océanique (divergence)','Subduction'],answer:2,exp:'Dorsales = zones de divergence → magma remonte → nouvelle croûte océanique'},
+{q:'L\'Himalaya s\'est formé par ?',opts:['Subduction','Divergence','Collision Inde/Eurasie','Éruption volcanique'],answer:2,exp:'Collision des plaques indienne et eurasiatique → soulèvement de l\'Himalaya'},
+{q:'Séismes et volcans se situent principalement ?',opts:['Au centre des plaques','Aux limites des plaques','Dans les océans uniquement','Aux pôles'],answer:1,exp:'Séismes et volcans = aux limites des plaques (subduction, dorsales, failles)'},
+{q:'Quel est le moteur du déplacement des plaques ?',opts:['Le vent','La rotation de la Terre','La convection thermique dans le manteau','Les marées'],answer:2,exp:'La convection dans le manteau (matériaux chauds montent, froids descendent) entraîne les plaques'},
+]},
+{id:'SVT08',title:'Photosynthèse & respiration cellulaire',sub:'Équations · Échanges · Chlorophylle · Bilan',
+content:`<h3>Photosynthèse</h3><p>Lieu : <b>chloroplastes</b> (contenant la chlorophylle).<br>Équation : <b>6CO₂ + 6H₂O + lumière → C₆H₁₂O₆ + 6O₂</b><br>Absorbe CO₂ et H₂O, rejette O₂ et fabrique du glucose (matière organique).<br>Condition : nécessite la <b>lumière</b> (et la chlorophylle pour la capter).</p><h3>Respiration cellulaire</h3><p>Lieu : <b>mitochondries</b>. Réalisée par TOUS les êtres vivants.<br>Équation : <b>C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ATP (énergie)</b><br>Absorbe O₂ et glucose, rejette CO₂ et H₂O, produit de l'énergie (ATP).</p><h3>Bilan pour les plantes</h3><ul><li>De jour : photosynthèse > respiration → plante PRODUIT O₂ et matière organique</li><li>De nuit : photosynthèse = 0 → plante CONSOMME O₂ (respire seulement)</li></ul><div class="memo">🧠 Photo. → chloroplastes → CO₂+H₂O → glucose+O₂ (lumière). Respiration → mitochondries → glucose+O₂ → CO₂+H₂O+énergie. De nuit = plante consomme O₂.</div>`,
+qcm:[
+{q:'La photosynthèse a lieu dans ?',opts:['Les mitochondries','Le noyau','Les chloroplastes','La vacuole'],answer:2,exp:'Les chloroplastes (contenant la chlorophylle) = siège de la photosynthèse'},
+{q:'Lors de la photosynthèse, les plantes absorbent ?',opts:['O₂ et rejettent CO₂','CO₂ et H₂O et rejettent O₂','Uniquement de l\'eau','Aucun gaz'],answer:1,exp:'Photosynthèse : CO₂ absorbé + H₂O + lumière → glucose + O₂ rejeté'},
+{q:'La respiration cellulaire produit ?',opts:['Du glucose et de l\'O₂','ATP (énergie), CO₂ et H₂O','Seulement du CO₂','De la chlorophylle'],answer:1,exp:'Respiration : glucose + O₂ → ATP + CO₂ + H₂O'},
+{q:'De nuit, les plantes ?',opts:['Seulement photosynhétisent','Seulement respirent (consomment O₂)','Ne font rien','Produisent plus d\'O₂'],answer:1,exp:'Sans lumière : photosynthèse = 0. La plante respire seulement → consomme O₂, rejette CO₂'},
+{q:'Quel pigment capte la lumière pour la photosynthèse ?',opts:['La mélanine','La carotène seule','La chlorophylle','L\'hémoglobine'],answer:2,exp:'La chlorophylle (verte) absorbe les longueurs d\'onde rouge et bleue'},
+{q:'La photosynthèse et la respiration cellulaire ont-elles des bilans opposés ?',opts:['Non, elles font la même chose','Oui, elles sont inverses l\'une de l\'autre','Seulement partiellement','Elles ne sont pas liées'],answer:1,exp:'Photo. : CO₂+H₂O → glucose+O₂. Respiration : glucose+O₂ → CO₂+H₂O. Équations inverses !'},
+]},
+]},
+
+// ══════════════════════════════════════════════
+// PHYSIQUE-CHIMIE
+// ══════════════════════════════════════════════
+{id:'pc',name:'Physique-Chimie',icon:'⚗️',color:'#54a0ff',cards:[
+{id:'PC01',title:'Électricité : circuits',sub:'⚠️ Fiche renforcée — Loi d\'Ohm · Série · Parallèle',
+content:`<h3>Grandeurs électriques</h3><ul><li><b>Tension U</b> (Volts) → voltmètre en <b>dérivation</b></li><li><b>Intensité I</b> (Ampères) → ampèremètre en <b>série</b></li><li><b>Résistance R</b> (Ohms Ω)</li></ul><h3>Loi d'Ohm</h3><p><b>U = R × I</b> → R = U/I → I = U/R</p><h3>Circuits en série</h3><ul><li>I identique partout : I₁ = I₂ = I</li><li>Tensions s'additionnent : U = U₁ + U₂</li><li>Résistances s'additionnent : Req = R₁ + R₂</li></ul><h3>Circuits en dérivation (parallèle)</h3><ul><li>Tension identique : U₁ = U₂ = U</li><li>Intensités s'additionnent : I = I₁ + I₂</li><li>1/Req = 1/R₁ + 1/R₂ (toujours inférieure à la plus petite R)</li></ul><h3>⚠️ Pièges fréquents</h3><ul><li>En parallèle : Req est PLUS PETITE que chaque résistance !</li><li>Voltmètre en dérivation = ne gêne pas le circuit</li><li>Ampèremètre en série = doit être traversé par le courant</li></ul><div class="memo">🧠 <b>Série :</b> I constant, U s'additionne. <b>Dérivation :</b> U constant, I s'additionne. Loi Ohm : U=RI. Voltmètre=dérivation. Ampèremètre=série.</div>`,
+qcm:[
+{q:'U=12V, R=4Ω → I = ?',opts:['3A','48A','0,33A','8A'],answer:0,exp:'I=U/R=12/4=3A'},
+{q:'En circuit série, l\'intensité est ?',opts:['Différente pour chaque dipôle','La même partout','Nulle','Proportionnelle à la résistance'],answer:1,exp:'En série : I identique dans tous les dipôles'},
+{q:'En circuit parallèle, la tension est ?',opts:['Différente pour chaque branche','La même pour toutes les branches','Nulle','La somme des tensions'],answer:1,exp:'En dérivation : U identique aux bornes de chaque branche'},
+{q:'Pour mesurer une tension, on utilise ?',opts:['Ampèremètre en série','Voltmètre en dérivation','Ohmmètre en série','Multimètre en série'],answer:1,exp:'Voltmètre = en dérivation (parallèle) aux bornes de ce qu\'on mesure'},
+{q:'R1=3Ω et R2=6Ω en dérivation → Req = ?',opts:['9Ω','2Ω','18Ω','0,5Ω'],answer:1,exp:'1/Req=1/3+1/6=2/6+1/6=3/6 → Req=2Ω. Plus petite que R1 et R2 !'},
+{q:'R1=4Ω et R2=6Ω en série, U=20V → I = ?',opts:['2A','5A','3,3A','1,25A'],answer:0,exp:'Req=4+6=10Ω ; I=U/Req=20/10=2A'},
+]},
+{id:'PC02',title:'Forces et mouvement',sub:'Vecteur force · Poids · Newton · Énergie',
+content:`<h3>La force — grandeur vectorielle</h3><ul><li>Caractérisée par : point d'application, direction, sens, valeur (Newtons, N)</li><li><b>Poids</b> : P = m × g (g=10 N/kg sur Terre ; 1,6 N/kg sur Lune)</li><li><b>Réaction du support (normale)</b> : perpendiculaire à la surface de contact</li></ul><h3>Lois de Newton</h3><ul><li><b>1ère (inertie)</b> : ΣF = 0 → repos ou MRU (mouvement rectiligne uniforme)</li><li><b>2ème</b> : ΣF = m × a (somme des forces = masse × accélération)</li><li><b>3ème (action-réaction)</b> : forces mutuelles égales et opposées</li></ul><h3>Travail et énergie</h3><ul><li>W = F × d × cos(θ) en Joules</li><li>Puissance P = E/t (Watts = J/s)</li></ul><div class="memo">🧠 P=mg. ΣF=0 → repos ou MRU. ΣF=ma. Action-réaction=égales et opposées. Poids≠masse (poids dépend de g).</div>`,
+qcm:[
+{q:'Poids d\'un objet de 5 kg sur Terre (g=10) ?',opts:['5N','50N','500N','0,5N'],answer:1,exp:'P=m×g=5×10=50N'},
+{q:'Si ΣF = 0, l\'objet est ?',opts:['Forcément à l\'arrêt','En accélération','En repos ou MRU (1ère loi Newton)','En chute libre'],answer:2,exp:'ΣF=0 → repos ou mouvement rectiligne uniforme'},
+{q:'ΣF = m × a : c\'est la ?',opts:['1ère loi de Newton','2ème loi de Newton','3ème loi de Newton','Loi d\'Ohm'],answer:1,exp:'2ème loi de Newton : la résultante des forces = masse × accélération'},
+{q:'La 3ème loi de Newton dit que ?',opts:['Tout objet attire les autres','Les forces action-réaction sont égales et opposées','F=ma','Rien ne se crée'],answer:1,exp:'Si A exerce F sur B, B exerce −F (même norme, sens opposé) sur A'},
+{q:'Poids sur la Lune d\'un objet de 10 kg (g=1,6 N/kg) ?',opts:['10N','16N','100N','6,25N'],answer:1,exp:'P=10×1,6=16N (masse=10kg partout, poids varie selon g)'},
+{q:'Un objet en chute libre (sans frottement) a ?',opts:['ΣF=0','Une vitesse constante','Une accélération constante g','Une force nulle'],answer:2,exp:'En chute libre : seule la pesanteur agit → accélération constante = g (10 m/s² sur Terre)'},
+]},
+{id:'PC03',title:'Optique et lumière',sub:'Réflexion · Réfraction · Lentilles · Spectre',
+content:`<h3>Propriétés de la lumière</h3><ul><li>Propagation rectiligne dans un milieu homogène</li><li>Vitesse dans le vide : <b>c = 3×10⁸ m/s</b></li><li>Lumière blanche = mélange de toutes les couleurs du spectre visible (ROYGBIV)</li></ul><h3>Réflexion</h3><p>Angle d'incidence = angle de réflexion (par rapport à la normale)</p><h3>Réfraction — loi de Snell-Descartes</h3><p>n₁ sin(i₁) = n₂ sin(i₂)<br>Milieu plus dense → rayon se <b>rapproche</b> de la normale</p><h3>Lentilles convergentes (f'>0)</h3><ul><li>Objet au-delà de 2f' → image réelle plus petite</li><li>Entre f' et 2f' → image réelle agrandie</li><li>Entre O et f' → image virtuelle agrandie (<b>loupe</b>)</li></ul><div class="memo">🧠 c=3×10⁸ m/s. Réflexion: i=r. Réfraction: milieu dense→rapproche normale. Loupe=objet entre O et f'. Prisme=décompose la lumière blanche.</div>`,
+qcm:[
+{q:'Vitesse de la lumière dans le vide ?',opts:['3×10⁶ m/s','3×10⁸ m/s','3×10¹⁰ m/s','300 m/s'],answer:1,exp:'c=3×10⁸ m/s (300 000 km/s)'},
+{q:'Angle de réflexion = ?',opts:['0°','90°','Angle d\'incidence','2× angle incidence'],answer:2,exp:'Loi de la réflexion : i_réflexion = i_incidence'},
+{q:'Un rayon passant de l\'air vers le verre (plus dense) ?',opts:['S\'éloigne de la normale','Se rapproche de la normale','Déviation nulle','Se réfléchit entièrement'],answer:1,exp:'Vers un milieu plus dense → rapprochement de la normale (réfraction)'},
+{q:'Lumière blanche à travers un prisme donne ?',opts:['Lumière rouge uniquement','Lumière blanche amplifiée','Le spectre visible (arc-en-ciel)','Lumière UV'],answer:2,exp:'Le prisme décompose la lumière blanche en toutes ses couleurs (ROYGBIV)'},
+{q:'Objet entre O et f\' d\'une lentille convergente ?',opts:['Image réelle plus petite','Image réelle agrandie','Image virtuelle agrandie (loupe)','Pas d\'image'],answer:2,exp:'Objet < f\' → image virtuelle, droite, agrandie → effet loupe'},
+{q:'L\'indice de réfraction du verre est d\'environ 1,5. La lumière va ? dans le verre que dans l\'air.',opts:['Plus vite','Aussi vite','Plus lentement','2 fois plus vite'],answer:2,exp:'Dans un milieu d\'indice n, la vitesse de la lumière = c/n. n=1,5 → v=c/1,5 → plus lentement que dans l\'air (n=1)'},
+]},
+{id:'PC04',title:'Chimie : atomes, ions & molécules',sub:'⚠️ Fiche renforcée — structure atomique & liaisons',
+content:`<h3>Structure de l'atome</h3><ul><li><b>Noyau</b> : protons (charge +) + neutrons (charge neutre)</li><li><b>Électrons</b> : charge −, organisés en couches autour du noyau</li><li><b>Z</b> (numéro atomique) = nombre de protons = nombre d'électrons (si atome neutre)</li><li><b>A</b> (nombre de masse) = protons + neutrons (= nucléons)</li><li>Notation : ᴬzX (ex : ¹²₆C = carbone avec 6 protons et 6 neutrons)</li></ul><h3>Ions — formation</h3><ul><li>Atome perd des e⁻ → <b>cation</b> (ion positif) : Na → Na⁺, Ca → Ca²⁺</li><li>Atome gagne des e⁻ → <b>anion</b> (ion négatif) : Cl → Cl⁻, O → O²⁻</li></ul><h3>Molécules et liaisons covalentes</h3><ul><li>Liaison covalente = partage de 2 électrons entre 2 atomes</li><li>H₂O : 2H−O | CO₂ : O=C=O | CH₄ : C au centre + 4H</li></ul><h3>⚠️ Pièges</h3><ul><li>Le numéro atomique Z = protons = électrons (seulement si atome NEUTRE)</li><li>Les isotopes ont le même Z mais des A différents (même élément, masse différente)</li></ul><div class="memo">🧠 Z=protons=électrons (neutre). A=protons+neutrons. Cation=perd e⁻(+). Anion=gagne e⁻(−). Na⁺=sodium+. Cl⁻=chlorure−.</div>`,
+qcm:[
+{q:'Le numéro atomique Z = ?',opts:['Nombre de neutrons','Nombre de protons','Électrons de valence','Nucléons totaux'],answer:1,exp:'Z = nombre de protons (et d\'électrons pour un atome neutre)'},
+{q:'Un ion positif (cation) est un atome qui a ?',opts:['Gagné des électrons','Perdu des protons','Perdu des électrons','Gagné des protons'],answer:2,exp:'Cation = perd des e⁻ → charge positive (ex: Na perd 1 e⁻ → Na⁺)'},
+{q:'A = nombre de masse = ?',opts:['Protons seulement','Électrons seulement','Protons + neutrons','Protons + électrons'],answer:2,exp:'A = Z + N = protons + neutrons (= nucléons)'},
+{q:'Carbone ¹²₆C : combien de neutrons ?',opts:['6','12','18','0'],answer:0,exp:'N = A − Z = 12 − 6 = 6 neutrons'},
+{q:'Isotopes d\'un même élément ont ?',opts:['Même A, Z différent','Même Z, A différent','Même A et Z','Même nombre de neutrons'],answer:1,exp:'Isotopes = même Z (même élément) mais A différent (nombre de neutrons différent)'},
+{q:'La liaison covalente est ?',opts:['Un transfert d\'électrons','Un partage de 2 électrons entre 2 atomes','Une attraction électrostatique entre ions','Une liaison entre protons'],answer:1,exp:'Liaison covalente = partage de 2 électrons (paire liante) entre 2 atomes'},
+]},
+{id:'PC05',title:'Chimie : réactions & pH',sub:'Conservation · Équilibrer · pH · Acides/Bases',
+content:`<h3>Réaction chimique</h3><ul><li>Réactifs → Produits (flèche ou = avec conditions)</li><li><b>Conservation de la masse</b> (Lavoisier) : masse réactifs = masse produits</li><li><b>Conservation des éléments</b> : même nombre d'atomes de chaque côté → équilibrer</li></ul><h3>Méthode équilibration</h3><p>Ajuster les coefficients (pas les indices !) devant les formules.<br>Ex : _H₂ + _O₂ → _H₂O → 2H₂ + O₂ → 2H₂O</p><h3>pH et acides/bases</h3><ul><li>pH &lt; 7 : acide (citron pH≈2, vinaigre pH≈3)</li><li>pH = 7 : neutre (eau pure)</li><li>pH &gt; 7 : basique (savon pH≈9, soude pH≈13)</li></ul><h3>Indicateurs colorés</h3><p>BBT : jaune(acide) / vert(neutre) / bleu(base)<br>Phénolphtaléine : incolore(acide/neutre) / rose(base)</p><div class="memo">🧠 pH &lt; 7 = acide. pH = 7 = neutre. pH &gt; 7 = basique. Lavoisier : rien ne se crée, rien ne se perd. Équilibrer = coefficients (pas les indices !).</div>`,
+qcm:[
+{q:'pH = 3 indique une solution ?',opts:['Neutre','Basique','Acide','Très basique'],answer:2,exp:'pH < 7 → acide'},
+{q:'Loi de conservation de la masse ?',opts:['Masse augmente','Masse diminue','Masse totale reste identique','Dépend de la température'],answer:2,exp:'Lavoisier : "rien ne se crée, rien ne se perd, tout se transforme"'},
+{q:'pH d\'une solution neutre ?',opts:['0','7','14','5'],answer:1,exp:'pH=7 → neutre (eau pure)'},
+{q:'BBT est jaune en milieu ?',opts:['Basique','Neutre','Acide','Concentré'],answer:2,exp:'BBT : jaune=acide, vert=neutre, bleu=base'},
+{q:'Équilibrer : H₂ + O₂ → H₂O. Coefficients corrects ?',opts:['1,1,1','2,1,2','1,2,2','2,2,2'],answer:1,exp:'2H₂ + O₂ → 2H₂O. Vérif: H: 4=4 ✓, O: 2=2 ✓'},
+{q:'NaOH (soude) est ?',opts:['Un acide fort','Un sel neutre','Une base','Un métal'],answer:2,exp:'NaOH = hydroxyde de sodium = base forte (pH élevé)'},
+]},
+{id:'PC06',title:'Énergie : formes et conversions',sub:'Cinétique · Potentielle · Rendement · Puissance',
+content:`<h3>Formes d'énergie</h3><ul><li><b>Cinétique</b> : Ec = ½mv² (objet en mouvement, Joules)</li><li><b>Potentielle gravitationnelle</b> : Ep = mgh</li><li><b>Thermique</b> : chaleur, agitation moléculaire</li><li>Électrique, chimique, nucléaire, lumineuse…</li></ul><h3>Conservation de l'énergie</h3><p>L'énergie se transforme mais ne se crée ni ne se détruit.<br>Ec + Ep = constante (sans frottement)</p><h3>Rendement</h3><p>η = énergie utile / énergie consommée × 100% ≤ 100%<br>(pertes thermiques inévitables)</p><h3>Puissance</h3><p>P = E/t (Watts = J/s)<br>Énergie = P × t (kWh → 1 kWh = 3,6 × 10⁶ J)</p><div class="memo">🧠 Ec=½mv². Ep=mgh. Conservation: Ec+Ep=cste. Rendement ≤100%. P=E/t en Watts. 1kWh=3,6MJ.</div>`,
+qcm:[
+{q:'Ec = ?',opts:['mgh','½mv²','mv','F×d'],answer:1,exp:'Énergie cinétique = ½mv²'},
+{q:'Objet qui monte → énergie potentielle ?',opts:['Diminue','Reste constante','Augmente','Devient nulle'],answer:2,exp:'Ep=mgh → augmente quand h augmente'},
+{q:'Rendement de 80% signifie ?',opts:['80% perdu','80% énergie utile / totale','Appareil défaillant','20% utile'],answer:1,exp:'Rendement = utile/totale = 80% → 20% perdu (chaleur)'},
+{q:'La puissance en Watts correspond à ?',opts:['L\'énergie totale','L\'énergie par unité de temps (J/s)','La force × distance','La masse × accélération'],answer:1,exp:'P=E/t. 1W=1J/s'},
+{q:'Un objet de 2kg, v=3m/s → Ec = ?',opts:['6J','9J','3J','12J'],answer:1,exp:'Ec=½×2×3²=½×2×9=9J'},
+{q:'Sans frottement, une bille lancée vers le haut : au sommet, Ec = ?',opts:['Maximum','Nulle (v=0)','Constante','Égale à Ep'],answer:1,exp:'Au sommet la vitesse=0 → Ec=½mv²=0. Toute l\'énergie est en Ep. Ec+Ep=constante.'},
+]},
+]},
+];
+
+// ═══════════════════════════════════════════════
+// BUILD POOL — 500 questions from all subjects
+// ═══════════════════════════════════════════════
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function buildPool(n){
+  // Collect all questions with metadata
+  const all=[];
+  for(const subj of SUBJECTS){
+    for(const card of subj.cards){
+      for(const q of card.qcm){
+        all.push({...q, _subj:subj.name, _icon:subj.icon, _card:card.title, _color:subj.color, _sid:subj.id});
+      }
+    }
+  }
+  // Build n questions: shuffle repeatedly until we have n
+  const pool=[];
+  while(pool.length < n){
+    const batch=shuffle(all);
+    for(const q of batch){
+      if(pool.length>=n) break;
+      // Shuffle options
+      const order=shuffle([0,1,2,3]);
+      pool.push({...q, opts:order.map(i=>q.opts[i]), answer:order.indexOf(q.answer)});
+    }
+  }
+  return pool;
+}
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+const TOTAL = 500;
+let E = {
+  view: 'home',
+  pool: [],
+  idx: 0,
+  answered: false,
+  selectedOpt: null,
+  correct: 0,
+  wrong: 0,
+  hackCount: 0,
+  streak: [],         // array of 'ok'|'ko' for last 20
+  bySubj: {},         // {sid: {c,t}}
+  startTime: null,
+  pendingHack: false,
+};
+
+// ═══════════════════════════════════════════════
+// ANTI-HACK
+// ═══════════════════════════════════════════════
+document.addEventListener('visibilitychange',()=>{
+  if(E.view==='qcm' && !E.answered && document.hidden){
+    E.hackCount++;
+    E.pendingHack=true;
+    document.getElementById('hackwarn').classList.add('show');
+  }
+});
+window.addEventListener('blur',()=>{
+  if(E.view==='qcm' && !E.answered){
+    E.hackCount++;
+    E.pendingHack=true;
+    document.getElementById('hackwarn').classList.add('show');
+  }
+});
+function dismissHack(){
+  document.getElementById('hackwarn').classList.remove('show');
+  if(E.pendingHack){
+    // Mark current question as wrong (penalize)
+    E.pendingHack=false;
+    if(!E.answered){
+      E.answered=true;
+      E.selectedOpt=-1; // invalid
+      const q=E.pool[E.idx];
+      const sid=q._sid;
+      if(!E.bySubj[sid]) E.bySubj[sid]={c:0,t:0};
+      E.bySubj[sid].t++;
+      E.wrong++;
+      E.streak.push('ko');
+      if(E.streak.length>20) E.streak.shift();
+      render();
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════
+function render(){
+  const app=document.getElementById('app');
+  if(E.view==='home') app.innerHTML=renderHome();
+  else if(E.view==='qcm') app.innerHTML=renderQcm();
+  else if(E.view==='results') app.innerHTML=renderResults();
+  bind();
+}
+
+function renderHome(){
+  return `<div class="home">
+    <h1>🎯 Grand Examen Final</h1>
+    <p style="font-size:1.1rem;color:var(--txt);font-weight:700;margin-bottom:4px">${TOTAL} questions · Toutes matières · Mélange aléatoire</p>
+    <p>Questions et réponses mélangées à chaque fois</p>
+    <div class="warn">
+      ⚠️ <strong>Règles de l'examen :</strong><br>
+      — Ne pas quitter la fenêtre pendant une question<br>
+      — Ne pas chercher les réponses dans les fiches<br>
+      — Toute sortie de fenêtre est détectée et pénalisée<br>
+      — Le code final indique le nombre de tentatives de triche
+    </div>
+    <button class="start-btn" data-action="start">🚀 Commencer l'examen</button>
+  </div>`;
+}
+
+function renderQcm(){
+  const q=E.pool[E.idx];
+  const done=E.idx+1;
+  const pct=Math.round(done/TOTAL*100);
+  const scorePct=E.idx>0?Math.round(E.correct/(E.correct+E.wrong)*100):100;
+  const sc=scorePct>=80?'sg':scorePct>=60?'so':'sr';
+
+  // Streak dots (last 20)
+  const dots=E.streak.map(s=>`<div class="sdot ${s}"></div>`).join('');
+  const curDot=`<div class="sdot cur"></div>`;
+
+  const opts=q.opts.map((o,i)=>{
+    let cls='opt';
+    if(E.answered){
+      cls+=' dis';
+      if(i===q.answer) cls+=' ok2';
+      else if(i===E.selectedOpt) cls+=' ko2';
+    }
+    return `<div class="${cls}" data-action="answer" data-opt="${i}">
+      <div class="ol">${['A','B','C','D'][i]}</div><span>${o}</span>
+    </div>`;
+  }).join('');
+
+  const expl=E.answered&&E.selectedOpt!==-1?`<div class="expl fade">
+    <strong>${E.selectedOpt===q.answer?'✅ Correct !':'❌ Incorrect.'}</strong> ${q.exp}
+    <div class="src">${q._icon} ${q._subj} — ${q._card}</div>
+  </div>`:E.answered&&E.selectedOpt===-1?`<div class="expl fade" style="border-color:#f87171">
+    <strong>🚨 Question invalidée (sortie de fenêtre)</strong><br>
+    <span class="src">${q._icon} ${q._subj} — ${q._card}</span>
+  </div>`:'';
+
+  const nxt=E.answered?`<div class="next-wrap">
+    <button class="next-btn" data-action="next">${E.idx<TOTAL-1?'Question suivante →':'Voir les résultats →'}</button>
+  </div>`:'';
+
+  return `
+  <div class="prog-wrap">
+    <div class="prog-top">
+      <span class="prog-label">Q${done}/${TOTAL}</span>
+      <span class="prog-score ${sc}">✓ ${E.correct} · ✗ ${E.wrong}${E.hackCount>0?' · 🚨 '+E.hackCount:''}</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat"><div class="stat-v sg">${E.correct}</div><div class="stat-l">Bonnes</div></div>
+    <div class="stat"><div class="stat-v sr">${E.wrong}</div><div class="stat-l">Mauvaises</div></div>
+    <div class="stat"><div class="stat-v ${sc}">${E.idx>0?Math.round(E.correct/(E.correct+E.wrong)*100):100}%</div><div class="stat-l">Taux</div></div>
+    <div class="stat"><div class="stat-v" style="color:${q._color}">${q._icon}</div><div class="stat-l">${q._subj.split(' ')[0]}</div></div>
+  </div>
+  <div class="streak-bar">${dots}${curDot}</div>
+  <div class="subj-tag" style="color:${q._color};border-color:${q._color}44">${q._icon} ${q._card}</div>
+  <div class="qbox ${E.answered?'':'fade'}">
+    <div class="qtxt">${q.q}</div>
+    <div class="opts">${opts}</div>
+    ${expl}
+  </div>
+  ${nxt}`;
+}
+
+function renderResults(){
+  const total=E.correct+E.wrong;
+  const pct=Math.round(E.correct/total*100);
+  const grade=pct>=95?'🏆 Excellent — Mention Très Bien':pct>=85?'🥇 Très bien — Mention Bien':pct>=70?'🥈 Bien — Mention Assez Bien':pct>=60?'🥉 Passable':'❌ Insuffisant';
+  const col=pct>=85?'#4ade80':pct>=70?'#fbbf24':'#f87171';
+  const elapsed=E.startTime?Math.round((Date.now()-E.startTime)/60000):0;
+
+  // Per-subject breakdown
+  const breakdown=SUBJECTS.map(s=>{
+    const d=E.bySubj[s.id];
+    if(!d||d.t===0) return '';
+    const p=Math.round(d.c/d.t*100);
+    const bc=p>=85?'#4ade80':p>=70?'#fbbf24':'#f87171';
+    return `<div style="margin-bottom:14px">
+      <div class="sbh2" style="color:${s.color}">${s.icon} ${s.name} <span style="color:var(--muted);font-size:.85rem;font-weight:600">· ${d.c}/${d.t}</span></div>
+      <div class="sb-bar-wrap"><div class="sb-bar" style="width:${p}%;background:${bc}"></div></div>
+      <div class="sb-label">${p}% de réussite</div>
+    </div>`;
+  }).join('');
+
+  const hackNote=E.hackCount>0?`<div style="background:#2e1a0e;border:1px solid #f87171;border-radius:10px;padding:12px;margin-bottom:16px;color:#f87171;font-size:.9rem">🚨 <strong>${E.hackCount} sortie(s) de fenêtre détectée(s)</strong> pendant l'examen. Ces questions ont été invalidées.</div>`:'';
+
+  const code=genCode();
+  return `<div class="result-page">
+    <div style="font-size:2rem">🎓</div>
+    <h1>Résultats finaux</h1>
+    <div class="big-score" style="color:${col}">${pct}%</div>
+    <div class="grade">${grade}</div>
+    <p style="color:var(--muted);margin-bottom:8px">${E.correct}/${total} bonnes réponses · ${elapsed} minutes</p>
+    ${hackNote}
+    <div class="subj-breakdown">${breakdown}</div>
+    <div class="codebox">
+      <h3>📬 Code à envoyer à ton parent</h3>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:10px">Copie et envoie ce code !</p>
+      <div class="codetxt" id="codetext">${code}</div>
+      <button class="copybtn" onclick="copyCode()">📋 Copier le code</button>
+    </div>
+    <button class="replay-btn" data-action="restart" style="display:block;margin:20px auto 0">🔄 Nouvel examen</button>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════
+// CODE GÉNÉRATION
+// ═══════════════════════════════════════════════
+function genCode(){
+  const data={
+    v:'exam500',
+    d:new Date().toLocaleDateString('fr-FR'),
+    score:`${E.correct}/${E.correct+E.wrong}`,
+    pct:Math.round(E.correct/(E.correct+E.wrong)*100),
+    hack:E.hackCount,
+    mins:E.startTime?Math.round((Date.now()-E.startTime)/60000):0,
+    subj:{}
+  };
+  for(const [sid,d] of Object.entries(E.bySubj)){
+    const subj=SUBJECTS.find(s=>s.id===sid);
+    if(subj) data.subj[subj.name]=`${d.c}/${d.t} (${Math.round(d.c/d.t*100)}%)`;
+  }
+  return btoa(unescape(encodeURIComponent(JSON.stringify(data)))).replace(/(.{60})/g,'$1\n').trim();
+}
+function copyCode(){
+  navigator.clipboard.writeText(document.getElementById('codetext').textContent).then(()=>{
+    const b=document.querySelector('.copybtn');
+    b.textContent='✅ Copié !';b.style.background='#4ade80';b.style.color='#000';
+    setTimeout(()=>{b.textContent='📋 Copier le code';b.style.background='';b.style.color='';},2000);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// EVENTS
+// ═══════════════════════════════════════════════
+function bind(){
+  document.querySelectorAll('[data-action]').forEach(el=>el.addEventListener('click',handle));
+}
+function handle(e){
+  const a=e.currentTarget.dataset.action;
+  if(a==='start'||a==='restart'){
+    E={view:'qcm',pool:buildPool(TOTAL),idx:0,answered:false,selectedOpt:null,
+       correct:0,wrong:0,hackCount:0,streak:[],bySubj:{},startTime:Date.now(),pendingHack:false};
+    render();
+  }
+  else if(a==='answer'){
+    if(E.answered) return;
+    const opt=+e.currentTarget.dataset.opt;
+    E.selectedOpt=opt;E.answered=true;
+    const q=E.pool[E.idx];
+    const sid=q._sid;
+    if(!E.bySubj[sid]) E.bySubj[sid]={c:0,t:0};
+    E.bySubj[sid].t++;
+    if(opt===q.answer){E.correct++;E.bySubj[sid].c++;E.streak.push('ok');}
+    else{E.wrong++;E.streak.push('ko');}
+    if(E.streak.length>20) E.streak.shift();
+    render();
+  }
+  else if(a==='next'){
+    if(E.idx<TOTAL-1){E.idx++;E.answered=false;E.selectedOpt=null;render();}
+    else{E.view='results';render();}
+  }
+}
+
+render();
+</script></body></html>

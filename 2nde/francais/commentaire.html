@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse de Texte - 2nde</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #08090f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .subtitle {
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .quiz-section {
+            display: none;
+        }
+        .quiz-section.active {
+            display: block;
+        }
+        .question-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+        }
+        .question-number {
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        .question-text {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        .excerpt {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 4px solid #764ba2;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-style: italic;
+            color: #d0d0d0;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.2);
+        }
+        .option.selected {
+            background: rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+        .option.correct {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+        }
+        .option.incorrect {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #f44336;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Nunito', sans-serif;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        .btn-secondary:hover {
+            background: rgba(102, 126, 234, 0.3);
+        }
+        .results {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            border-radius: 12px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+        }
+        .score-display {
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        .stars {
+            font-size: 2.5em;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+        .result-code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            word-break: break-all;
+            font-size: 0.9em;
+            color: #4caf50;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            color: #764ba2;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            .question-container {
+                padding: 18px;
+            }
+            .score-display {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Analyse de Texte</h1>
+            <p class="subtitle">Classe de 2nde - Français</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div id="quizContent"></div>
+
+        <div id="resultsSection" style="display:none;">
+            <div class="results">
+                <h2>Résultats</h2>
+                <div class="score-display" id="scoreDisplay">0/0</div>
+                <div class="stars" id="starsDisplay">☆☆☆☆☆</div>
+                <p id="percentageText"></p>
+                <div class="result-code" id="resultCode"></div>
+                <a href="/index.html" class="back-link">← Retour à l'accueil</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Identifiez le procédé littéraire principal dans cet extrait:",
+                excerpt: "\"Le ciel était bleu, si bleu qu'on aurait pu le peindre.\"",
+                options: [
+                    "Une comparaison",
+                    "Une hyperbole",
+                    "Une allitération",
+                    "Une métaphore"
+                ],
+                correct: 1,
+                explanation: "L'utilisation de 'si bleu qu'on aurait pu le peindre' est une hyperbole qui exagère la beauté du ciel."
+            },
+            {
+                question: "Quel est le champ lexical dominant dans ce passage?",
+                excerpt: "\"La forêt était silencieuse, les arbres immobiles, les animaux cachés.\"",
+                options: [
+                    "Le mouvement et l'action",
+                    "Le bruit et le tumulte",
+                    "Le silence et l'immobilité",
+                    "La peur et le danger"
+                ],
+                correct: 2,
+                explanation: "Les mots 'silencieuse', 'immobiles' et 'cachés' constituent un champ lexical du silence et de l'immobilité."
+            },
+            {
+                question: "Qui parle dans cet extrait?",
+                excerpt: "\"Je me demandais si cette journée serait différente. Les autres ne semblaient pas inquiets.\"",
+                options: [
+                    "Un narrateur omniscient",
+                    "Un personnage interne au récit",
+                    "Un narrateur externe",
+                    "Un observateur neutre"
+                ],
+                correct: 1,
+                explanation: "L'utilisation de la première personne 'Je' indique qu'un personnage parle de lui-même."
+            },
+            {
+                question: "Identifiez le registre de ton dans ce passage:",
+                excerpt: "\"Les clowns entrèrent en scène, glissant sur des peaux de banane, se cognant les uns les autres dans une débauche de sottises.\"",
+                options: [
+                    "Tragique",
+                    "Lyrique",
+                    "Comique",
+                    "Polémique"
+                ],
+                correct: 2,
+                explanation: "L'accumulation de situations ridicules (glissades, coups) caractérise le registre comique."
+            },
+            {
+                question: "Quel procédé rhétorique est utilisé ici?",
+                excerpt: "\"Veni, vidi, vici.\" (Je suis venu, j'ai vu, j'ai vaincu.)",
+                options: [
+                    "Une antithèse",
+                    "Un chiasme",
+                    "Une anaphore",
+                    "Une épiphore"
+                ],
+                correct: 2,
+                explanation: "La répétition du sujet implicite en début de propositions successives est une anaphore."
+            },
+            {
+                question: "À qui le texte s'adresse-t-il principalement?",
+                excerpt: "\"Mes chers lecteurs, vous comprendrez sans doute que cette histoire n'est pas ordinaire.\"",
+                options: [
+                    "Au lecteur",
+                    "Aux personnages",
+                    "À l'auteur",
+                    "Au critique"
+                ],
+                correct: 0,
+                explanation: "L'appel direct 'Mes chers lecteurs, vous comprendrez' montre que le texte s'adresse au lecteur."
+            },
+            {
+                question: "Quel est le registre prédominant?",
+                excerpt: "\"Hélas! La mort a emporté mon ami le plus cher. Je ne verrai plus son sourire bienveillant.\"",
+                options: [
+                    "Comique",
+                    "Tragique",
+                    "Ironique",
+                    "Fantastique"
+                ],
+                correct: 1,
+                explanation: "Les thèmes de la mort et du deuil, exprimés avec une tonalité mélancolique, définissent le registre tragique."
+            },
+            {
+                question: "Identifiez la figure de style:",
+                excerpt: "\"Ses cheveux d'or étaient comme des fils de soie qui capturaient la lumière.\"",
+                options: [
+                    "Une métaphore",
+                    "Une comparaison",
+                    "Une personnification",
+                    "Une synecdoque"
+                ],
+                correct: 1,
+                explanation: "L'utilisation de 'comme' indique une comparaison entre les cheveux et les fils de soie."
+            },
+            {
+                question: "Quel est le champ lexical de ce passage?",
+                excerpt: "\"L'épée brilla, le guerrier chargea, les ennemis s'enfuirent.\"",
+                options: [
+                    "L'amour et l'amitié",
+                    "La nature et les saisons",
+                    "La bataille et la guerre",
+                    "La paix et la sérénité"
+                ],
+                correct: 2,
+                explanation: "'épée', 'guerrier', 'chargea', 'ennemis' appartiennent au champ lexical de la guerre et du combat."
+            },
+            {
+                question: "Quel est le registre dominant?",
+                excerpt: "\"Quelle audace! Quel mépris! Vous pensez vraiment que ce plan fonctionnera?\"",
+                options: [
+                    "Lyrique",
+                    "Polémique",
+                    "Merveilleux",
+                    "Historique"
+                ],
+                correct: 1,
+                explanation: "Le registre polémique est caractérisé par la critique violente et l'indignation du locuteur."
+            },
+            {
+                question: "Identifiez le procédé stylistique:",
+                excerpt: "\"La nuit tombe, la lumière s'éteint, l'espoir s'envole.\"",
+                options: [
+                    "Une énumération",
+                    "Une personnification",
+                    "Un parallélisme",
+                    "Une métaphore"
+                ],
+                correct: 2,
+                explanation: "La répétition de la structure sujet-verbe dans trois propositions successives est un parallélisme."
+            },
+            {
+                question: "Qui est le narrateur dans ce passage?",
+                excerpt: "\"Le prince entra dans le château. Il était magnifique avec ses tours dorées.\"",
+                options: [
+                    "Le prince",
+                    "Un narrateur omniscient externe",
+                    "Un courtisan",
+                    "Le château"
+                ],
+                correct: 1,
+                explanation: "L'utilisation de la troisième personne et la capacité à décrire les pensées indiquent un narrateur omniscient externe."
+            },
+            {
+                question: "Quel est le champ lexical dominant?",
+                excerpt: "\"Elle chanson avec passion, son cœur vibrait, ses yeux brillaient de joie.\"",
+                options: [
+                    "La tristesse",
+                    "La passion et la joie",
+                    "La maladie",
+                    "La solitude"
+                ],
+                correct: 1,
+                explanation: "'chanson', 'passion', 'vibrait', 'brillaient', 'joie' forment un champ lexical d'émotion positive."
+            },
+            {
+                question: "Identifiez la figure de style:",
+                excerpt: "\"Le soleil se coucha lentement, caressant l'horizon de ses derniers rayons.\"",
+                options: [
+                    "Une antithèse",
+                    "Une personnification",
+                    "Une hyperbole",
+                    "Un oxymore"
+                ],
+                correct: 1,
+                explanation: "L'action de 'caresser' attribuée au soleil est une personnification (donner des caractéristiques humaines)."
+            },
+            {
+                question: "Quel registre dominant ce passage?",
+                excerpt: "\"O Amour! Force éternelle qui règnes sur nos cœurs! Que tes flèches nous transpercent!\"",
+                options: [
+                    "Comique",
+                    "Lyrique",
+                    "Polémique",
+                    "Didactique"
+                ],
+                correct: 1,
+                explanation: "L'expression des sentiments personnels avec une tonalité poétique définit le registre lyrique."
+            },
+            {
+                question: "Identifiez le procédé littéraire:",
+                excerpt: "\"Et il courut, courut, courut jusqu'à en perdre haleine.\"",
+                options: [
+                    "Une énumération",
+                    "Une répétition",
+                    "Une assonance",
+                    "Une gradation"
+                ],
+                correct: 1,
+                explanation: "La répétition du verbe 'courut' renforce l'intensité de l'action."
+            },
+            {
+                question: "À qui s'adresse ce passage?",
+                excerpt: "\"Écoute bien, ami lecteur, ce que je vais te confier.\"",
+                options: [
+                    "À un ami proche",
+                    "Au lecteur",
+                    "À l'auteur",
+                    "À un personnage fictif"
+                ],
+                correct: 1,
+                explanation: "L'appel direct au 'lecteur' avec l'adresse 'tu' montre que c'est au lecteur que s'adresse le texte."
+            },
+            {
+                question: "Quel est le champ lexical?",
+                excerpt: "\"Le paysage était désolé: les terres étaient stériles, les arbres morts, l'air glacial.\"",
+                options: [
+                    "L'abondance et la fertilité",
+                    "La désolation et la mort",
+                    "La joie et l'optimisme",
+                    "Le mouvement et la vie"
+                ],
+                correct: 1,
+                explanation: "'désolé', 'stériles', 'morts', 'glacial' composent un champ lexical de la désolation."
+            },
+            {
+                question: "Quelle est la thèse implicite de cet extrait?",
+                excerpt: "\"Les riches vivent dans des palais dorés tandis que les pauvres grelottent dans des ruines. Quel système injuste!\"",
+                options: [
+                    "L'égalité est nécessaire",
+                    "La richesse crée le bonheur",
+                    "La pauvreté est naturelle",
+                    "Les palais sont plus beaux"
+                ],
+                correct: 0,
+                explanation: "Le contraste établi et l'exclamation critiques suggèrent que l'auteur critique l'injustice sociale."
+            },
+            {
+                question: "Identifiez la figure de style:",
+                excerpt: "\"Un vent froid et brûlant traversa le désert.\"",
+                options: [
+                    "Un oxymore",
+                    "Une métaphore",
+                    "Une comparaison",
+                    "Une allitération"
+                ],
+                correct: 0,
+                explanation: "Un oxymore unit deux termes contradictoires: 'froid' et 'brûlant' ne peuvent pas coexister normalement."
+            },
+            {
+                question: "Quel est le registre dominant?",
+                excerpt: "\"Et puis voilà, il n'y avait plus rien. Même pas une miette de pain pour le repas.\"",
+                options: [
+                    "Épique",
+                    "Familier/ironique",
+                    "Tragique",
+                    "Mystérieux"
+                ],
+                correct: 1,
+                explanation: "Le ton familier et l'ironie douce caractérisent cet extrait qui traite un sujet grave légèrement."
+            },
+            {
+                question: "Identifiez le procédé de style:",
+                excerpt: "\"Ils avançaient: régiment après régiment, bannière après bannière, soldat après soldat.\"",
+                options: [
+                    "Une répétition",
+                    "Une anaphore",
+                    "Une épiphore",
+                    "Une symétrie"
+                ],
+                correct: 2,
+                explanation: "La répétition de la structure 'après' en fin de segments successifs est une épiphore."
+            },
+            {
+                question: "Qui parle dans ce passage?",
+                excerpt: "\"J'ai décidé de partir. Personne ne m'en empêcherait. Cette vie n'était pas pour moi.\"",
+                options: [
+                    "Un narrateur omniscient",
+                    "Un personnage racontant sa propre histoire",
+                    "Un observateur externe",
+                    "Un critique littéraire"
+                ],
+                correct: 1,
+                explanation: "L'utilisation de la première personne 'J'ai' indique qu'un personnage raconte sa propre expérience."
+            },
+            {
+                question: "Quel est le champ lexical dominant?",
+                excerpt: "\"Les fleurs s'épanouissaient, le soleil brillait, les oiseaux chantaient joyeusement.\"",
+                options: [
+                    "L'automne et la mélancolie",
+                    "Le printemps et la vie",
+                    "L'hiver et la mort",
+                    "La guerre et la destruction"
+                ],
+                correct: 1,
+                explanation: "'épanouissaient', 'brillait', 'chantaient', 'joyeusement' créent un champ lexical du printemps et de la vie."
+            },
+            {
+                question: "Quelle est la thèse implicite de ce passage?",
+                excerpt: "\"Les études sans une véritable passion ne mènent qu'à l'ennui. Il faut cultiver l'amour de ce que l'on apprend.\"",
+                options: [
+                    "Les études sont inutiles",
+                    "La passion est essentielle à l'apprentissage",
+                    "L'ennui rend intelligent",
+                    "L'école est un mal nécessaire"
+                ],
+                correct: 1,
+                explanation: "L'auteur affirme que la passion est nécessaire pour que les études soient efficaces et enrichissantes."
+            },
+            {
+                question: "Identifiez le registre:",
+                excerpt: "\"Ô malheureux! Pourquoi combattre l'inévitable? Le destin a parlé!\"",
+                options: [
+                    "Comique",
+                    "Tragique",
+                    "Ludique",
+                    "Scientifique"
+                ],
+                correct: 1,
+                explanation: "L'invocation du destin tragique et l'expression du malheur caractérisent le registre tragique."
+            },
+            {
+                question: "Identifiez la figure de style principale:",
+                excerpt: "\"Elle avait un cœur de pierre et une âme d'acier.\"",
+                options: [
+                    "Une comparaison",
+                    "Une série de métaphores",
+                    "Une personnification",
+                    "Une antithèse"
+                ],
+                correct: 1,
+                explanation: "'cœur de pierre' et 'âme d'acier' sont deux métaphores suggérant une dureté émotionnelle."
+            },
+            {
+                question: "À qui s'adresse le texte?",
+                excerpt: "\"Chers parents, je vous écris pour vous demander pardon. J'ai compris mes erreurs.\"",
+                options: [
+                    "Au lecteur en général",
+                    "Aux parents",
+                    "À un amis",
+                    "À soi-même"
+                ],
+                correct: 1,
+                explanation: "L'appel direct 'Chers parents' indique que le message s'adresse aux parents."
+            },
+            {
+                question: "Quel est le champ lexical?",
+                excerpt: "\"Le roi leva son épée, ses guerriers frappèrent, l'ennemi fut vaincu.\"",
+                options: [
+                    "La diplomatie et la paix",
+                    "La bataille et la conquête",
+                    "L'amour et l'amitié",
+                    "L'art et la culture"
+                ],
+                correct: 1,
+                explanation: "'épée', 'guerriers', 'frappèrent', 'vaincu' appartiennent au champ lexical de la bataille."
+            },
+            {
+                question: "Quel est le registre dominant?",
+                excerpt: "\"Votre proposition est absolument ridicule! C'est une insulte à notre intelligence!\"",
+                options: [
+                    "Lyrique",
+                    "Polémique",
+                    "Épique",
+                    "Merveilleux"
+                ],
+                correct: 1,
+                explanation: "Le registre polémique se caractérise par la critique virulente et l'indignation exprimées ici."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        const userAnswers = [];
+        const startTime = Date.now();
+
+        function initQuiz() {
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const question = quizData[currentQuestion];
+            const total = quizData.length;
+            const progress = ((currentQuestion + 1) / total) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            let html = `
+                <div class="question-container">
+                    <div class="question-number">Question ${currentQuestion + 1}/${total}</div>
+                    <div class="question-text">${question.question}</div>
+                    <div class="excerpt">${question.excerpt}</div>
+                    <div class="options">
+            `;
+
+            question.options.forEach((option, index) => {
+                html += `
+                    <div class="option" onclick="selectOption(${index})">
+                        <input type="radio" name="question${currentQuestion}" value="${index}" id="opt${index}">
+                        <label for="opt${index}">${option}</label>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <div class="button-group">
+                        ${currentQuestion > 0 ? '<button class="btn-secondary" onclick="previousQuestion()">← Précédent</button>' : ''}
+                        <button class="btn-primary" onclick="nextQuestion()" id="nextBtn">Suivant →</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('quizContent').innerHTML = html;
+            document.getElementById('nextBtn').disabled = true;
+        }
+
+        function selectOption(index) {
+            userAnswers[currentQuestion] = index;
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('.option')[index].classList.add('selected');
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function showResults() {
+            score = userAnswers.filter((ans, i) => ans === quizData[i].correct).length;
+            const percentage = Math.round((score / quizData.length) * 100);
+            const stars = Math.ceil((percentage / 100) * 5);
+
+            const dt = new Date().toISOString();
+            const resultData = {
+                v: '2_comment',
+                dt: dt,
+                score: score,
+                total: quizData.length,
+                pct: percentage,
+                stars: stars
+            };
+
+            const resultCode = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('scoreDisplay').textContent = `${score}/${quizData.length}`;
+            document.getElementById('percentageText').innerHTML = `Résultat: ${percentage}%`;
+            document.getElementById('starsDisplay').textContent = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        window.addEventListener('load', initQuiz);
+    </script>
+</body>
+</html>

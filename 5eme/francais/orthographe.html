@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orthographe - 5ème Français</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(135deg, #08090f 0%, #1a1b2e 100%);
+            font-family: 'Nunito', sans-serif;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(255, 0, 110, 0.3);
+        }
+        h1 {
+            font-size: 2em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .score-display {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .question-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(131, 56, 236, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .question-number {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+        .question-text {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #00d9ff 0%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .blank {
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 3px solid #00d9ff;
+            padding: 5px 10px;
+            min-width: 80px;
+            font-weight: 700;
+        }
+        .options {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .option {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .option:hover:not(:disabled) {
+            background: rgba(131, 56, 236, 0.2);
+            border-color: rgba(131, 56, 236, 0.5);
+            transform: translateX(5px);
+        }
+        .option.selected {
+            background: rgba(131, 56, 236, 0.4);
+            border-color: rgba(131, 56, 236, 0.8);
+        }
+        .option.correct {
+            background: rgba(0, 255, 100, 0.3);
+            border-color: rgba(0, 255, 100, 0.8);
+        }
+        .option.incorrect {
+            background: rgba(255, 0, 100, 0.3);
+            border-color: rgba(255, 0, 100, 0.8);
+        }
+        .option:disabled {
+            cursor: not-allowed;
+        }
+        .rule-box {
+            background: rgba(0, 255, 150, 0.1);
+            border-left: 4px solid rgba(0, 255, 150, 0.8);
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        .rule-title {
+            font-weight: 700;
+            color: #00ff88;
+            margin-bottom: 8px;
+        }
+        .button {
+            background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        .button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 0, 110, 0.3);
+        }
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .results-screen {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+        .results-screen.active {
+            display: block;
+        }
+        .final-score {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d9ff 0%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        .percentage {
+            font-size: 1.8em;
+            margin: 15px 0;
+            color: #00ff88;
+        }
+        .stars {
+            font-size: 2.5em;
+            margin: 20px 0;
+        }
+        .result-code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            word-break: break-all;
+            font-size: 0.85em;
+            font-family: monospace;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid rgba(0, 255, 150, 0.3);
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #00d9ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            transform: translateX(-5px);
+        }
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5em;
+            }
+            .question-text {
+                font-size: 1em;
+            }
+            .final-score {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📝 Orthographe</h1>
+            <div class="score-display"><span id="currentScore">0</span>/20</div>
+        </header>
+
+        <div id="questionContainer" class="question-container">
+            <div class="question-number">Question <span id="questionNum">1</span>/20</div>
+            <div class="question-text" id="questionText"></div>
+            <div class="options" id="optionsContainer"></div>
+            <div class="rule-box" id="ruleBox" style="display: none;">
+                <div class="rule-title" id="ruleTitle"></div>
+                <div id="ruleText"></div>
+            </div>
+            <div class="button-group">
+                <button id="submitBtn" class="button">Soumettre</button>
+                <button id="nextBtn" class="button" style="display: none;">Question suivante</button>
+            </div>
+        </div>
+
+        <div id="resultsScreen" class="results-screen">
+            <h2>Session terminée!</h2>
+            <div class="final-score" id="finalScore">0/20</div>
+            <div class="percentage" id="percentageDisplay">0%</div>
+            <div class="stars" id="starsDisplay">☆☆☆☆☆</div>
+            <div class="result-code" id="resultCode"></div>
+            <button class="button" onclick="location.reload()">Recommencer</button>
+            <a href="/index.html" class="back-link">← Retour</a>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {q: "Le chat _____ sur le tapis.", opts: ["dort", "dorte", "dormes", "dorten"], ans: 0, rule: "Accord sujet-verbe", exp: "Le sujet 'chat' est 3e personne du singulier → verbe à 3e personne: dort"},
+            {q: "Les enfants _____ à l'école.", opts: ["va", "vont", "allent", "aller"], ans: 1, rule: "Accord sujet-verbe", exp: "Sujet pluriel 'Les enfants' → verbe au pluriel: vont"},
+            {q: "Les fleurs _____ sont belles.", opts: ["rouge", "rouges", "rougent", "rouget"], ans: 1, rule: "Accord dans le GN", exp: "Le nom 'fleurs' est féminin pluriel → adjectif s'accorde: rouges"},
+            {q: "Un garçon _____ et _____ cheveux noirs.", opts: ["grand, un", "grands, des", "grand, des", "grands, un"], ans: 2, rule: "Accord dans le GN", exp: "Un (masc. sing.) garçon grand (masc. sing.) et des cheveux noirs"},
+            {q: "La porte est _____.", opts: ["ferme", "fermée", "fermés", "fermer"], ans: 1, rule: "Participe passé avec être", exp: "Avec l'auxiliaire être, le participe s'accorde avec le sujet (porte = fém. sing.): fermée"},
+            {q: "Elle a _____ les fruits.", opts: ["mangé", "mangée", "mangés", "mangées"], ans: 0, rule: "Participe passé avec avoir", exp: "Avec avoir, le participe ne s'accorde généralement pas (COD après): mangé"},
+            {q: "Les lettres qu'elle a _____.", opts: ["écrite", "écrit", "écrites", "écrits"], ans: 2, rule: "Participe passé avec avoir + COD", exp: "COD 'lettres' (fém. pluriel) avant le verbe → accord: écrites"},
+            {q: "Il _____ par la fenêtre.", opts: ["regard", "regarde", "regardes", "regardent"], ans: 1, rule: "Accord sujet-verbe", exp: "Sujet 'Il' (3e sing.) → verbe 3e sing.: regarde"},
+            {q: "La femme est _____.", opts: ["marié", "mariée", "mariés", "mariees"], ans: 1, rule: "Participe passé avec être", exp: "Sujet féminin singulier → participe passé s'accorde: mariée"},
+            {q: "Ils _____ venus hier.", opts: ["ont", "sont", "est", "étaient"], ans: 1, rule: "Auxiliaire être", exp: "Verbe 'venir' se conjugue avec 'être' au passé composé: sont venus"},
+            {q: "Une belle _____ sombre.", opts: ["maison", "mayson", "maizons", "meson"], ans: 0, rule: "Orthographe des mots", exp: "Le mot s'écrit 'maison' avec 'ai'. Les doubles consonnes ne s'ajoutent pas partout."},
+            {q: "Elle aime _____ du sport.", opts: ["faire", "fer", "fere", "faire"], ans: 0, rule: "Verbe à l'infinitif", exp: "Après 'aimer', on met l'infinitif: faire"},
+            {q: "J'ai vu le chat _____ par la rue.", opts: ["courir", "courré", "couru", "court"], ans: 0, rule: "Verbe à l'infinitif après un verbe conjugué", exp: "Après 'vu', on utilise l'infinitif: courir"},
+            {q: "Les apples sont _____.", opts: ["trop", "trap", "tropp", "tropes"], ans: 0, rule: "Mots invariables", exp: "'Trop' est un adverbe invariable"},
+            {q: "Elle parle _____ fort.", opts: ["très", "trés", "tré", "tres"], ans: 0, rule: "Accents sur les adverbes", exp: "L'adverbe 'très' prend un accent grave"},
+            {q: "Les _____ ont quitté le château.", opts: ["chevaux", "cheveaux", "chevaus", "chevelaux"], ans: 0, rule: "Pluriel en -aux", exp: "Cheval → chevaux (pluriel irrégulier)"},
+            {q: "Les _____ de la reine brillaient.", opts: ["bijous", "bijoux", "bijouis", "bijoes"], ans: 1, rule: "Pluriel en -oux", exp: "Bijou → bijoux (pluriel irrégulier)"},
+            {q: "Elle est _____ de cette décision.", opts: ["content", "contente", "contentes", "contentée"], ans: 1, rule: "Accord de l'adjectif attribut", exp: "Attribut du sujet 'elle' (fém.) → adjectif s'accorde: contente"},
+            {q: "Ils ont _____ une maison.", opts: ["acheter", "acheté", "achetée", "acheté"], ans: 1, rule: "Participe passé avec avoir", exp: "Verbe 'acheter' conjugué au passé composé avec avoir: acheté"},
+            {q: "Les règles _____ importante.", opts: ["est", "sont", "étaient", "seront"], ans: 1, rule: "Accord du verbe", exp: "Sujet pluriel 'Les règles' → verbe au pluriel: sont"},
+            {q: "Elle a _____ une robe.", opts: ["achete", "acheté", "acheté", "achetée"], ans: 1, rule: "Participe passé avec avoir", exp: "Sans COD placé avant → pas d'accord: acheté"}
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+        const sessionQuestions = questions.slice(0, 20);
+
+        function loadQuestion() {
+            const q = sessionQuestions[currentQuestion];
+            document.getElementById('questionNum').textContent = currentQuestion + 1;
+            document.getElementById('questionText').innerHTML = q.q;
+            document.getElementById('currentScore').textContent = score;
+
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            q.opts.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option';
+                btn.textContent = opt;
+                btn.onclick = () => selectOption(i);
+                btn.id = `opt${i}`;
+                container.appendChild(btn);
+            });
+
+            document.getElementById('ruleBox').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'none';
+            answered = false;
+        }
+
+        let selectedOption = null;
+        function selectOption(index) {
+            if (answered) return;
+            selectedOption = index;
+            document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+            document.getElementById(`opt${index}`).classList.add('selected');
+        }
+
+        function submitAnswer() {
+            if (selectedOption === null) return;
+            answered = true;
+            const q = sessionQuestions[currentQuestion];
+            const correct = selectedOption === q.ans;
+
+            if (correct) {
+                score++;
+                document.getElementById(`opt${selectedOption}`).classList.add('correct');
+            } else {
+                document.getElementById(`opt${selectedOption}`).classList.add('incorrect');
+                document.getElementById(`opt${q.ans}`).classList.add('correct');
+            }
+
+            document.getElementById('ruleTitle').textContent = q.rule;
+            document.getElementById('ruleText').textContent = q.exp;
+            document.getElementById('ruleBox').style.display = 'block';
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'block';
+
+            document.querySelectorAll('.option').forEach(o => o.disabled = true);
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= 20) {
+                showResults();
+            } else {
+                selectedOption = null;
+                document.querySelectorAll('.option').forEach(o => o.disabled = false);
+                loadQuestion();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('questionContainer').style.display = 'none';
+            document.getElementById('resultsScreen').classList.add('active');
+
+            const pct = Math.round((score / 20) * 100);
+            const stars = Math.ceil(pct / 20);
+
+            document.getElementById('finalScore').textContent = `${score}/20`;
+            document.getElementById('percentageDisplay').textContent = `${pct}%`;
+            document.getElementById('starsDisplay').textContent = '⭐'.repeat(stars) + '☆'.repeat(5 - stars);
+
+            const resultData = {
+                v: '5_ortho',
+                dt: new Date().toISOString(),
+                score: `${score}/20`,
+                pct: pct,
+                stars: stars
+            };
+            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+            document.getElementById('resultCode').textContent = encoded;
+        }
+
+        loadQuestion();
+        document.getElementById('submitBtn').onclick = submitAnswer;
+        document.getElementById('nextBtn').onclick = nextQuestion;
+    </script>
+</body>
+</html>

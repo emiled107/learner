@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circuits Électriques - 5ème Sciences</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(135deg, #08090f 0%, #1a1b2e 100%);
+            font-family: 'Nunito', sans-serif;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(255, 0, 110, 0.3);
+        }
+        h1 {
+            font-size: 2em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .score-display {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .question-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(131, 56, 236, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .question-number {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+        .question-text {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #00d9ff 0%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .diagram-box {
+            background: rgba(0, 200, 255, 0.1);
+            border: 2px solid rgba(0, 200, 255, 0.4);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            line-height: 1.6;
+            font-family: monospace;
+            color: #00d9ff;
+            white-space: pre-wrap;
+        }
+        .options {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .option {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .option:hover:not(:disabled) {
+            background: rgba(131, 56, 236, 0.2);
+            border-color: rgba(131, 56, 236, 0.5);
+            transform: translateX(5px);
+        }
+        .option.selected {
+            background: rgba(131, 56, 236, 0.4);
+            border-color: rgba(131, 56, 236, 0.8);
+        }
+        .option.correct {
+            background: rgba(0, 255, 100, 0.3);
+            border-color: rgba(0, 255, 100, 0.8);
+        }
+        .option.incorrect {
+            background: rgba(255, 0, 100, 0.3);
+            border-color: rgba(255, 0, 100, 0.8);
+        }
+        .option:disabled {
+            cursor: not-allowed;
+        }
+        .explanation {
+            background: rgba(0, 255, 150, 0.1);
+            border-left: 4px solid rgba(0, 255, 150, 0.8);
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        .rule-title {
+            font-weight: 700;
+            color: #00ff88;
+            margin-bottom: 8px;
+        }
+        .button {
+            background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        .button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 0, 110, 0.3);
+        }
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .results-screen {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+        .results-screen.active {
+            display: block;
+        }
+        .final-score {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d9ff 0%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        .percentage {
+            font-size: 1.8em;
+            margin: 15px 0;
+            color: #00ff88;
+        }
+        .stars {
+            font-size: 2.5em;
+            margin: 20px 0;
+        }
+        .result-code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            word-break: break-all;
+            font-size: 0.85em;
+            font-family: monospace;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid rgba(0, 255, 150, 0.3);
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #00d9ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            transform: translateX(-5px);
+        }
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5em;
+            }
+            .question-text {
+                font-size: 1em;
+            }
+            .diagram-box {
+                font-size: 0.85em;
+            }
+            .final-score {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ Circuits Électriques</h1>
+            <div class="score-display"><span id="currentScore">0</span>/20</div>
+        </header>
+
+        <div id="questionContainer" class="question-container">
+            <div class="question-number">Question <span id="questionNum">1</span>/20</div>
+            <div class="question-text" id="questionText"></div>
+            <div class="diagram-box" id="diagramBox" style="display: none;"></div>
+            <div class="options" id="optionsContainer"></div>
+            <div class="explanation" id="explanation" style="display: none;">
+                <div class="rule-title" id="ruleTitle"></div>
+                <div id="ruleText"></div>
+            </div>
+            <div class="button-group">
+                <button id="submitBtn" class="button">Soumettre</button>
+                <button id="nextBtn" class="button" style="display: none;">Question suivante</button>
+            </div>
+        </div>
+
+        <div id="resultsScreen" class="results-screen">
+            <h2>Session terminée!</h2>
+            <div class="final-score" id="finalScore">0/20</div>
+            <div class="percentage" id="percentageDisplay">0%</div>
+            <div class="stars" id="starsDisplay">☆☆☆☆☆</div>
+            <div class="result-code" id="resultCode"></div>
+            <button class="button" onclick="location.reload()">Recommencer</button>
+            <a href="/index.html" class="back-link">← Retour</a>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {q: "Dans un circuit série, où les ampoules sont connectées l'une après l'autre, que se passe-t-il si une ampoule grille?", opts: ["Toutes les ampoules s'éteignent", "Les autres restent allumées", "La tension augmente", "Le courant ne change pas"], ans: 0, diagram: null, rule: "Circuit série", exp: "Dans un circuit série, il n'y a qu'un chemin pour le courant. Si un composant casse, le circuit est ouvert."},
+            {q: "Dans un circuit parallèle, comment est distribuée la tension?", opts: ["Partagée entre les branches", "Identique sur chaque branche", "Augmente sur chaque branche", "Diminue progressivement"], ans: 1, diagram: null, rule: "Tension en circuit parallèle", exp: "En parallèle, la tension est identique aux bornes de chaque branche (U_branche = U_source)."},
+            {q: "Qu'est-ce que l'intensité du courant électrique?", opts: ["L'énergie consommée", "La quantité de charge qui passe par seconde", "La tension appliquée", "La résistance du circuit"], ans: 1, diagram: null, rule: "Intensité (I)", exp: "L'intensité (A) = quantité de charge électrique / temps. Elle se mesure avec un ampèremètre."},
+            {q: "Quel est l'unité de la tension?", opts: ["Ampère (A)", "Volt (V)", "Ohm (Ω)", "Watt (W)"], ans: 1, diagram: null, rule: "Tension", exp: "La tension se mesure en Volts (V). Elle représente la différence de potentiel."},
+            {q: "Selon la loi d'Ohm, quelle est la relation entre U, I et R?", opts: ["U = I × R", "U = I / R", "U = R / I", "U = I + R"], ans: 0, diagram: null, rule: "Loi d'Ohm", exp: "U (Volts) = I (Ampères) × R (Ohms). C'est la loi fondamentale de l'électricité."},
+            {q: "Qu'est-ce qu'une ampoule? (électriquement)", opts: ["Un fil conducteur", "Une résistance qui produit de la lumière", "Une source d'énergie", "Un interrupteur"], ans: 1, diagram: null, rule: "Ampoule", exp: "Une ampoule est une résistance qui chauffe un filament pour produire de la lumière."},
+            {q: "Quel type de matériau est un bon conducteur?", opts: ["Caoutchouc", "Plastique", "Cuivre", "Bois"], ans: 2, diagram: null, rule: "Conducteurs", exp: "Le cuivre, l'aluminium et l'argent sont d'excellents conducteurs d'électricité."},
+            {q: "Qu'est-ce qu'un isolant électrique?", opts: ["Un fil qui conduit l'électricité", "Un matériau qui s'oppose au passage du courant", "Une source de tension", "Un ampèremètre"], ans: 1, diagram: null, rule: "Isolants", exp: "Isolants: caoutchouc, plastique, verre. Ils empêchent le passage du courant."},
+            {q: "Dans un circuit série avec 2 résistances, comment la tension se répartit-elle?", opts: ["Identique sur chaque résistance", "Divisée entre les résistances", "Partagée également", "Augmente sur la deuxième"], ans: 1, diagram: null, rule: "Tension en série", exp: "U_totale = U_R1 + U_R2. La tension se partage selon la résistance de chaque élément."},
+            {q: "Qu'est-ce qu'une lampe de poche représente électriquement?", opts: ["Un circuit simple série", "Un circuit complexe parallèle", "Une source AC", "Un transformateur"], ans: 0, diagram: null, rule: "Lampe de poche", exp: "Batterie (source) → interrupteur → ampoule (résistance) → retour batterie. Circuit série simple."},
+            {q: "Comment s'appelle l'appareil qui mesure l'intensité du courant?", opts: ["Voltmètre", "Ampèremètre", "Ohmmètre", "Wattmètre"], ans: 1, diagram: null, rule: "Appareil de mesure", exp: "L'ampèremètre mesure l'intensité (A) et se branche EN SÉRIE dans le circuit."},
+            {q: "Comment s'appelle l'appareil qui mesure la tension?", opts: ["Ampèremètre", "Voltmètre", "Ohmmètre", "Multimètre"], ans: 1, diagram: null, rule: "Voltmètre", exp: "Le voltmètre mesure la tension (V) et se branche EN PARALLÈLE sur le composant."},
+            {q: "Quelle est la résistance d'un fil conducteur parfait?", opts: ["Très élevée", "Infinie", "Très faible (proche de 0)", "Variable"], ans: 2, diagram: null, rule: "Résistance d'un conducteur", exp: "Les conducteurs ont une très faible résistance. En théorie, un conducteur parfait = R ≈ 0 Ω."},
+            {q: "Qu'est-ce que la loi des nœuds?", opts: ["La somme des tensions = 0", "La somme des courants entrants = somme des courants sortants", "La somme des résistances = 0", "Tous les courants sont identiques"], ans: 1, diagram: null, rule: "Loi des nœuds (Kirchhoff)", exp: "Au nœud: Σ I_entrantes = Σ I_sortantes. Le courant se conserve."},
+            {q: "Qu'est-ce que la loi des mailles?", opts: ["Les tensions doivent être égales", "La somme des tensions dans une boucle = 0", "L'intensité doit être constante", "La résistance disparaît"], ans: 1, diagram: null, rule: "Loi des mailles (Kirchhoff)", exp: "Dans une boucle fermée: ΣU = 0. La somme des tensions montantes = somme des tensions descendantes."},
+            {q: "Dans un circuit parallèle avec 3 lampes identiques, comment se répartit l'intensité?", opts: ["Toute sur une lampe", "Divisée également entre les 3 lampes", "Augmente sur chaque lampe", "Diminue progressivement"], ans: 1, diagram: null, rule: "Intensité en parallèle", exp: "En parallèle: I_totale = I_1 + I_2 + I_3. Avec lampes identiques: I_1 = I_2 = I_3 = I_totale/3."},
+            {q: "Qu'est-ce qu'une source d'énergie (générateur)?", opts: ["Un composant qui utilise l'électricité", "Un dispositif qui transforme l'énergie chimique en énergie électrique", "Une résistance spéciale", "Un appareil de mesure"], ans: 1, diagram: null, rule: "Générateur/Source", exp: "Une batterie transforme l'énergie chimique en courant électrique."},
+            {q: "Qu'est-ce qu'un court-circuit?", opts: ["Un circuit de faible longueur", "Un chemin de faible résistance contournant le composant principal", "Une connexion manquante", "Un circuit en parallèle"], ans: 1, diagram: null, rule: "Court-circuit", exp: "Court-circuit = chemin de très faible résistance → intense courant → risque de dégât/incendie."},
+            {q: "Selon la loi de Joule, quelle énergie produit une résistance?", opts: ["Lumière seulement", "Chaleur (E = I²×R×t)", "Mouvement", "Froid"], ans: 1, diagram: null, rule: "Loi de Joule", exp: "Énergie thermique = I² × R × t. Plus le courant est fort, plus la chaleur augmente."},
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+        const sessionQuestions = questions.slice(0, 20);
+
+        function loadQuestion() {
+            const q = sessionQuestions[currentQuestion];
+            document.getElementById('questionNum').textContent = currentQuestion + 1;
+            document.getElementById('questionText').innerHTML = q.q;
+            document.getElementById('currentScore').textContent = score;
+
+            if (q.diagram) {
+                document.getElementById('diagramBox').textContent = q.diagram;
+                document.getElementById('diagramBox').style.display = 'block';
+            } else {
+                document.getElementById('diagramBox').style.display = 'none';
+            }
+
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            q.opts.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option';
+                btn.textContent = opt;
+                btn.onclick = () => selectOption(i);
+                btn.id = `opt${i}`;
+                container.appendChild(btn);
+            });
+
+            document.getElementById('explanation').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'none';
+            answered = false;
+        }
+
+        let selectedOption = null;
+        function selectOption(index) {
+            if (answered) return;
+            selectedOption = index;
+            document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+            document.getElementById(`opt${index}`).classList.add('selected');
+        }
+
+        function submitAnswer() {
+            if (selectedOption === null) return;
+            answered = true;
+            const q = sessionQuestions[currentQuestion];
+            const correct = selectedOption === q.ans;
+
+            if (correct) {
+                score++;
+                document.getElementById(`opt${selectedOption}`).classList.add('correct');
+            } else {
+                document.getElementById(`opt${selectedOption}`).classList.add('incorrect');
+                document.getElementById(`opt${q.ans}`).classList.add('correct');
+            }
+
+            document.getElementById('ruleTitle').textContent = q.rule;
+            document.getElementById('ruleText').textContent = q.exp;
+            document.getElementById('explanation').style.display = 'block';
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'block';
+
+            document.querySelectorAll('.option').forEach(o => o.disabled = true);
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= 20) {
+                showResults();
+            } else {
+                selectedOption = null;
+                document.querySelectorAll('.option').forEach(o => o.disabled = false);
+                loadQuestion();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('questionContainer').style.display = 'none';
+            document.getElementById('resultsScreen').classList.add('active');
+
+            const pct = Math.round((score / 20) * 100);
+            const stars = Math.ceil(pct / 20);
+
+            document.getElementById('finalScore').textContent = `${score}/20`;
+            document.getElementById('percentageDisplay').textContent = `${pct}%`;
+            document.getElementById('starsDisplay').textContent = '⭐'.repeat(stars) + '☆'.repeat(5 - stars);
+
+            const resultData = {
+                v: '5_elec',
+                dt: new Date().toISOString(),
+                score: `${score}/20`,
+                pct: pct,
+                stars: stars
+            };
+            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+            document.getElementById('resultCode').textContent = encoded;
+        }
+
+        loadQuestion();
+        document.getElementById('submitBtn').onclick = submitAnswer;
+        document.getElementById('nextBtn').onclick = nextQuestion;
+    </script>
+</body>
+</html>

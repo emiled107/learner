@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Matière - 6ème Sciences</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            color: #e0e0ff;
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: linear-gradient(135deg, #1a1d2e 0%, #16192b 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff9f;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00ff9f 0%, #00ffff 50%, #00d4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .topic-badge {
+            display: inline-block;
+            background: #00ff9f;
+            color: #08090f;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #2a2d3f;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff9f, #00d4ff);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 12px;
+            color: #9d9dff;
+            font-weight: 600;
+        }
+
+        .question-container {
+            display: none;
+            animation: slideIn 0.4s ease;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-number {
+            font-size: 12px;
+            color: #00ff9f;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 15px 0;
+            color: #ffffff;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .option {
+            padding: 15px;
+            background: #2a2d3f;
+            border: 2px solid #4a4d5f;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            border-color: #00ff9f;
+            background: #32354d;
+        }
+
+        .option.selected {
+            background: #00ff9f;
+            border-color: #00ffff;
+            color: #08090f;
+        }
+
+        .option.correct {
+            background: #00d47f;
+            border-color: #00ff9f;
+            color: #ffffff;
+        }
+
+        .option.incorrect {
+            background: #ff4757;
+            border-color: #ff6b7f;
+            color: #ffffff;
+        }
+
+        .feedback {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 13px;
+            display: none;
+            animation: slideIn 0.3s ease;
+            line-height: 1.6;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #00d47f33;
+            border-left: 4px solid #00d47f;
+            color: #00ffaf;
+        }
+
+        .feedback.incorrect {
+            background: #ff475733;
+            border-left: 4px solid #ff4757;
+            color: #ff9db3;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Nunito', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00ff9f, #00d4ff);
+            color: #08090f;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 255, 159, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #2a2d3f;
+            color: #00ff9f;
+            border: 2px solid #00ff9f;
+        }
+
+        .btn-secondary:hover {
+            background: #00ff9f;
+            color: #08090f;
+        }
+
+        .results-screen {
+            display: none;
+            text-align: center;
+            animation: slideIn 0.4s ease;
+        }
+
+        .results-screen.show {
+            display: block;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00ff9f, #00d4ff);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            font-size: 14px;
+        }
+
+        .score-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: #08090f;
+        }
+
+        .score-max {
+            font-size: 18px;
+            color: #08090f;
+            opacity: 0.9;
+        }
+
+        .score-percentage {
+            font-size: 28px;
+            font-weight: 800;
+            color: #00ff9f;
+            margin: 15px 0;
+        }
+
+        .stars {
+            font-size: 40px;
+            margin: 15px 0;
+            letter-spacing: 5px;
+        }
+
+        .result-message {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 15px 0;
+            color: #e0e0ff;
+        }
+
+        .result-code {
+            background: #0a0c14;
+            border: 2px solid #00ff9f;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #00ff9f;
+            word-break: break-all;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .back-link {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .back-link a {
+            color: #00ff9f;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .back-link a:hover {
+            color: #00ffff;
+            transform: translateX(-5px);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .question-text {
+                font-size: 16px;
+            }
+
+            .option {
+                font-size: 14px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>La Matière</h1>
+            <div class="topic-badge" id="topicBadge">États de la matière</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Question 1 / 20</div>
+        </div>
+
+        <div id="questionsSection">
+            <div id="questionContainer" class="question-container active">
+                <div class="question-number" id="questionNum">Question 1</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="options"></div>
+                <div class="feedback" id="feedback"></div>
+                <div class="button-group">
+                    <button class="btn btn-primary" id="submitBtn" onclick="submitAnswer()">Valider</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-screen" id="resultsScreen">
+            <h2 style="font-size: 24px; color: #e0e0ff; margin-bottom: 20px;">Résultats</h2>
+            <div class="score-circle">
+                <div class="score-number" id="scoreNumber">0</div>
+                <div class="score-max">/ 20</div>
+            </div>
+            <div class="score-percentage" id="scorePercentage">0%</div>
+            <div class="stars" id="stars"></div>
+            <div class="result-message" id="resultMessage"></div>
+            <div class="result-code" id="resultCode"></div>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="restartQuiz()">Recommencer</button>
+                <button class="btn btn-secondary" onclick="goHome()">Retour accueil</button>
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="/index.html">← Retour à l'accueil</a>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Combien d'états de la matière y a-t-il ?",
+                options: ["2", "3", "4", "5"],
+                correct: 2,
+                topic: "États de la matière",
+                explanation: "Il y a 4 états de la matière : solide, liquide, gaz, et plasma."
+            },
+            {
+                question: "Quel état de la matière a une forme fixe ?",
+                options: ["Liquide", "Gaz", "Solide", "Plasma"],
+                correct: 2,
+                topic: "États de la matière",
+                explanation: "Un solide a une forme fixe et un volume constant."
+            },
+            {
+                question: "Quel état de la matière prend la forme du récipient ?",
+                options: ["Solide", "Liquide", "Plasma", "Gaz"],
+                correct: 1,
+                topic: "États de la matière",
+                explanation: "Un liquide prend la forme du récipient mais garde un volume constant."
+            },
+            {
+                question: "Quel état de la matière occupe tout l'espace disponible ?",
+                options: ["Solide", "Liquide", "Gaz", "Plasma"],
+                correct: 2,
+                topic: "États de la matière",
+                explanation: "Un gaz occupe tout l'espace disponible et n'a ni forme ni volume fixe."
+            },
+            {
+                question: "Comment s'appelle le passage du solide au liquide ?",
+                options: ["Congélation", "Fusion", "Vaporisation", "Sublimation"],
+                correct: 1,
+                topic: "Changements d'état",
+                explanation: "La fusion est le passage d'un solide à un liquide sous l'effet de la chaleur."
+            },
+            {
+                question: "Comment s'appelle le passage du liquide au solide ?",
+                options: ["Fusion", "Vaporisation", "Congélation", "Liquéfaction"],
+                correct: 2,
+                topic: "Changements d'état",
+                explanation: "La congélation est le passage d'un liquide à un solide par refroidissement."
+            },
+            {
+                question: "Comment s'appelle le passage du liquide au gaz ?",
+                options: ["Condensation", "Vaporisation", "Sublimation", "Fusion"],
+                correct: 1,
+                topic: "Changements d'état",
+                explanation: "La vaporisation est le passage d'un liquide à un gaz sous l'effet de la chaleur."
+            },
+            {
+                question: "Comment s'appelle le passage du gaz au liquide ?",
+                options: ["Vaporisation", "Condensation", "Sublimation", "Ionisation"],
+                correct: 1,
+                topic: "Changements d'état",
+                explanation: "La condensation est le passage d'un gaz à un liquide par refroidissement."
+            },
+            {
+                question: "À quelle température l'eau bout-elle en conditions normales ?",
+                options: ["0°C", "50°C", "100°C", "150°C"],
+                correct: 2,
+                topic: "Changements d'état",
+                explanation: "L'eau bout à 100°C en conditions normales de pression."
+            },
+            {
+                question: "À quelle température l'eau gèle-t-elle en conditions normales ?",
+                options: ["0°C", "-10°C", "10°C", "-20°C"],
+                correct: 0,
+                topic: "Changements d'état",
+                explanation: "L'eau gèle à 0°C en conditions normales."
+            },
+            {
+                question: "Quel est le premier stade du cycle de l'eau ?",
+                options: ["Condensation", "Évaporation", "Précipitation", "Infiltration"],
+                correct: 1,
+                topic: "Cycle de l'eau",
+                explanation: "L'évaporation est le premier stade : l'eau s'évapore du sol et des océans."
+            },
+            {
+                question: "Qu'est-ce que la condensation dans le cycle de l'eau ?",
+                options: ["Eau qui s'évapore", "Eau qui se refroidit et devient liquide", "Eau qui tombe", "Eau qui s'infiltre"],
+                correct: 1,
+                topic: "Cycle de l'eau",
+                explanation: "La condensation est la formation de nuages à partir de la vapeur d'eau refroidie."
+            },
+            {
+                question: "Qu'est-ce que la précipitation ?",
+                options: ["L'évaporation de l'eau", "La chute d'eau (pluie, neige)", "L'infiltration", "La transpiration"],
+                correct: 1,
+                topic: "Cycle de l'eau",
+                explanation: "La précipitation est la chute d'eau sous forme de pluie, neige ou grêle."
+            },
+            {
+                question: "Qu'est-ce qu'un mélange ?",
+                options: ["Une réaction chimique", "Un ensemble d'au moins deux substances", "Un composé chimique", "Un gaz"],
+                correct: 1,
+                topic: "Mélanges et solutions",
+                explanation: "Un mélange est l'association de deux ou plusieurs substances."
+            },
+            {
+                question: "Qu'est-ce qu'une solution ?",
+                options: ["Un mélange hétérogène", "Un mélange homogène", "Une séparation", "Un composé"],
+                correct: 1,
+                topic: "Mélanges et solutions",
+                explanation: "Une solution est un mélange homogène où les substances sont uniformément distribuées."
+            },
+            {
+                question: "Qu'est-ce qu'un mélange hétérogène ?",
+                options: ["Uniforme", "Où on voit les différents composants", "Transparent", "Liquide"],
+                correct: 1,
+                topic: "Mélanges et solutions",
+                explanation: "Un mélange hétérogène est un mélange où on peut voir les différents composants."
+            },
+            {
+                question: "Quel est un exemple de propriété physique d'un matériau ?",
+                options: ["Densité", "Combustion", "Oxydation", "Réaction"],
+                correct: 0,
+                topic: "Propriétés des matériaux",
+                explanation: "La densité est une propriété physique. Les autres sont des propriétés chimiques."
+            },
+            {
+                question: "Quel matériau est le plus dense ?",
+                options: ["L'eau", "Le fer", "Le bois", "L'aluminium"],
+                correct: 1,
+                topic: "Propriétés des matériaux",
+                explanation: "Le fer a une densité très élevée (7,87 g/cm³) comparée aux autres matériaux."
+            },
+            {
+                question: "Quel matériau est conducteur de l'électricité ?",
+                options: ["Bois", "Plastique", "Cuivre", "Caoutchouc"],
+                correct: 2,
+                topic: "Propriétés des matériaux",
+                explanation: "Le cuivre est un bon conducteur d'électricité, contrairement aux isolants."
+            },
+            {
+                question: "Qu'est-ce que la solubilité ?",
+                options: ["La capacité à flotter", "La capacité à se dissoudre", "La dureté", "La flexibilité"],
+                correct: 1,
+                topic: "Propriétés des matériaux",
+                explanation: "La solubilité est la capacité d'une substance à se dissoudre dans un solvant."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+        const TOTAL_QUESTIONS = 20;
+
+        function shuffleArray(arr) {
+            const copy = [...arr];
+            for (let i = copy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+        }
+
+        const selectedQuestions = shuffleArray(questions).slice(0, TOTAL_QUESTIONS);
+
+        function loadQuestion() {
+            if (currentQuestion >= TOTAL_QUESTIONS) {
+                showResults();
+                return;
+            }
+
+            answered = false;
+            const q = selectedQuestions[currentQuestion];
+
+            document.getElementById('questionNum').textContent = `Question ${currentQuestion + 1}`;
+            document.getElementById('questionText').textContent = q.question;
+            document.getElementById('topicBadge').textContent = q.topic;
+            document.getElementById('progressText').textContent = `Question ${currentQuestion + 1} / ${TOTAL_QUESTIONS}`;
+            document.getElementById('progressFill').style.width = `${((currentQuestion) / TOTAL_QUESTIONS) * 100}%`;
+
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((option, index) => {
+                const btn = document.createElement('div');
+                btn.className = 'option';
+                btn.textContent = option;
+                btn.onclick = () => selectOption(index);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
+            document.getElementById('submitBtn').textContent = 'Valider';
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function selectOption(index) {
+            if (answered) return;
+
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                opt.classList.toggle('selected', i === index);
+            });
+        }
+
+        function submitAnswer() {
+            if (answered) {
+                currentQuestion++;
+                loadQuestion();
+                return;
+            }
+
+            const selected = document.querySelector('.option.selected');
+            if (!selected) return;
+
+            answered = true;
+            const q = selectedQuestions[currentQuestion];
+            const selectedIndex = Array.from(document.querySelectorAll('.option')).indexOf(selected);
+            const isCorrect = selectedIndex === q.correct;
+
+            if (isCorrect) {
+                score++;
+                selected.classList.add('correct');
+                document.getElementById('feedback').classList.add('show', 'correct');
+                document.getElementById('feedback').textContent = '✓ Correct ! ' + q.explanation;
+            } else {
+                selected.classList.add('incorrect');
+                document.querySelectorAll('.option')[q.correct].classList.add('correct');
+                document.getElementById('feedback').classList.add('show', 'incorrect');
+                document.getElementById('feedback').textContent = '✗ Incorrect. ' + q.explanation;
+            }
+
+            document.getElementById('submitBtn').textContent = currentQuestion === TOTAL_QUESTIONS - 1 ? 'Voir les résultats' : 'Suivant';
+        }
+
+        function showResults() {
+            document.getElementById('questionsSection').style.display = 'none';
+            document.getElementById('resultsScreen').classList.add('show');
+
+            const percentage = Math.round((score / TOTAL_QUESTIONS) * 100);
+            let stars = '';
+
+            if (percentage === 100) stars = '★★★★★';
+            else if (percentage >= 80) stars = '★★★★☆';
+            else if (percentage >= 60) stars = '★★★☆☆';
+            else if (percentage >= 40) stars = '★★☆☆☆';
+            else stars = '★☆☆☆☆';
+
+            document.getElementById('scoreNumber').textContent = score;
+            document.getElementById('scorePercentage').textContent = percentage + '%';
+            document.getElementById('stars').textContent = stars;
+
+            let message = '';
+            if (percentage === 100) message = 'Scientifique brillant ! 🚀';
+            else if (percentage >= 80) message = 'Excellent ! Vous maîtrisez les bases ! 🎉';
+            else if (percentage >= 60) message = 'Bien ! Continuez l\'apprentissage ! 💪';
+            else if (percentage >= 40) message = 'Pas mal ! Renforcez vos connaissances ! 📚';
+            else message = 'À revoir ! Relisez vos cours ! 💯';
+
+            document.getElementById('resultMessage').textContent = message;
+
+            const now = new Date();
+            const resultCode = `v:'6_sci'|dt:${now.toISOString()}|score:${score}|pct:${percentage}|stars:${stars.length}`;
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('questionsSection').style.display = 'block';
+            document.getElementById('resultsScreen').classList.remove('show');
+            loadQuestion();
+        }
+
+        function goHome() {
+            window.location.href = '/index.html';
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>

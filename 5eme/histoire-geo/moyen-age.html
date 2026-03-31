@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Moyen Âge - 5ème Histoire</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(135deg, #08090f 0%, #1a1b2e 100%);
+            font-family: 'Nunito', sans-serif;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(255, 0, 110, 0.3);
+        }
+        h1 {
+            font-size: 2em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .score-display {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .question-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(131, 56, 236, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .question-number {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+        .question-text {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #00d9ff 0%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .context-box {
+            background: rgba(0, 200, 255, 0.1);
+            border-left: 4px solid rgba(0, 200, 255, 0.8);
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+        .options {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .option {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .option:hover:not(:disabled) {
+            background: rgba(131, 56, 236, 0.2);
+            border-color: rgba(131, 56, 236, 0.5);
+            transform: translateX(5px);
+        }
+        .option.selected {
+            background: rgba(131, 56, 236, 0.4);
+            border-color: rgba(131, 56, 236, 0.8);
+        }
+        .option.correct {
+            background: rgba(0, 255, 100, 0.3);
+            border-color: rgba(0, 255, 100, 0.8);
+        }
+        .option.incorrect {
+            background: rgba(255, 0, 100, 0.3);
+            border-color: rgba(255, 0, 100, 0.8);
+        }
+        .option:disabled {
+            cursor: not-allowed;
+        }
+        .explanation {
+            background: rgba(0, 255, 150, 0.1);
+            border-left: 4px solid rgba(0, 255, 150, 0.8);
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        .button {
+            background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        .button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 0, 110, 0.3);
+        }
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .results-screen {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+        .results-screen.active {
+            display: block;
+        }
+        .final-score {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d9ff 0%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        .percentage {
+            font-size: 1.8em;
+            margin: 15px 0;
+            color: #00ff88;
+        }
+        .stars {
+            font-size: 2.5em;
+            margin: 20px 0;
+        }
+        .result-code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            word-break: break-all;
+            font-size: 0.85em;
+            font-family: monospace;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid rgba(0, 255, 150, 0.3);
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #00d9ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            transform: translateX(-5px);
+        }
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5em;
+            }
+            .question-text {
+                font-size: 1em;
+            }
+            .final-score {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏰 Le Moyen Âge</h1>
+            <div class="score-display"><span id="currentScore">0</span>/25</div>
+        </header>
+
+        <div id="questionContainer" class="question-container">
+            <div class="question-number">Question <span id="questionNum">1</span>/25</div>
+            <div class="context-box" id="contextBox" style="display: none;"></div>
+            <div class="question-text" id="questionText"></div>
+            <div class="options" id="optionsContainer"></div>
+            <div class="explanation" id="explanation" style="display: none;"></div>
+            <div class="button-group">
+                <button id="submitBtn" class="button">Soumettre</button>
+                <button id="nextBtn" class="button" style="display: none;">Question suivante</button>
+            </div>
+        </div>
+
+        <div id="resultsScreen" class="results-screen">
+            <h2>Session terminée!</h2>
+            <div class="final-score" id="finalScore">0/25</div>
+            <div class="percentage" id="percentageDisplay">0%</div>
+            <div class="stars" id="starsDisplay">☆☆☆☆☆</div>
+            <div class="result-code" id="resultCode"></div>
+            <button class="button" onclick="location.reload()">Recommencer</button>
+            <a href="/index.html" class="back-link">← Retour</a>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {q: "Quelle était la période du Moyen Âge?", opts: ["500-1500", "1000-2000", "800-1300", "600-1400"], ans: 0, ctx: "Le Moyen Âge s'étend du VIe au XVe siècle.", exp: "De 476 (chute de Rome) à 1492 (découverte de l'Amérique), soit environ 1000 ans."},
+            {q: "Quel empire byzantin a survécu après la chute de Rome?", opts: ["Empire romain d'Orient", "Empire arabe", "Empire germanique", "Empire franc"], ans: 0, ctx: "Byzance a conservé la civilisation romaine en Orient.", exp: "L'Empire byzantin a perduré jusqu'à 1453 à Constantinople."},
+            {q: "Qui était Justinien en tant que leader byzantin?", opts: ["Guerrier", "Empereur réformateur", "Pape", "Merchant"], ans: 1, ctx: "Justinien (482-565) est l'un des plus grands empereurs byzantins.", exp: "Il a reconquis le bassin méditerranéen et codifié le droit (Code Justinien)."},
+            {q: "Quel évenement majeur en 622 marqua l'Islam?", opts: ["Naissance de Mahomet", "L'Hégire (migration à Médine)", "Première croisade", "Chute de Bagdad"], ans: 1, ctx: "L'Hégire est l'année du calendrier islamique.", exp: "C'est l'année zéro de l'ère islamique, quand Mahomet a fui La Mecque pour Médine."},
+            {q: "Quel empire arabe a étendu son pouvoir au VIIe-VIIIe siècles?", opts: ["Empire ottoman", "Califat omeyyade", "Empire safavide", "Empire moghol"], ans: 1, ctx: "Les omeyyades ont fondé un empire couvrant trois continents.", exp: "De 661 à 750, l'Empire omeyyade s'étend de l'Espagne à l'Asie centrale."},
+            {q: "Que signifie 'féodalité'?", opts: ["Système économique urbain", "Système d'échange de terre pour protection", "Commerce maritime", "Gouvernement démocratique"], ans: 1, ctx: "La féodalité est le système politique et social du Moyen Âge occidental.", exp: "Seigneurs donnent des terres (fiefs) aux vassaux en échange de loyauté et d'aide militaire."},
+            {q: "Quel était le statut d'un vassal?", opts: ["Ouvrier libre", "Noble qui doit loyauté à un seigneur", "Paysan", "Guerrier sans terre"], ans: 1, ctx: "Les vassaux formaient la noblesse féodale.", exp: "Un vassal est un noble lié à un seigneur par un serment d'hommage."},
+            {q: "Qu'est-ce qu'un fief?", opts: ["Une ville fortifiée", "Une terre donnée à un vassal", "Une armée du roi", "Un titre religieux"], ans: 1, ctx: "Le fief est l'élément économique de la féodalité.", exp: "C'est une portion de terre que le seigneur cède au vassal en échange de service."},
+            {q: "Quel rôle jouait l'Église au Moyen Âge?", opts: ["Militaire", "Purement religieux", "Politique, culturelle et religieuse", "Commercial"], ans: 2, ctx: "L'Église était la plus grande puissance du Moyen Âge occidental.", exp: "Elle contrôlait des terres, instruisait, jugeait et influençait les rois."},
+            {q: "Qui était le chef de l'Église catholique au Moyen Âge?", opts: ["L'Empereur", "Le Pape", "Le Patriarche", "Le Roi"], ans: 1, ctx: "Le Pape résidait à Rome (puis Avignon).", exp: "Le Pape était le chef suprême de la chrétienté occidentale."},
+            {q: "Quel ordre religieux a fondé les premiers monastères?", opts: ["Jésuites", "Bénédictins", "Franciscains", "Dominicains"], ans: 1, ctx: "Les monastères bénédictins preservaient le savoir antique.", exp: "L'ordre de Saint Benoît (VIe s.) a créé les premiers grands monastères."},
+            {q: "Qu'est-ce qu'une croisade?", opts: ["Un commerce de route", "Une expédition militaire pour reprendre la Terre Sainte", "Une réforme religieuse", "Une épidémie"], ans: 1, ctx: "Les croisades (1096-1291) furent des expéditions lancées par le Pape.", exp: "Elles visaient à reprendre Jérusalem et les terres chrétiennes aux musulmans."},
+            {q: "Combien de croisades majeures y a-t-il eu?", opts: ["2", "4", "8", "12"], ans: 2, ctx: "Les croisades s'échelonnent sur près de 200 ans.", exp: "Généralement, les historiens en dénombrent 8 croisades officielles."},
+            {q: "Quelle ville était le centre des croisades?", opts: ["Rome", "Constantinople", "Jérusalem", "Damas"], ans: 2, ctx: "Jérusalem était sacrée pour les trois religions monothéistes.", exp: "Elle était l'objectif principal des croisades chrétiennes."},
+            {q: "Quand la Grande Mosquée de Cordoue a-t-elle été construite?", opts: ["VIe siècle", "VIIIe-Xe siècles", "XIIe siècle", "XIVe siècle"], ans: 1, ctx: "Cordoue était le centre de l'Al-Andalus musulman.", exp: "C'est l'une des plus belles mosquées médiévales, datant du VIIIe-Xe siècles."},
+            {q: "Qu'est-ce qu'Al-Andalus?", opts: ["Un empire en Afrique", "Le territoire musulman en Péninsule Ibérique", "Une ville fortifiée", "Un ordre religieux"], ans: 1, ctx: "Al-Andalus prospéra pendant 8 siècles en Espagne.", exp: "C'est le territoire musulman établi en Espagne du VIIIe au XVe siècles."},
+            {q: "Quel était le principal métier d'un serf au Moyen Âge?", opts: ["Marchand", "Agriculteur lié à la terre", "Soldat", "Artisan"], ans: 1, ctx: "Les serfs formaient la majorité de la population rurale.", exp: "Ils travaillaient la terre du seigneur et devaient lui payer des taxes."},
+            {q: "Qu'est-ce que le droit du seigneur de cuissage?", opts: ["Un impôt sur le vin", "Un droit fictif (légende)", "Un droit de prélever du grain", "Un droit matrimonial"], ans: 1, ctx: "C'est l'un des mythes du Moyen Âge.", exp: "Prétendument, un seigneur avait un droit sur la première nuit du mariage d'un serf."},
+            {q: "Quel fut l'impact de la Peste Noire (1347-1351)?", opts: ["Prospérité économique", "Mort de 25-50% de la population d'Europe", "Expansion coloniale", "Réforme religieuse"], ans: 1, ctx: "La Peste Noire fut la pire épidémie du Moyen Âge.", exp: "Elle tua environ 25 millions de personnes et restructura la société féodale."},
+            {q: "Quand ont débuté les Grandes Découvertes?", opts: ["XIIIe siècle", "Fin XVe siècle (1492)", "XVIe siècle complet", "Fin XVIIe siècle"], ans: 1, ctx: "1492 marque la découverte de l'Amérique par Christophe Colomb.", exp: "Les Grandes Découvertes (fin XVe-XVIe) marquent la fin du Moyen Âge."},
+            {q: "Qui était Christophe Colomb?", opts: ["Un mathématicien", "Un explorateur ayant atteint l'Amérique", "Un marchand vénitien", "Un cartographe arabe"], ans: 1, ctx: "Colomb partit d'Espagne en 1492 sous patronage royal.", exp: "Navigateur génois au service d'Isabelle et Ferdinand d'Espagne."},
+            {q: "Quel était l'objectif initial des grandes découvertes?", opts: ["Conquérir des terres", "Chercher une nouvelle route vers l'Asie", "Convertir les infidèles", "Étendre le Pape"], ans: 1, ctx: "Les marchands européens cherchaient à contourner le monopole musulman.", exp: "Atteindre l'Asie et les épices en contournant les routes terrestres contrôlées par l'Islam."},
+            {q: "Quels métaux attiraient les Européens en Amérique?", opts: ["Fer et cuivre", "Or et argent", "Bronze et étain", "Plomb et zinc"], ans: 1, ctx: "La richesse minérale des Amériques fascina les conquistadors.", exp: "L'or et l'argent américains enrichirent l'Europe du XVIe siècle."},
+            {q: "Quel était le principal motif de la construction des châteaux forts?", opts: ["Résidence royale confortable", "Défense militaire et contrôle territorial", "Démonstration artistique", "Lieu de prière"], ans: 1, ctx: "Les châteaux forts dominaient le paysage féodal.", exp: "Ils servaient à défendre les fiefs et à montrer la puissance du seigneur."},
+            {q: "Quels métiers dominaient dans les villes médiévales?", opts: ["Agriculture", "Artisanat et commerce", "Pêche", "Minéraux"], ans: 1, ctx: "Les villes médiévales s'organisaient autour des corporations de métiers.", exp: "Charpentiers, tisserands, forgerons, marchands formaient le cœur urbain."},
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+        const sessionQuestions = questions.slice(0, 25);
+
+        function loadQuestion() {
+            const q = sessionQuestions[currentQuestion];
+            document.getElementById('questionNum').textContent = currentQuestion + 1;
+            document.getElementById('questionText').innerHTML = q.q;
+            document.getElementById('currentScore').textContent = score;
+
+            if (q.ctx) {
+                document.getElementById('contextBox').textContent = q.ctx;
+                document.getElementById('contextBox').style.display = 'block';
+            }
+
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            q.opts.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option';
+                btn.textContent = opt;
+                btn.onclick = () => selectOption(i);
+                btn.id = `opt${i}`;
+                container.appendChild(btn);
+            });
+
+            document.getElementById('explanation').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'none';
+            answered = false;
+        }
+
+        let selectedOption = null;
+        function selectOption(index) {
+            if (answered) return;
+            selectedOption = index;
+            document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+            document.getElementById(`opt${index}`).classList.add('selected');
+        }
+
+        function submitAnswer() {
+            if (selectedOption === null) return;
+            answered = true;
+            const q = sessionQuestions[currentQuestion];
+            const correct = selectedOption === q.ans;
+
+            if (correct) {
+                score++;
+                document.getElementById(`opt${selectedOption}`).classList.add('correct');
+            } else {
+                document.getElementById(`opt${selectedOption}`).classList.add('incorrect');
+                document.getElementById(`opt${q.ans}`).classList.add('correct');
+            }
+
+            document.getElementById('explanation').textContent = q.exp;
+            document.getElementById('explanation').style.display = 'block';
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'block';
+
+            document.querySelectorAll('.option').forEach(o => o.disabled = true);
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= 25) {
+                showResults();
+            } else {
+                selectedOption = null;
+                document.querySelectorAll('.option').forEach(o => o.disabled = false);
+                loadQuestion();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('questionContainer').style.display = 'none';
+            document.getElementById('resultsScreen').classList.add('active');
+
+            const pct = Math.round((score / 25) * 100);
+            const stars = Math.ceil(pct / 20);
+
+            document.getElementById('finalScore').textContent = `${score}/25`;
+            document.getElementById('percentageDisplay').textContent = `${pct}%`;
+            document.getElementById('starsDisplay').textContent = '⭐'.repeat(stars) + '☆'.repeat(5 - stars);
+
+            const resultData = {
+                v: '5_hist',
+                dt: new Date().toISOString(),
+                score: `${score}/25`,
+                pct: pct,
+                stars: stars
+            };
+            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+            document.getElementById('resultCode').textContent = encoded;
+        }
+
+        loadQuestion();
+        document.getElementById('submitBtn').onclick = submitAnswer;
+        document.getElementById('nextBtn').onclick = nextQuestion;
+    </script>
+</body>
+</html>

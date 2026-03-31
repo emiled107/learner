@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QCM Histoire-Géo - 1ère</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #08090f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(243, 156, 18, 0.3);
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .subtitle {
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .question-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(243, 156, 18, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+        }
+        .question-number {
+            color: #f39c12;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        .question-text {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 12px;
+            background: rgba(243, 156, 18, 0.1);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            border-color: #f39c12;
+            background: rgba(243, 156, 18, 0.2);
+        }
+        .option.selected {
+            background: rgba(243, 156, 18, 0.3);
+            border-color: #f39c12;
+        }
+        .option.correct {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+        }
+        .option.incorrect {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #f44336;
+        }
+        .explanation {
+            background: rgba(255, 195, 0, 0.1);
+            border-left: 4px solid #ffc300;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 5px;
+            color: #d0d0d0;
+            font-size: 0.95em;
+            display: none;
+        }
+        .explanation.show {
+            display: block;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f39c12 0%, #d68910 100%);
+            transition: width 0.3s;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Nunito', sans-serif;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+        }
+        .btn-secondary {
+            background: rgba(243, 156, 18, 0.2);
+            color: #f39c12;
+            border: 2px solid #f39c12;
+        }
+        .btn-secondary:hover {
+            background: rgba(243, 156, 18, 0.3);
+        }
+        .results {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(243, 156, 18, 0.2) 0%, rgba(214, 137, 16, 0.2) 100%);
+            border-radius: 12px;
+            border: 2px solid rgba(243, 156, 18, 0.3);
+        }
+        .score-display {
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        .stars {
+            font-size: 2.5em;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+        .result-code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            word-break: break-all;
+            font-size: 0.9em;
+            color: #4caf50;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #f39c12;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            color: #d68910;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            .question-container {
+                padding: 18px;
+            }
+            .score-display {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>QCM Histoire-Géo</h1>
+            <p class="subtitle">Classe de 1ère - Programme complet</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div id="quizContent"></div>
+
+        <div id="resultsSection" style="display:none;">
+            <div class="results">
+                <h2>Résultats</h2>
+                <div class="score-display" id="scoreDisplay">0/0</div>
+                <div class="stars" id="starsDisplay">☆☆☆☆☆</div>
+                <p id="percentageText"></p>
+                <div class="result-code" id="resultCode"></div>
+                <a href="/index.html" class="back-link">← Retour à l'accueil</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "En quelle année débute la Révolution française?",
+                options: ["1789", "1792", "1799", "1815"],
+                correct: 0,
+                explanation: "La Révolution française débute en 1789 avec la prise de la Bastille."
+            },
+            {
+                question: "Quel document fondamental est adopté en 1789?",
+                options: ["La Constitution", "La Déclaration des droits de l'homme et du citoyen", "Le Code civil", "L'Acte constitutionnel"],
+                correct: 1,
+                explanation: "La Déclaration des droits de l'homme et du citoyen proclame l'égalité et les libertés."
+            },
+            {
+                question: "Quel est le principal exploit militaire de Napoléon en 1798-1799?",
+                options: ["La conquête de la Russie", "La campagne d'Égypte", "La défaite de l'Autriche", "L'invasion de l'Espagne"],
+                correct: 1,
+                explanation: "Napoléon conduit la campagne d'Égypte de 1798 à 1799, consolidant sa réputation."
+            },
+            {
+                question: "Quel événement marque la fin du Consulat?",
+                options: ["Le traité de Tilsit", "Le coup d'État du 18 brumaire", "La mort de Robespierre", "Le sacre de 1804"],
+                correct: 3,
+                explanation: "Le sacre de Napoléon en 1804 établit l'Empire, mettant fin au Consulat."
+            },
+            {
+                question: "Quel est le principal code légal de l'ère napoléonienne?",
+                options: ["La Déclaration", "Le Code civil (Code Napoléon)", "Le Contrat social", "L'Ordonnance royale"],
+                correct: 1,
+                explanation: "Le Code civil de 1804 établit un cadre légal unifié en France."
+            },
+            {
+                question: "Quel est le mouvement politique dominant en Europe après 1815?",
+                options: ["Le libéralisme", "Le nationalisme", "La restauration conservatrice et le nationalisme", "L'anarchisme"],
+                correct: 2,
+                explanation: "Après le Congrès de Vienne, les monarchies restaurées combattent le libéralisme et le nationalisme."
+            },
+            {
+                question: "Quel traité met fin aux guerres napoléoniennes?",
+                options: ["Le traité de Westphalie", "Le traité de Paris (1815)", "Le traité d'Utrecht", "Le traité de Versailles"],
+                correct: 1,
+                explanation: "Le traité de Paris en 1815 restaure la paix après la chute de Napoléon."
+            },
+            {
+                question: "Quels mouvements politiques caractérisent le XIXe siècle en Europe?",
+                options: ["Féodalisme et absolutisme", "Libéralisme et nationalisme", "Communisme exclusif", "Monarchie absolue"],
+                correct: 1,
+                explanation: "Le XIXe siècle voit l'émergence du libéralisme et des mouvements nationalistes."
+            },
+            {
+                question: "Quel événement déclenche l'unification de l'Italie?",
+                options: ["La révolution de 1848", "Les guerres de l'Indépendance italienne", "Le Risorgimento (1850-1871)", "La Restauration"],
+                correct: 2,
+                explanation: "Le Risorgimento (1850-1871) unifie l'Italie sous Victor-Emmanuel II et Cavour."
+            },
+            {
+                question: "Quel est le principal leader de l'unification allemande?",
+                options: ["Bismarck", "Guillaume Ier", "Frédéric Barberousse", "Metternich"],
+                correct: 0,
+                explanation: "Bismarck, ministre-président de Prusse, dirige l'unification allemande (1864-1871)."
+            },
+            {
+                question: "Quel événement mène à l'unification allemande?",
+                options: ["La révolution de 1848", "Les guerres d'unification (1864-1871)", "La Restauration", "Le congrès de Vienne"],
+                correct: 1,
+                explanation: "Trois guerres (contre le Danemark, l'Autriche, la France) unifient l'Allemagne."
+            },
+            {
+                question: "Quand la IIIe République est-elle établie?",
+                options: ["1848", "1870", "1875", "1789"],
+                correct: 2,
+                explanation: "La IIIe République débute après la chute de l'Empire en 1870, consolidée en 1875."
+            },
+            {
+                question: "Quel événement renforce le nationalism français?",
+                options: ["La victoire sur la Prusse", "La défaite de 1870 contre la Prusse", "Le traité de Francfort", "La Commune"],
+                correct: 1,
+                explanation: "La défaite de 1870 face à la Prusse provoque un sentiment de revanche et de nationalisme."
+            },
+            {
+                question: "Qu'est-ce que l'Affaire Dreyfus?",
+                options: ["Une bataille", "Un scandale politique sur la justice et l'antisémitisme", "Une réforme électorale", "Une révolution"],
+                correct: 1,
+                explanation: "L'Affaire Dreyfus (1894) divise la France sur l'innocence d'un officier juif accusé d'espionnage."
+            },
+            {
+                question: "Quel est le principal enjeu de la Première Guerre mondiale?",
+                options: ["L'indépendance coloniale", "La domination européenne et mondiale", "L'abolition de l'esclavage", "La démocratie"],
+                correct: 1,
+                explanation: "La Grande Guerre oppose les puissances pour la domination politique et économique."
+            },
+            {
+                question: "Quel événement déclenche la Première Guerre mondiale?",
+                options: ["La annexion de l'Alsace-Lorraine", "L'assassinat de l'archiduc François-Ferdinand", "La révolte russe", "L'invasion belge"],
+                correct: 1,
+                explanation: "L'assassinat de l'archiduc François-Ferdinand à Sarajevo déclenche la Première Guerre mondiale."
+            },
+            {
+                question: "Quel front est caractérisé par la tranchée?",
+                options: ["Le front oriental", "Le front occidental", "Le front africain", "Le front pacifique"],
+                correct: 1,
+                explanation: "Le front occidental (France-Allemagne) est marqué par la Guerre de tranchée (1914-1918)."
+            },
+            {
+                question: "Quel événement termine la Grande Guerre?",
+                options: ["La révolution russe", "L'armistice du 11 novembre 1918", "Le traité de Versailles", "La prise de Berlin"],
+                correct: 1,
+                explanation: "L'armistice du 11 novembre 1918 met fin aux combats de la Première Guerre mondiale."
+            },
+            {
+                question: "Quel traité codifie la paix après la Première Guerre mondiale?",
+                options: ["Le traité de Paris", "Le traité de Versailles", "Le traité de Westphalie", "Le traité d'Utrecht"],
+                correct: 1,
+                explanation: "Le traité de Versailles impose des conditions sévères à l'Allemagne."
+            },
+            {
+                question: "Quel concept géographique décrit les métropoles et leur influence?",
+                options: ["L'urbanisation", "La métropolisation", "L'industrialisation", "La ruralité"],
+                correct: 1,
+                explanation: "La métropolisation désigne la concentration du pouvoir et de l'activité dans les grandes villes."
+            },
+            {
+                question: "Quel est le principal enjeu des espaces productifs?",
+                options: ["La conservation de la nature", "L'organisation de la production agricole et industrielle", "Le tourisme", "Le droit d'habiter"],
+                correct: 1,
+                explanation: "Les espaces productifs incluent l'agriculture, l'industrie et les zones commerciales."
+            },
+            {
+                question: "Comment la France s'insère-t-elle dans la mondialisation?",
+                options: ["Par l'isolement", "Par les échanges commerciaux, les investissements et le tourisme", "Par la colonisation", "Par la protectionnisme total"],
+                correct: 1,
+                explanation: "La France participe activement au commerce mondial et aux échanges internationaux."
+            },
+            {
+                question: "Quel est le rôle des espaces ruraux contemporains?",
+                options: ["Disparition totale", "Adaptation avec diversification (agriculture, tourisme, résidence)", "Aucun rôle", "Seule production agricole"],
+                correct: 1,
+                explanation: "Les espaces ruraux se diversifient avec l'agritourisme, les résidences secondaires et les services."
+            },
+            {
+                question: "Quel processus caractérise la relation entre l'Occident et le monde?",
+                options: ["L'isolement", "La mondialisation avec inégalités Nord-Sud", "L'égalité globale", "Le retrait occidental"],
+                correct: 1,
+                explanation: "La mondialisation crée des connexions mais aussi des inégalités entre régions riches et pauvres."
+            },
+            {
+                question: "Qu'est-ce que la Triade mondiale?",
+                options: ["Un traité commercial", "Les trois principales puissances économiques (Amérique du Nord, Europe, Asie)", "Une alliance militaire", "Un bloc politique"],
+                correct: 1,
+                explanation: "La Triade désigne les trois zones économiques dominantes: Amérique du Nord, Europe, Asie-Pacifique."
+            },
+            {
+                question: "Quel est le principal vecteur de la mondialisation?",
+                options: ["Les armées", "Le commerce, les investissements et les technologies", "La politique", "La culture locale"],
+                correct: 1,
+                explanation: "Le commerce international, les investissements directs et Internet favorisent la mondialisation."
+            },
+            {
+                question: "Quel est l'impact de la mondialisation sur les espaces locaux?",
+                options: ["Aucun", "Standardisation, polarisation, création de nouvelles inégalités", "Amélioration universelle", "Retour au féodalisme"],
+                correct: 1,
+                explanation: "La mondialisation transforme les espaces locaux, créant des inégalités et une certaine uniformité."
+            },
+            {
+                question: "Quel est le rôle de la France dans la géopolitique mondiale?",
+                options: ["Aucun rôle", "Puissance politique, culturelle et économique influente en Europe et mondialement", "Puissance mineure", "Isolationnisme"],
+                correct: 1,
+                explanation: "La France reste une puissance majeure par son économie, sa culture et son influence politique."
+            },
+            {
+                question: "Comment les flux mondiaux transforment-ils l'Europe?",
+                options: ["Aucune transformation", "Par l'intégration économique, la migration et les échanges", "Par l'isolement croissant", "Par la désindustrialisation"],
+                correct: 1,
+                explanation: "L'Europe se transforme par l'intégration (UE), les migrations et l'interdépendance économique."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        const userAnswers = [];
+        const startTime = Date.now();
+
+        function initQuiz() {
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const question = quizData[currentQuestion];
+            const total = quizData.length;
+            const progress = ((currentQuestion + 1) / total) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            let html = `
+                <div class="question-container">
+                    <div class="question-number">Question ${currentQuestion + 1}/${total}</div>
+                    <div class="question-text">${question.question}</div>
+                    <div class="options">
+            `;
+
+            question.options.forEach((option, index) => {
+                html += `
+                    <div class="option" onclick="selectOption(${index})">
+                        <input type="radio" name="question${currentQuestion}" value="${index}" id="opt${index}">
+                        <label for="opt${index}">${option}</label>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <div class="explanation" id="explanation${currentQuestion}">
+                        <strong>Explication:</strong> ${question.explanation}
+                    </div>
+                    <div class="button-group">
+                        ${currentQuestion > 0 ? '<button class="btn-secondary" onclick="previousQuestion()">← Précédent</button>' : ''}
+                        <button class="btn-primary" onclick="nextQuestion()" id="nextBtn">Suivant →</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('quizContent').innerHTML = html;
+            document.getElementById('nextBtn').disabled = true;
+        }
+
+        function selectOption(index) {
+            userAnswers[currentQuestion] = index;
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('.option')[index].classList.add('selected');
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById(`explanation${currentQuestion}`).classList.add('show');
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function showResults() {
+            score = userAnswers.filter((ans, i) => ans === quizData[i].correct).length;
+            const percentage = Math.round((score / quizData.length) * 100);
+            const stars = Math.ceil((percentage / 100) * 5);
+
+            const dt = new Date().toISOString();
+            const resultData = {
+                v: '1_histgeo',
+                dt: dt,
+                score: score,
+                total: quizData.length,
+                pct: percentage,
+                stars: stars
+            };
+
+            const resultCode = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('scoreDisplay').textContent = `${score}/${quizData.length}`;
+            document.getElementById('percentageText').innerHTML = `Résultat: ${percentage}%`;
+            document.getElementById('starsDisplay').textContent = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        window.addEventListener('load', initQuiz);
+    </script>
+</body>
+</html>

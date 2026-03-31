@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Géographie de France</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            font-family: 'Nunito', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #08090f 0%, #1a1b2e 50%, #0f1628 100%);
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #00d4ff, #7c3aed, #ff006e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 1rem;
+        }
+
+        .mode-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .mode-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1a1b2e 0%, #2d1b3d 100%);
+            border: 2px solid #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .question-number {
+            color: #00d4ff;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .question {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .choices {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .choice-btn {
+            padding: 15px 20px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            background: #0f1628;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .choice-btn:hover {
+            border-color: #00d4ff;
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .choice-btn.correct {
+            background: linear-gradient(135deg, #00c896 0%, #00e5a0 100%);
+            border-color: #00e5a0;
+            box-shadow: 0 5px 20px rgba(0, 229, 160, 0.4);
+        }
+
+        .choice-btn.incorrect {
+            background: linear-gradient(135deg, #ff006e 0%, #ff4081 100%);
+            border-color: #ff4081;
+            box-shadow: 0 5px 20px rgba(255, 64, 129, 0.4);
+        }
+
+        .choice-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            min-height: 30px;
+        }
+
+        .feedback.correct {
+            color: #00e5a0;
+        }
+
+        .feedback.incorrect {
+            color: #ff4081;
+        }
+
+        .fact {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(124, 58, 237, 0.2);
+            border-left: 4px solid #7c3aed;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #b3a7e6;
+            line-height: 1.5;
+        }
+
+        .next-btn {
+            margin-top: 20px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .stars {
+            font-size: 2rem;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+
+        .result-code {
+            background: #0a0b14;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+            margin-top: 30px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #00d4ff;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-link a {
+            color: #00d4ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-link a:hover {
+            color: #7c3aed;
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 25px;
+                min-height: 250px;
+            }
+
+            .question {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🗺️ Géographie de France</h1>
+            <p class="subtitle">Explorez les villes, fleuves et montagnes de France</p>
+        </header>
+
+        <div id="setupScreen" class="card">
+            <h2>Choose a Topic</h2>
+            <div class="mode-select">
+                <button class="mode-btn" onclick="selectMode('cities')">🏙️ Grandes Villes</button>
+                <button class="mode-btn" onclick="selectMode('rivers')">🌊 Fleuves</button>
+                <button class="mode-btn" onclick="selectMode('reliefs')">⛰️ Reliefs & Montagnes</button>
+                <button class="mode-btn" onclick="selectMode('mix')">🎲 Mix All</button>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="hidden">
+            <div class="question-number">Question <span id="questionNum">1</span>/20</div>
+            <div class="card">
+                <div class="question" id="question"></div>
+                <div class="choices" id="choices"></div>
+                <div class="feedback" id="feedback"></div>
+                <div class="fact" id="fact"></div>
+            </div>
+            <div style="text-align: center;">
+                <button class="next-btn" id="nextBtn" onclick="nextQuestion()" disabled>Next Question</button>
+            </div>
+        </div>
+
+        <div id="resultScreen" class="hidden">
+            <div class="card">
+                <h2>Bravo! 🇫🇷</h2>
+                <div class="stars" id="starsDisplay"></div>
+                <p style="font-size: 1.5rem; margin: 20px 0;">Score: <span id="scoreDisplay"></span>/20</p>
+                <p style="color: #aaa;">Percentage: <span id="percentDisplay"></span>%</p>
+                <button class="mode-btn" onclick="location.reload()" style="margin-top: 20px;">Play Again</button>
+            </div>
+            <div class="result-code" id="resultCode"></div>
+        </div>
+
+        <div class="back-link">
+            <a href="/index.html">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        const geography = {
+            cities: [
+                { name: 'Paris', region: 'Île-de-France', question: 'La capitale de la France', fact: 'Paris est divisée en 20 arrondissements et contient la Torre Eiffel.' },
+                { name: 'Lyon', region: 'Auvergne-Rhône-Alpes', question: 'Deuxième plus grande ville de France', fact: 'Lyon est au confluent du Rhône et de la Saône.' },
+                { name: 'Marseille', region: 'Provence-Alpes-Côte d\'Azur', question: 'La plus grande ville de la Méditerranée', fact: 'Marseille est fondée par les Grecs en 600 avant J.-C.' },
+                { name: 'Toulouse', region: 'Occitanie', question: 'La ville rose du sud-ouest', fact: 'Toulouse est le centre de l\'industrie aéronautique en France.' },
+                { name: 'Bordeaux', region: 'Nouvelle-Aquitaine', question: 'La ville du vin, située sur la Garonne', fact: 'Bordeaux est célèbre pour ses vignobles de classe mondiale.' },
+                { name: 'Nantes', region: 'Pays de la Loire', question: 'Ville historique à l\'embouchure de la Loire', fact: 'Nantes était autrefois le siège des ducs de Bretagne.' },
+                { name: 'Lille', region: 'Hauts-de-France', question: 'Capitale des Flandres françaises', fact: 'Lille est proche de la Belgique et de la Manche.' },
+                { name: 'Strasbourg', region: 'Grand Est', question: 'Ville d\'Alsace avec la cathédrale gothique', fact: 'Strasbourg est le siège du Parlement européen.' },
+                { name: 'Nice', region: 'Provence-Alpes-Côte d\'Azur', question: 'Station balnéaire sur la Côte d\'Azur', fact: 'Nice est la troisième ville française sur la Méditerranée.' },
+                { name: 'Montpellier', region: 'Occitanie', question: 'Ville universitaire du sud', fact: 'Montpellier a une des plus anciennes universités de France.' },
+                { name: 'Rennes', region: 'Bretagne', question: 'Capitale de la Bretagne', fact: 'Rennes a un patrimoine médiéval impressionnant.' },
+                { name: 'Reims', region: 'Grand Est', question: 'Ville du champagne en Champagne-Ardenne', fact: 'Reims a accueilli le sacre de nombreux rois de France.' },
+                { name: 'Le Havre', region: 'Normandie', question: 'Grand port sur la Manche', fact: 'Le Havre est important pour le commerce international.' },
+                { name: 'Avignon', region: 'Provence-Alpes-Côte d\'Azur', question: 'Ville historique du Pape, sur le Rhône', fact: 'Avignon a été le siège de la papauté au 14ème siècle.' },
+                { name: 'Grenoble', region: 'Auvergne-Rhône-Alpes', question: 'Ville des Alpes avec des sports d\'hiver', fact: 'Grenoble a accueilli les Jeux Olympiques d\'hiver en 1968.' }
+            ],
+            rivers: [
+                { name: 'Seine', region: 'Île-de-France', question: 'Le fleuve qui traverse Paris', fact: 'La Seine mesure 776 km et est le principal fleuve français.' },
+                { name: 'Loire', region: 'Centre-Val de Loire', question: 'Le plus long fleuve de France', fact: 'La Loire mesure 1 012 km et traverse 6 régions.' },
+                { name: 'Rhône', region: 'Auvergne-Rhône-Alpes', question: 'Fleuve qui traverse Lyon et Avignon', fact: 'Le Rhône mesure 812 km et prend sa source en Suisse.' },
+                { name: 'Garonne', region: 'Nouvelle-Aquitaine', question: 'Fleuve du sud-ouest qui traverse Toulouse', fact: 'La Garonne mesure 575 km et forme l\'estuaire de la Gironde.' },
+                { name: 'Rhin', region: 'Grand Est', question: 'Fleuve qui sépare la France de l\'Allemagne', fact: 'Le Rhin est un des fleuves les plus importants d\'Europe.' }
+            ],
+            reliefs: [
+                { name: 'Alpes', emoji: '🏔️', question: 'La plus haute chaîne de montagnes de France', fact: 'Les Alpes contiennent le Mont-Blanc, le plus haut sommet français (4 808 m).' },
+                { name: 'Pyrénées', emoji: '⛰️', question: 'Chaîne de montagnes qui sépare la France d\'Espagne', fact: 'Les Pyrénées s\'étendent sur 400 km de long.' },
+                { name: 'Massif Central', emoji: '🏔️', question: 'Plateau montagneux du centre de la France', fact: 'Le Massif Central couvre 15% du territoire français.' },
+                { name: 'Jura', emoji: '⛰️', question: 'Chaîne de montagnes entre la France et la Suisse', fact: 'Le Jura est célèbre pour ses lacs et ses grottes.' },
+                { name: 'Vosges', emoji: '🏔️', question: 'Chaîne de montagnes en Alsace', fact: 'Les Vosges sont les montagnes les plus anciennes de France.' },
+                { name: 'Apennins', emoji: '⛰️', question: 'Chaîne importante en France du sud-est', fact: 'Les Apennins se trouvent près de la Provence.' },
+                { name: 'Côte d\'Azur', emoji: '🌊', question: 'Côte méditerranéenne montagneuse', fact: 'La Côte d\'Azur a des falaises spectaculaires.' },
+                { name: 'Causses', emoji: '🏔️', question: 'Plateaux calcaires du sud de la France', fact: 'Les Causses sont importants pour l\'agriculture locale.' },
+                { name: 'Escarpement de Lorraine', emoji: '⛰️', question: 'Relief dans le nord-est de la France', fact: 'C\'est une frontière entre le calcaire et le grès.' },
+                { name: 'Plaine d\'Alsace', emoji: '🌾', question: 'Région plate entre les Vosges et le Rhin', fact: 'La plaine d\'Alsace est très fertile et densément peuplée.' }
+            ]
+        };
+
+        let currentMode = '';
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let questions = [];
+        let answered = false;
+
+        function selectMode(mode) {
+            currentMode = mode;
+            score = 0;
+            currentQuestionIndex = 0;
+            answered = false;
+
+            let allQuestions = [];
+            if (mode === 'mix') {
+                Object.keys(geography).forEach(key => {
+                    allQuestions = allQuestions.concat(geography[key]);
+                });
+            } else {
+                allQuestions = geography[mode];
+            }
+
+            questions = [...allQuestions].sort(() => Math.random() - 0.5).slice(0, 20);
+            document.getElementById('setupScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                endGame();
+                return;
+            }
+
+            answered = false;
+            const q = questions[currentQuestionIndex];
+            document.getElementById('questionNum').textContent = currentQuestionIndex + 1;
+            document.getElementById('question').textContent = q.question;
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('fact').textContent = '';
+            document.getElementById('nextBtn').disabled = true;
+
+            showChoices(q);
+        }
+
+        function showChoices(correct) {
+            const choices = [correct];
+            const allItems = Object.values(geography).flat();
+
+            while (choices.length < 4) {
+                const random = allItems[Math.floor(Math.random() * allItems.length)];
+                if (!choices.some(c => c.name === random.name)) {
+                    choices.push(random);
+                }
+            }
+
+            const shuffled = choices.sort(() => Math.random() - 0.5);
+            const choicesHtml = shuffled.map((choice, idx) => {
+                return `<button class="choice-btn" onclick="checkAnswer(${idx}, '${choice.name}', '${correct.name}', '${correct.fact.replace(/'/g, "\\'")}')">${choice.name}</button>`;
+            }).join('');
+
+            document.getElementById('choices').innerHTML = choicesHtml;
+        }
+
+        function checkAnswer(idx, selected, correct, fact) {
+            if (answered) return;
+            answered = true;
+
+            const buttons = document.querySelectorAll('.choice-btn');
+            const isCorrect = selected === correct;
+
+            buttons.forEach((btn, index) => {
+                btn.disabled = true;
+                const btnText = btn.textContent.trim();
+                if (isCorrect && btnText === correct) {
+                    btn.classList.add('correct');
+                } else if (!isCorrect && index === idx) {
+                    btn.classList.add('incorrect');
+                } else if (!isCorrect && btnText === correct) {
+                    btn.classList.add('correct');
+                }
+            });
+
+            if (isCorrect) {
+                score++;
+                document.getElementById('feedback').textContent = '✓ Correct!';
+                document.getElementById('feedback').classList.add('correct');
+            } else {
+                document.getElementById('feedback').textContent = '✗ Incorrect';
+                document.getElementById('feedback').classList.add('incorrect');
+            }
+
+            document.getElementById('fact').textContent = '📚 ' + fact;
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            showQuestion();
+        }
+
+        function endGame() {
+            const percent = Math.round((score / 20) * 100);
+            let stars = '☆☆☆';
+            if (percent >= 80) stars = '★★★';
+            else if (percent >= 60) stars = '★★☆';
+            else if (percent >= 40) stars = '★☆☆';
+
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            document.getElementById('scoreDisplay').textContent = score;
+            document.getElementById('percentDisplay').textContent = percent;
+            document.getElementById('starsDisplay').textContent = stars;
+
+            const now = new Date().toISOString();
+            const resultCode = `v:'p_geo', dt:'${now}', score:'${score}/20', pct:${percent}, stars:'${stars}'`;
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+    </script>
+</body>
+</html>

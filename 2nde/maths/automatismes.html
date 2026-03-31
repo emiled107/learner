@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automatismes Maths - 2nde</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            color: #fff;
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: linear-gradient(135deg, #1a1d2e 0%, #16111f 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 107, 107, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcf7f, #4d96ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .header p {
+            color: #aaa;
+            font-size: 0.95em;
+        }
+
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .theme-btn {
+            padding: 15px;
+            border: 2px solid;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .theme-btn:nth-child(1) {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .theme-btn:nth-child(1):hover {
+            background: rgba(255, 107, 107, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .theme-btn:nth-child(2) {
+            border-color: #ffd93d;
+            color: #ffd93d;
+        }
+
+        .theme-btn:nth-child(2):hover {
+            background: rgba(255, 217, 61, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 217, 61, 0.3);
+        }
+
+        .theme-btn:nth-child(3) {
+            border-color: #6bcf7f;
+            color: #6bcf7f;
+        }
+
+        .theme-btn:nth-child(3):hover {
+            background: rgba(107, 207, 127, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(107, 207, 127, 0.3);
+        }
+
+        .theme-btn:nth-child(4) {
+            border-color: #4d96ff;
+            color: #4d96ff;
+        }
+
+        .theme-btn:nth-child(4):hover {
+            background: rgba(77, 150, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(77, 150, 255, 0.3);
+        }
+
+        .theme-btn:nth-child(5) {
+            border-color: #c77dff;
+            color: #c77dff;
+        }
+
+        .theme-btn:nth-child(5):hover {
+            background: rgba(199, 125, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(199, 125, 255, 0.3);
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .quiz-screen {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ffd93d);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        .timer {
+            background: rgba(255, 107, 107, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .option.selected {
+            border-color: #4d96ff;
+            background: rgba(77, 150, 255, 0.2);
+        }
+
+        .option.correct {
+            border-color: #6bcf7f;
+            background: rgba(107, 207, 127, 0.2);
+            animation: pulse 0.5s ease;
+        }
+
+        .option.incorrect {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.2);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-screen {
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6bcf7f, #4d96ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+
+        .percentage {
+            font-size: 1.5em;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        .stars {
+            font-size: 3em;
+            margin: 20px 0;
+            letter-spacing: 10px;
+        }
+
+        .result-code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 0.85em;
+            word-break: break-all;
+            color: #6bcf7f;
+            font-family: monospace;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #4d96ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #ff6b6b;
+            transform: translateX(-3px);
+        }
+
+        .explanation {
+            background: rgba(77, 150, 255, 0.1);
+            border-left: 4px solid #4d96ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.95em;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .explanation.show {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .theme-selector {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .theme-btn {
+                padding: 12px;
+                font-size: 0.8em;
+            }
+
+            .question-text {
+                font-size: 1.1em;
+            }
+
+            .score-display {
+                font-size: 2.2em;
+            }
+
+            .stars {
+                font-size: 2em;
+                letter-spacing: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Theme Selection Screen -->
+        <div class="screen active" id="themeScreen">
+            <div class="header">
+                <h1>⚡ Automatismes Maths</h1>
+                <p>Entraîne-toi avec des exercices rapides - 20 questions, 30s chacune</p>
+            </div>
+            <div class="theme-selector" id="themeSelector"></div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div class="screen" id="quizScreen">
+            <div class="question-info">
+                <span id="questionNumber"></span>
+                <span class="timer" id="timer">30s</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-text" id="questionText"></div>
+            <div class="options" id="optionsContainer"></div>
+            <div class="explanation" id="explanation"></div>
+            <button class="btn" id="nextBtn">Réponse suivante</button>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="screen results-screen" id="resultsScreen">
+            <h2>Quiz Terminé!</h2>
+            <div class="score-display" id="scoreDisplay"></div>
+            <div class="percentage" id="percentageDisplay"></div>
+            <div class="stars" id="starsDisplay"></div>
+            <div class="result-code">
+                <strong>Code de résultat:</strong><br>
+                <span id="resultCode"></span>
+            </div>
+            <button class="btn" onclick="location.reload()">Rejouer</button>
+            <a href="/index.html" class="back-link">← Retour à l'accueil</a>
+        </div>
+    </div>
+
+    <script>
+        const questions = {
+            'Calcul numérique': [
+                {q: 'Développer: (2x+3)(x-1)', a: [2, '2x² + x - 3', '2x² + 5x - 3', '2x² - x - 3'], c: 1},
+                {q: 'Factoriser: x² - 9', a: ['(x-9)(x+1)', '(x-3)(x+3)', '(x-3)²', '(x+3)²'], c: 1},
+                {q: 'Résoudre: 3x + 7 = 22', a: ['x = 5', 'x = 10', 'x = -5', 'x = 15'], c: 0},
+                {q: 'Simplifier: √16 + √9', a: ['7', '5', '25', '4'], c: 0},
+                {q: 'Calculer: (2³ × 3²) ÷ 6', a: ['12', '6', '18', '36'], c: 0},
+                {q: 'Résoudre: 5x - 3 = 2x + 9', a: ['x = 4', 'x = 2', 'x = 6', 'x = -4'], c: 0},
+                {q: 'Développer: (x-2)²', a: ['x² - 4x + 4', 'x² + 4x - 4', 'x² - 4', 'x² - 4x - 4'], c: 0},
+                {q: 'Factoriser: 2x² + 4x', a: ['2x(x+2)', '2(x²+2x)', 'x(2x+4)', '2x(x-2)'], c: 0},
+                {q: 'Calculer: ½ + ¼', a: ['¾', '⅚', '⅝', '⅜'], c: 0},
+                {q: 'Résoudre: -4x + 1 = 5', a: ['x = -1', 'x = 1', 'x = 2', 'x = -2'], c: 0},
+                {q: 'Simplifier: 3√2 + 2√2', a: ['5√2', '6√2', '√2', '5√4'], c: 0},
+                {q: 'Développer: (a+b)²', a: ['a² + 2ab + b²', 'a² + b²', 'a² - 2ab + b²', 'ab + ab'], c: 0},
+                {q: 'Factoriser: x² + 6x + 9', a: ['(x+3)²', '(x+3)(x-3)', '(x+6)²', '(x+9)'], c: 0},
+                {q: 'Calculer: 20% de 150', a: ['30', '3', '50', '75'], c: 0},
+                {q: 'Résoudre: 2(x+3) = 10', a: ['x = 2', 'x = 1', 'x = 4', 'x = -2'], c: 0},
+                {q: 'Simplifier: (x²)³', a: ['x⁶', 'x⁵', 'x⁹', 'x⁸'], c: 0},
+                {q: 'Factoriser: 4x² - 1', a: ['(2x-1)(2x+1)', '(2x-1)²', '(4x-1)', '(x-1)(x+1)'], c: 0},
+                {q: 'Calculer: √100 - √25', a: ['5', '10', '75', '50'], c: 0},
+                {q: 'Résoudre: x/2 + 3 = 7', a: ['x = 8', 'x = 4', 'x = 10', 'x = 2'], c: 0},
+                {q: 'Développer: 3(x-4)', a: ['3x - 12', '3x + 12', '3x - 4', '3x + 4'], c: 0}
+            ],
+            'Calcul littéral': [
+                {q: 'Développer: (x+2)(x-5)', a: ['x² + 3x - 10', 'x² - 3x - 10', 'x² + 7x - 10', 'x² - 7x + 10'], c: 1},
+                {q: 'Factoriser: 3x + 6', a: ['3(x+2)', '3(x+6)', '6(x+1)', '(3+x)(3+2)'], c: 0},
+                {q: 'Résoudre: 4x - 2 = 6', a: ['x = 2', 'x = 1', 'x = 3', 'x = -1'], c: 0},
+                {q: 'Simplifier: 2x + 5x - 3x', a: ['4x', '10x', '7x', '3x'], c: 0},
+                {q: 'Factoriser: x² - 4x + 4', a: ['(x-2)²', '(x+2)²', '(x-4)²', '(x-2)(x+2)'], c: 0},
+                {q: 'Développer: (2x-3)²', a: ['4x² - 12x + 9', '4x² + 12x + 9', '4x² - 9', '2x² - 9'], c: 0},
+                {q: 'Résoudre: 2(x-1) = x + 3', a: ['x = 5', 'x = 4', 'x = 1', 'x = 3'], c: 0},
+                {q: 'Simplifier: 3a + 2b + 4a - b', a: ['7a + b', '7a - b', '6a + 3b', 'a + b'], c: 0},
+                {q: 'Factoriser: x³ + x²', a: ['x²(x+1)', 'x(x²+1)', 'x(x+1)', 'x²(x-1)'], c: 0},
+                {q: 'Résoudre: 5x + 10 = 0', a: ['x = -2', 'x = 2', 'x = 5', 'x = -5'], c: 0},
+                {q: 'Développer: (a-b)(a+b)', a: ['a² - b²', 'a² + b²', 'a² - 2ab + b²', 'a² + 2ab - b²'], c: 0},
+                {q: 'Simplifier: -3x - (-2x)', a: ['-x', 'x', '-5x', '5x'], c: 0},
+                {q: 'Factoriser: 2x² - 8x', a: ['2x(x-4)', '2(x²-4x)', 'x(2x-8)', '2x(x+4)'], c: 0},
+                {q: 'Résoudre: x/3 = 4', a: ['x = 12', 'x = 1', 'x = 7', 'x = 9'], c: 0},
+                {q: 'Développer: (x+1)(x+1)', a: ['x² + 2x + 1', 'x² + 1', 'x² + 2x', 'x + 1'], c: 0},
+                {q: 'Factoriser: 6x + 3y', a: ['3(2x+y)', '3(2x+3y)', '6(x+y)', '(3+2x)(3+y)'], c: 0},
+                {q: 'Résoudre: -2x = 8', a: ['x = -4', 'x = 4', 'x = -2', 'x = 2'], c: 0},
+                {q: 'Simplifier: (x + y) - (x - y)', a: ['2y', '0', '2x', 'x - y'], c: 0},
+                {q: 'Développer: (3-x)(3+x)', a: ['9 - x²', '9 + x²', '9 - 6x + x²', '9 + 6x - x²'], c: 0},
+                {q: 'Résoudre: 6x - 3 = 2x + 5', a: ['x = 2', 'x = 1', 'x = 4', 'x = -2'], c: 0}
+            ],
+            'Fonctions': [
+                {q: 'Pour f(x) = 2x + 3, calculer f(5)', a: ['13', '10', '15', '8'], c: 0},
+                {q: 'Pour f(x) = x², calculer f(3)', a: ['9', '6', '8', '12'], c: 0},
+                {q: 'Pour f(x) = 2x + 1, quel est l\'antécédent de 11?', a: ['5', '10', '3', '7'], c: 0},
+                {q: 'Pour f(x) = 1/x, f(2) = ?', a: ['½', '2', '1', '¼'], c: 0},
+                {q: 'Pour f(x) = -3x, f(-2) = ?', a: ['6', '-6', '2', '-2'], c: 0},
+                {q: 'La fonction f(x) = x² est-elle paire?', a: ['Oui', 'Non', 'Parfois', 'Impossible'], c: 0},
+                {q: 'Pour f(x) = √x, f(16) = ?', a: ['4', '8', '2', '16'], c: 0},
+                {q: 'Pour f(x) = x³, f(-1) = ?', a: ['-1', '1', '3', '-3'], c: 0},
+                {q: 'L\'image de 2 par f(x) = x + 4 est:', a: ['6', '8', '5', '3'], c: 0},
+                {q: 'La fonction f(x) = 3x est-elle croissante?', a: ['Oui', 'Non', 'Constante', 'Décroissante'], c: 0},
+                {q: 'Pour f(x) = 2x² + 1, f(0) = ?', a: ['1', '0', '2', '3'], c: 0},
+                {q: 'Antécédent de 0 pour f(x) = x - 3:', a: ['3', '0', '-3', '6'], c: 0},
+                {q: 'Pour f(x) = -x, f(5) = ?', a: ['-5', '5', '0', '10'], c: 0},
+                {q: 'La fonction f(x) = 1/x est définie pour:', a: ['x ≠ 0', 'x > 0', 'x ≥ 0', 'tout x'], c: 0},
+                {q: 'Pour f(x) = x/2, antécédent de 5:', a: ['10', '5', '2.5', '20'], c: 0},
+                {q: 'f(x) = -2x + 3, f(1) = ?', a: ['1', '5', '-1', '3'], c: 0},
+                {q: 'Croissante ou décroissante: f(x) = -5x?', a: ['Décroissante', 'Croissante', 'Constante', 'Paire'], c: 0},
+                {q: 'Pour f(x) = 4x, f(-2) = ?', a: ['-8', '8', '-4', '2'], c: 0},
+                {q: 'L\'image de -1 par f(x) = x² est:', a: ['1', '-1', '0', '2'], c: 0},
+                {q: 'f(x) = x + 2, antécédent de 7:', a: ['5', '7', '9', '2'], c: 0}
+            ],
+            'Probabilités/Stats': [
+                {q: 'Probabilité d\'obtenir 6 au dé: ?', a: ['1/6', '1/2', '1/3', '1/12'], c: 0},
+                {q: 'Moyenne de {2, 4, 6, 8}:', a: ['5', '6', '4', '7'], c: 0},
+                {q: 'Médiane de {1, 3, 5, 7, 9}:', a: ['5', '6', '4', '7'], c: 0},
+                {q: 'Probabilité pile et face:', a: ['1/2', '1/4', '3/4', '1/3'], c: 0},
+                {q: 'Étendue de {2, 5, 8, 1}:', a: ['7', '8', '6', '4'], c: 0},
+                {q: 'Mode de {1, 2, 2, 3, 3, 3}:', a: ['3', '2', '1', '2.5'], c: 0},
+                {q: 'P(A∪B) si P(A)=0.4, P(B)=0.3 et P(A∩B)=0.1:', a: ['0.6', '0.7', '0.5', '0.4'], c: 0},
+                {q: 'Moyenne de {10, 20, 30}:', a: ['20', '30', '15', '25'], c: 0},
+                {q: 'Variance approx. de {2, 4, 6}:', a: ['2.67', '4', '2', '1.33'], c: 0},
+                {q: 'Probabilité d\'un événement certain:', a: ['1', '0', '0.5', '0.1'], c: 0},
+                {q: 'Quartile Q1 de {1, 2, 3, 4, 5}:', a: ['2', '3', '1.5', '2.5'], c: 0},
+                {q: 'Combien de paires d\'as dans 52 cartes?', a: ['6', '4', '8', '2'], c: 0},
+                {q: 'Médiane de {2, 4, 6, 8}:', a: ['5', '6', '4', '7'], c: 0},
+                {q: 'Probabilité de tirer un carreau:', a: ['1/4', '1/13', '1/2', '4/13'], c: 0},
+                {q: 'Moyenne pondérée avec poids [10, 20, 30]:', a: ['Dépend valeurs', '20', '15', '25'], c: 0},
+                {q: 'Écart-type ≈ de {3, 3, 3}:', a: ['0', '3', '1', '9'], c: 0},
+                {q: 'Tirage simultané 2 dés, proba somme=7:', a: ['1/6', '1/12', '1/3', '1/2'], c: 0},
+                {q: 'Fréquence = effectif / ?', a: ['Total', 'Mode', 'Médiane', 'Étendue'], c: 0},
+                {q: 'P(non A) si P(A)=0.3:', a: ['0.7', '0.3', '0.5', '0.2'], c: 0},
+                {q: 'Classe modale si fréq max=0.4:', a: ['Classe avec 40%', 'Mode=40%', 'Médiane', 'Q3'], c: 0}
+            ],
+            'Géométrie': [
+                {q: 'Distance entre (0,0) et (3,4):', a: ['5', '7', '1', '12'], c: 0},
+                {q: 'Midpoint de (2,4) et (8,10):', a: ['(5,7)', '(5,6)', '(4,7)', '(6,7)'], c: 0},
+                {q: 'Vecteur AB: A(1,2), B(4,6) = ?', a: ['(3,4)', '(4,3)', '(5,8)', '(-3,-4)'], c: 0},
+                {q: 'Norme du vecteur (3,4):', a: ['5', '7', '1', '12'], c: 0},
+                {q: 'Triangle équilatéral côté=4, hauteur=?', a: ['2√3', '4', '2', '8'], c: 0},
+                {q: 'Périmètre carré côté 6:', a: ['24', '36', '18', '12'], c: 0},
+                {q: 'Aire cercle r=5:', a: ['25π', '10π', '5π', '100π'], c: 0},
+                {q: 'Aire triangle base=6, h=4:', a: ['12', '24', '10', '6'], c: 0},
+                {q: 'Théorème Pythagore: a²+b²=?', a: ['c²', 'c', 'ab', '2c'], c: 0},
+                {q: 'Aire rectangle l=8, L=5:', a: ['40', '26', '13', '80'], c: 0},
+                {q: 'Périmètre cercle r=3:', a: ['6π', '3π', '9π', '12π'], c: 0},
+                {q: 'Vecteurs (1,2)+(3,4)=?', a: ['(4,6)', '(3,8)', '(2,3)', '(4,4)'], c: 0},
+                {q: 'Parallélogramme base=10, h=3:', a: ['30', '13', '60', '20'], c: 0},
+                {q: 'Trapèze b1=4, b2=6, h=2:', a: ['10', '8', '20', '12'], c: 0},
+                {q: 'Volume cube côté=2:', a: ['8', '4', '16', '12'], c: 0},
+                {q: 'Volume cylindre r=2, h=5:', a: ['20π', '10π', '40π', '4π'], c: 0},
+                {q: 'Angle droit=? degrés', a: ['90', '180', '45', '360'], c: 0},
+                {q: 'Somme angles triangle:', a: ['180°', '360°', '90°', '270°'], c: 0},
+                {q: 'Distance (1,2) à (4,2):', a: ['3', '4', '5', '6'], c: 0},
+                {q: 'Vecteur nul (0,0), norme=?', a: ['0', '1', 'Infini', 'Indéfini'], c: 0}
+            ]
+        };
+
+        let currentTheme = '';
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let answers = [];
+        let timeLeft = 30;
+        let timerInterval = null;
+        let themeQuestions = [];
+
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function startQuiz(theme) {
+            currentTheme = theme;
+            themeQuestions = shuffle([...questions[theme]]).slice(0, 20);
+            currentQuestionIndex = 0;
+            score = 0;
+            answers = [];
+            document.getElementById('themeScreen').classList.remove('active');
+            document.getElementById('quizScreen').classList.add('active');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = themeQuestions[currentQuestionIndex];
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestionIndex + 1}/20`;
+            document.getElementById('questionText').textContent = q.q;
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            q.a.forEach((option, index) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = option;
+                div.onclick = () => selectOption(index);
+                optionsContainer.appendChild(div);
+            });
+
+            document.getElementById('explanation').classList.remove('show');
+            document.getElementById('nextBtn').textContent = 'Vérifier';
+            document.getElementById('nextBtn').disabled = false;
+
+            updateProgress();
+            resetTimer();
+        }
+
+        function selectOption(index) {
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                opt.classList.remove('selected');
+                if (i === index) opt.classList.add('selected');
+            });
+        }
+
+        function nextQuestion() {
+            const selectedIdx = Array.from(document.querySelectorAll('.option')).findIndex(o => o.classList.contains('selected'));
+
+            if (selectedIdx === -1) return;
+
+            const q = themeQuestions[currentQuestionIndex];
+            const isCorrect = selectedIdx === q.c;
+
+            if (isCorrect) score++;
+            answers.push({q: q.q, selected: selectedIdx === q.c, correct: q.c});
+
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                opt.style.pointerEvents = 'none';
+                if (i === q.c) opt.classList.add('correct');
+                else if (i === selectedIdx && !isCorrect) opt.classList.add('incorrect');
+            });
+
+            document.getElementById('explanation').innerHTML = `
+                <strong>Explication:</strong> La bonne réponse est "${q.a[q.c]}"
+            `;
+            document.getElementById('explanation').classList.add('show');
+            document.getElementById('nextBtn').textContent = currentQuestionIndex < 19 ? 'Question suivante' : 'Résultats';
+
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < 20) {
+                setTimeout(() => showQuestion(), 2000);
+            } else {
+                document.getElementById('nextBtn').onclick = () => showResults();
+            }
+        }
+
+        document.getElementById('nextBtn').onclick = nextQuestion;
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 30;
+            updateTimer();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+                if (timeLeft <= 0) nextQuestion();
+            }, 1000);
+        }
+
+        function updateTimer() {
+            document.getElementById('timer').textContent = timeLeft + 's';
+        }
+
+        function updateProgress() {
+            const percentage = ((currentQuestionIndex) / 20) * 100;
+            document.getElementById('progressFill').style.width = percentage + '%';
+        }
+
+        function showResults() {
+            clearInterval(timerInterval);
+            document.getElementById('quizScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+
+            const percentage = Math.round((score / 20) * 100);
+            let stars = '☆☆☆';
+            if (percentage >= 80) stars = '★★★';
+            else if (percentage >= 60) stars = '★★☆';
+            else if (percentage >= 40) stars = '★☆☆';
+
+            document.getElementById('scoreDisplay').textContent = score + '/20';
+            document.getElementById('percentageDisplay').textContent = percentage + '%';
+            document.getElementById('starsDisplay').textContent = stars;
+
+            const now = new Date();
+            const dt = now.toISOString().split('T')[0];
+            const resultCode = btoa(JSON.stringify({
+                v: 'l_auto',
+                dt: dt,
+                theme: currentTheme,
+                score: score + '/20',
+                pct: percentage,
+                stars: stars.includes('★') ? stars.match(/★/g).length : 0
+            }));
+
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        const selector = document.getElementById('themeSelector');
+        Object.keys(questions).forEach(theme => {
+            const btn = document.createElement('button');
+            btn.className = 'theme-btn';
+            btn.textContent = theme;
+            btn.onclick = () => startQuiz(theme);
+            selector.appendChild(btn);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Tenses - 5ème Anglais</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(135deg, #08090f 0%, #1a1b2e 100%);
+            font-family: 'Nunito', sans-serif;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(255, 0, 110, 0.3);
+        }
+        h1 {
+            font-size: 2em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .score-display {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .tense-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tense-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(131, 56, 236, 0.3);
+            color: #e0e0e0;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .tense-btn.active {
+            background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+            border-color: rgba(131, 56, 236, 0.8);
+        }
+        .tense-btn:hover {
+            border-color: rgba(131, 56, 236, 0.8);
+        }
+        .question-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(131, 56, 236, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .question-number {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+        .question-text {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #00d9ff 0%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .options {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .option {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .option:hover:not(:disabled) {
+            background: rgba(131, 56, 236, 0.2);
+            border-color: rgba(131, 56, 236, 0.5);
+            transform: translateX(5px);
+        }
+        .option.selected {
+            background: rgba(131, 56, 236, 0.4);
+            border-color: rgba(131, 56, 236, 0.8);
+        }
+        .option.correct {
+            background: rgba(0, 255, 100, 0.3);
+            border-color: rgba(0, 255, 100, 0.8);
+        }
+        .option.incorrect {
+            background: rgba(255, 0, 100, 0.3);
+            border-color: rgba(255, 0, 100, 0.8);
+        }
+        .option:disabled {
+            cursor: not-allowed;
+        }
+        .explanation {
+            background: rgba(0, 255, 150, 0.1);
+            border-left: 4px solid rgba(0, 255, 150, 0.8);
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        .button {
+            background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        .button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 0, 110, 0.3);
+        }
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .results-screen {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+        .results-screen.active {
+            display: block;
+        }
+        .final-score {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d9ff 0%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        .percentage {
+            font-size: 1.8em;
+            margin: 15px 0;
+            color: #00ff88;
+        }
+        .stars {
+            font-size: 2.5em;
+            margin: 20px 0;
+        }
+        .result-code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            word-break: break-all;
+            font-size: 0.85em;
+            font-family: monospace;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid rgba(0, 255, 150, 0.3);
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #00d9ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            transform: translateX(-5px);
+        }
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5em;
+            }
+            .tense-selector {
+                grid-template-columns: 1fr 1fr;
+            }
+            .final-score {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌍 English Tenses</h1>
+            <div class="score-display"><span id="currentScore">0</span>/20</div>
+        </header>
+
+        <div class="tense-selector">
+            <button class="tense-btn active" onclick="selectTense('present_simple')">Present Simple</button>
+            <button class="tense-btn" onclick="selectTense('present_continuous')">Present Continuous</button>
+            <button class="tense-btn" onclick="selectTense('past_simple')">Past Simple</button>
+            <button class="tense-btn" onclick="selectTense('mix')">Mix</button>
+        </div>
+
+        <div id="questionContainer" class="question-container">
+            <div class="question-number">Question <span id="questionNum">1</span>/20</div>
+            <div class="question-text" id="questionText"></div>
+            <div class="options" id="optionsContainer"></div>
+            <div class="explanation" id="explanation" style="display: none;"></div>
+            <div class="button-group">
+                <button id="submitBtn" class="button">Soumettre</button>
+                <button id="nextBtn" class="button" style="display: none;">Question suivante</button>
+            </div>
+        </div>
+
+        <div id="resultsScreen" class="results-screen">
+            <h2>Session terminée!</h2>
+            <div class="final-score" id="finalScore">0/20</div>
+            <div class="percentage" id="percentageDisplay">0%</div>
+            <div class="stars" id="starsDisplay">☆☆☆☆☆</div>
+            <div class="result-code" id="resultCode"></div>
+            <button class="button" onclick="location.reload()">Recommencer</button>
+            <a href="/index.html" class="back-link">← Retour</a>
+        </div>
+    </div>
+
+    <script>
+        const questionsByTense = {
+            present_simple: [
+                {q: "I _____ to school every day.", opts: ["go", "goes", "going", "am go"], ans: 0, exp: "Present simple: 'I go' (habitudes régulières)"},
+                {q: "She _____ football on Saturdays.", opts: ["play", "plays", "playing", "is play"], ans: 1, exp: "3e personne sing.: plays (he/she/it + -s)"},
+                {q: "They _____ in London.", opts: ["live", "lives", "living", "am living"], ans: 0, exp: "Pluriel: live (sans -s)"},
+                {q: "He _____ coffee every morning.", opts: ["drink", "drinks", "drinking", "is drink"], ans: 1, exp: "Verbe au singulier avec 'He': drinks"},
+                {q: "We _____ English at school.", opts: ["study", "studies", "studying", "am study"], ans: 0, exp: "We (pluriel): study"},
+                {q: "You _____ very well.", opts: ["sing", "sings", "singing", "are sing"], ans: 0, exp: "You utilise toujours la forme sans -s"},
+                {q: "It _____ at night.", opts: ["sleep", "sleeps", "sleeping", "is sleep"], ans: 1, exp: "It (3e pers. sing.): sleeps"},
+                {q: "Dogs _____ their food quickly.", opts: ["eat", "eats", "eating", "are eat"], ans: 0, exp: "Pluriel: eat"},
+                {q: "The sun _____ in the east.", opts: ["rise", "rises", "rising", "is rise"], ans: 1, exp: "The sun (3e pers. sing.): rises"},
+                {q: "I _____ not like spicy food.", opts: ["do", "does", "am", "is"], ans: 0, exp: "I: do not like"},
+            ],
+            present_continuous: [
+                {q: "I _____ my homework right now.", opts: ["do", "am doing", "am do", "doing"], ans: 1, exp: "Present continuous: am + -ing (action en cours)"},
+                {q: "She _____ a book at the moment.", opts: ["reads", "is reading", "reading", "read"], ans: 1, exp: "She is + reading"},
+                {q: "They _____ football in the park.", opts: ["play", "are playing", "playing", "are play"], ans: 1, exp: "They are + playing"},
+                {q: "He _____ dinner tonight.", opts: ["cooks", "is cooking", "cooking", "cook"], ans: 1, exp: "He is cooking (action présente)"},
+                {q: "We _____ a film now.", opts: ["watch", "are watching", "watching", "watches"], ans: 1, exp: "We are watching"},
+                {q: "You _____ very fast!", opts: ["run", "are running", "running", "runs"], ans: 1, exp: "You are running"},
+                {q: "It _____ heavily.", opts: ["rain", "is raining", "raining", "rains"], ans: 1, exp: "It is raining (pluie en cours)"},
+                {q: "The children _____ in the garden.", opts: ["play", "are playing", "plays", "is play"], ans: 1, exp: "Children (pluriel): are playing"},
+                {q: "I _____ to music right now.", opts: ["listen", "am listening", "listening", "am listen"], ans: 1, exp: "I am + listening"},
+                {q: "She _____ not answering her phone.", opts: ["is", "am", "are", "does"], ans: 0, exp: "She + is + not + answering"},
+            ],
+            past_simple: [
+                {q: "I _____ to the cinema yesterday.", opts: ["go", "went", "going", "am going"], ans: 1, exp: "Past simple: went (action terminée)"},
+                {q: "She _____ her homework last night.", opts: ["does", "did", "doing", "is doing"], ans: 1, exp: "Did + base form pour les questions"},
+                {q: "They _____ in Paris last summer.", opts: ["live", "lived", "living", "were living"], ans: 1, exp: "Verbe régulier: lived (passé)"},
+                {q: "He _____ a letter this morning.", opts: ["write", "wrote", "writing", "written"], ans: 1, exp: "Verbe irrégulier: wrote"},
+                {q: "We _____ at home all day.", opts: ["stay", "stayed", "staying", "were stay"], ans: 1, exp: "Verbe régulier: stayed"},
+                {q: "You _____ very tired yesterday.", opts: ["were", "was", "are", "be"], ans: 0, exp: "You + were (past simple de 'to be')"},
+                {q: "It _____ cold last winter.", opts: ["was", "were", "is", "be"], ans: 0, exp: "It + was"},
+                {q: "The cat _____ the fish.", opts: ["eats", "ate", "eating", "eat"], ans: 1, exp: "Verbe régulier: ate"},
+                {q: "I _____ not see him yesterday.", opts: ["did", "do", "was", "were"], ans: 0, exp: "Did not + base form"},
+                {q: "She _____ to university in 2020.", opts: ["goes", "went", "going", "is go"], ans: 1, exp: "Verbe irrégulier: went"},
+            ],
+            mix: [
+                {q: "He _____ tennis every week.", opts: ["plays", "is playing", "played", "play"], ans: 0, exp: "Habitude régulière: present simple (plays)"},
+                {q: "Right now, I _____ my phone.", opts: ["use", "am using", "used", "uses"], ans: 1, exp: "Action en cours: present continuous (am using)"},
+                {q: "Last week, they _____ a new car.", opts: ["buy", "are buying", "bought", "buys"], ans: 2, exp: "Action passée: past simple (bought)"},
+                {q: "The rain _____ at the moment.", opts: ["stops", "stopped", "is stopping", "stop"], ans: 2, exp: "Action présente: present continuous"},
+                {q: "I always _____ breakfast at 7am.", opts: ["have", "am having", "had", "has"], ans: 0, exp: "Habitude: present simple (have)"},
+                {q: "She _____ to France in 2019.", opts: ["goes", "went", "is going", "go"], ans: 1, exp: "Passé: past simple (went)"},
+                {q: "What _____ you _____ tomorrow?", opts: ["do/do", "are/doing", "did/do", "does/do"], ans: 1, exp: "Futur proche: present continuous"},
+                {q: "He _____ breakfast when I arrived.", opts: ["eats", "was eating", "ate", "eat"], ans: 1, exp: "Action passée en cours: past continuous"},
+                {q: "We _____ pizza last night.", opts: ["eat", "are eating", "ate", "eats"], ans: 2, exp: "Passé défini: past simple (ate)"},
+                {q: "Look! The sun _____ down.", opts: ["goes", "went", "is going", "go"], ans: 2, exp: "Action en direct: present continuous"},
+            ]
+        };
+
+        let currentTense = 'present_simple';
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+        let sessionQuestions = [];
+
+        function selectTense(tense) {
+            currentTense = tense;
+            currentQuestion = 0;
+            score = 0;
+            answered = false;
+            document.querySelectorAll('.tense-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (tense === 'mix') {
+                sessionQuestions = [
+                    ...questionsByTense.present_simple.slice(0, 7),
+                    ...questionsByTense.present_continuous.slice(0, 7),
+                    ...questionsByTense.past_simple.slice(0, 6)
+                ].sort(() => Math.random() - 0.5);
+            } else {
+                sessionQuestions = questionsByTense[tense].slice(0, 20);
+            }
+
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestion >= sessionQuestions.length) {
+                showResults();
+                return;
+            }
+            const q = sessionQuestions[currentQuestion];
+            document.getElementById('questionNum').textContent = currentQuestion + 1;
+            document.getElementById('questionText').innerHTML = q.q;
+            document.getElementById('currentScore').textContent = score;
+
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            q.opts.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option';
+                btn.textContent = opt;
+                btn.onclick = () => selectOption(i);
+                btn.id = `opt${i}`;
+                container.appendChild(btn);
+            });
+
+            document.getElementById('explanation').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'none';
+            answered = false;
+        }
+
+        let selectedOption = null;
+        function selectOption(index) {
+            if (answered) return;
+            selectedOption = index;
+            document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+            document.getElementById(`opt${index}`).classList.add('selected');
+        }
+
+        function submitAnswer() {
+            if (selectedOption === null) return;
+            answered = true;
+            const q = sessionQuestions[currentQuestion];
+            const correct = selectedOption === q.ans;
+
+            if (correct) {
+                score++;
+                document.getElementById(`opt${selectedOption}`).classList.add('correct');
+            } else {
+                document.getElementById(`opt${selectedOption}`).classList.add('incorrect');
+                document.getElementById(`opt${q.ans}`).classList.add('correct');
+            }
+
+            document.getElementById('explanation').textContent = q.exp;
+            document.getElementById('explanation').style.display = 'block';
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'block';
+
+            document.querySelectorAll('.option').forEach(o => o.disabled = true);
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= sessionQuestions.length) {
+                showResults();
+            } else {
+                selectedOption = null;
+                document.querySelectorAll('.option').forEach(o => o.disabled = false);
+                loadQuestion();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('questionContainer').style.display = 'none';
+            document.getElementById('resultsScreen').classList.add('active');
+
+            const pct = Math.round((score / 20) * 100);
+            const stars = Math.ceil(pct / 20);
+
+            document.getElementById('finalScore').textContent = `${score}/20`;
+            document.getElementById('percentageDisplay').textContent = `${pct}%`;
+            document.getElementById('starsDisplay').textContent = '⭐'.repeat(stars) + '☆'.repeat(5 - stars);
+
+            const resultData = {
+                v: '5_tense',
+                dt: new Date().toISOString(),
+                tense: currentTense,
+                score: `${score}/20`,
+                pct: pct,
+                stars: stars
+            };
+            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+            document.getElementById('resultCode').textContent = encoded;
+        }
+
+        selectTense('present_simple');
+        document.getElementById('submitBtn').onclick = submitAnswer;
+        document.getElementById('nextBtn').onclick = nextQuestion;
+    </script>
+</body>
+</html>

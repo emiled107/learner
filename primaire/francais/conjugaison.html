@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conjugaison Express</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            color: #fff;
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #08090f 0%, #1a1b2e 100%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ff00ff, #ff0099, #ff6600);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        .menu, .mode-select, .game, .result {
+            display: none;
+        }
+
+        .menu.active, .mode-select.active, .game.active, .result.active {
+            display: block;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 15px 25px;
+            font-size: 1.1em;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff00ff, #ff0099);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 0, 159, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 0, 159, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #ff6600, #ffaa00);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
+            font-weight: 700;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 102, 0, 0.4);
+        }
+
+        .tense-button {
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 0, 159, 0.3);
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1em;
+        }
+
+        .tense-button:hover {
+            background: rgba(255, 0, 159, 0.15);
+            border-color: #ff00ff;
+            transform: translateX(5px);
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff00ff, #ff0099);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff00ff, #ff0099, #ff6600);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .question-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 0, 159, 0.2);
+            text-align: center;
+        }
+
+        .prompt-text {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #e0e0e0;
+        }
+
+        .verb-display {
+            font-size: 2em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff00ff, #ff0099);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .pronoun-display {
+            font-size: 1.5em;
+            color: #ffaa00;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .input-box {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: 2px solid rgba(255, 0, 159, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border-radius: 10px;
+            font-family: 'Nunito', sans-serif;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .input-box:focus {
+            outline: none;
+            border-color: #ff00ff;
+            background: rgba(255, 0, 159, 0.15);
+            box-shadow: 0 0 15px rgba(255, 0, 159, 0.3);
+        }
+
+        .input-box.correct {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.15);
+            animation: correctFlash 0.5s ease;
+        }
+
+        .input-box.wrong {
+            border-color: #ff0000;
+            background: rgba(255, 0, 0, 0.15);
+            animation: wrongShake 0.4s ease;
+        }
+
+        @keyframes correctFlash {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .feedback {
+            font-size: 1.1em;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            display: block;
+        }
+
+        .feedback.wrong {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff6666;
+            display: block;
+        }
+
+        .answer-display {
+            font-size: 1em;
+            margin-top: 10px;
+            color: #aaa;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-box {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(255, 0, 159, 0.2);
+        }
+
+        .score-display {
+            font-size: 3em;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #ff00ff, #ff0099, #ff6600);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stars {
+            font-size: 3em;
+            margin-bottom: 15px;
+            letter-spacing: 5px;
+        }
+
+        .result-code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            word-break: break-all;
+            color: #00ff00;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .result-label {
+            color: #888;
+            font-size: 0.8em;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #ff00ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #ff0099;
+            transform: translateX(-3px);
+        }
+
+        .back-link::before {
+            content: '← ';
+        }
+
+        .tense-label {
+            font-size: 0.9em;
+            color: #888;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .verb-display {
+                font-size: 1.6em;
+            }
+
+            .pronoun-display {
+                font-size: 1.2em;
+            }
+
+            .input-box {
+                font-size: 1em;
+                padding: 12px;
+            }
+
+            button {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- MENU -->
+        <div class="menu active">
+            <div class="header">
+                <h1>🚀 CONJUGAISON EXPRESS</h1>
+                <p class="subtitle">Maîtrise les conjugaisons françaises!</p>
+            </div>
+            <p style="text-align: center; margin-bottom: 20px; color: #aaa;">
+                Choisis un mode de jeu: une seule tense ou mélange de toutes les tenses. 20 questions par session.
+            </p>
+            <div class="button-group">
+                <button class="btn-primary" onclick="showModeSelect()">🎮 COMMENCER</button>
+            </div>
+        </div>
+
+        <!-- MODE SELECT -->
+        <div class="mode-select">
+            <div class="header">
+                <h1 style="font-size: 2em;">Choisir un Mode</h1>
+            </div>
+            <div class="button-group">
+                <button class="tense-button" onclick="selectTense('present')">📝 PRÉSENT</button>
+                <button class="tense-button" onclick="selectTense('imparfait')">⏳ IMPARFAIT</button>
+                <button class="tense-button" onclick="selectTense('futur')">🚀 FUTUR SIMPLE</button>
+                <button class="tense-button" onclick="selectTense('passe')">✅ PASSÉ COMPOSÉ</button>
+                <button class="tense-button" onclick="selectTense('mix')" style="background: linear-gradient(135deg, rgba(255,0,159,0.3), rgba(255,102,0,0.3)); border-color: #ff6600;">🎲 MIX (TOUTES LES TENSES)</button>
+            </div>
+            <div class="button-group" style="margin-top: 25px;">
+                <button class="btn-secondary" onclick="backToMenu()">← RETOUR</button>
+            </div>
+        </div>
+
+        <!-- GAME -->
+        <div class="game">
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-label">Question</div>
+                    <div class="stat-value" id="questionCount">1/20</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Score</div>
+                    <div class="stat-value" id="scoreDisplay">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Tense</div>
+                    <div class="stat-value" id="tenseLabel" style="font-size: 1.2em;">-</div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-box">
+                <div class="prompt-text">Conjugue le verbe:</div>
+                <div class="verb-display" id="verbDisplay">-</div>
+                <div class="pronoun-display" id="pronounDisplay">-</div>
+                <input type="text" class="input-box" id="answerInput" placeholder="Tapez votre réponse..." autofocus>
+                <button class="btn-primary" onclick="checkAnswer()" style="width: 100%; margin-bottom: 0;">✓ VÉRIFIER</button>
+                <div class="feedback" id="feedback"></div>
+                <div class="answer-display" id="answerDisplay"></div>
+            </div>
+        </div>
+
+        <!-- RESULT -->
+        <div class="result">
+            <div class="result-box">
+                <h2 style="font-size: 1.5em; margin-bottom: 20px;">Session Terminée!</h2>
+                <div class="score-display" id="finalScore">0/20</div>
+                <div class="stars" id="starsDisplay">⭐</div>
+                <p id="percentage" style="font-size: 1.2em; margin-bottom: 20px;"></p>
+                <div class="result-code">
+                    <div id="resultCode"></div>
+                </div>
+                <div class="result-label">Copie ce code pour sauvegarder ton résultat</div>
+            </div>
+            <div class="button-group" style="margin-top: 25px;">
+                <button class="btn-primary" onclick="backToMenu()">🏠 ACCUEIL</button>
+                <button class="btn-secondary" onclick="showModeSelect()">🔄 REJOUER</button>
+            </div>
+            <a href="/index.html" class="back-link" style="display: block; text-align: center; width: 100%;"></a>
+        </div>
+    </div>
+
+    <script>
+        // Complete conjugation data for all verbs
+        const conjugationData = {
+            present: {
+                être: { je: 'suis', tu: 'es', il: 'est', elle: 'est', on: 'est', nous: 'sommes', vous: 'êtes', ils: 'sont', elles: 'sont' },
+                avoir: { je: 'ai', tu: 'as', il: 'a', elle: 'a', on: 'a', nous: 'avons', vous: 'avez', ils: 'ont', elles: 'ont' },
+                aller: { je: 'vais', tu: 'vas', il: 'va', elle: 'va', on: 'va', nous: 'allons', vous: 'allez', ils: 'vont', elles: 'vont' },
+                faire: { je: 'fais', tu: 'fais', il: 'fait', elle: 'fait', on: 'fait', nous: 'faisons', vous: 'faites', ils: 'font', elles: 'font' },
+                dire: { je: 'dis', tu: 'dis', il: 'dit', elle: 'dit', on: 'dit', nous: 'disons', vous: 'dites', ils: 'disent', elles: 'disent' },
+                voir: { je: 'vois', tu: 'vois', il: 'voit', elle: 'voit', on: 'voit', nous: 'voyons', vous: 'voyez', ils: 'voient', elles: 'voient' },
+                venir: { je: 'viens', tu: 'viens', il: 'vient', elle: 'vient', on: 'vient', nous: 'venons', vous: 'venez', ils: 'viennent', elles: 'viennent' },
+                pouvoir: { je: 'peux', tu: 'peux', il: 'peut', elle: 'peut', on: 'peut', nous: 'pouvons', vous: 'pouvez', ils: 'peuvent', elles: 'peuvent' },
+                vouloir: { je: 'veux', tu: 'veux', il: 'veut', elle: 'veut', on: 'veut', nous: 'voulons', vous: 'voulez', ils: 'veulent', elles: 'veulent' },
+                savoir: { je: 'sais', tu: 'sais', il: 'sait', elle: 'sait', on: 'sait', nous: 'savons', vous: 'savez', ils: 'savent', elles: 'savent' },
+                prendre: { je: 'prends', tu: 'prends', il: 'prend', elle: 'prend', on: 'prend', nous: 'prenons', vous: 'prenez', ils: 'prennent', elles: 'prennent' },
+                mettre: { je: 'mets', tu: 'mets', il: 'met', elle: 'met', on: 'met', nous: 'mettons', vous: 'mettez', ils: 'mettent', elles: 'mettent' },
+                partir: { je: 'pars', tu: 'pars', il: 'part', elle: 'part', on: 'part', nous: 'partons', vous: 'partez', ils: 'partent', elles: 'partent' },
+                sortir: { je: 'sors', tu: 'sors', il: 'sort', elle: 'sort', on: 'sort', nous: 'sortons', vous: 'sortez', ils: 'sortent', elles: 'sortent' },
+                finir: { je: 'finis', tu: 'finis', il: 'finit', elle: 'finit', on: 'finit', nous: 'finissons', vous: 'finissez', ils: 'finissent', elles: 'finissent' },
+                choisir: { je: 'choisis', tu: 'choisis', il: 'choisit', elle: 'choisit', on: 'choisit', nous: 'choisissons', vous: 'choisissez', ils: 'choisissent', elles: 'choisissent' },
+                manger: { je: 'mange', tu: 'manges', il: 'mange', elle: 'mange', on: 'mange', nous: 'mangeons', vous: 'mangez', ils: 'mangent', elles: 'mangent' },
+                jouer: { je: 'joue', tu: 'joues', il: 'joue', elle: 'joue', on: 'joue', nous: 'jouons', vous: 'jouez', ils: 'jouent', elles: 'jouent' },
+                parler: { je: 'parle', tu: 'parles', il: 'parle', elle: 'parle', on: 'parle', nous: 'parlons', vous: 'parlez', ils: 'parlent', elles: 'parlent' },
+                chanter: { je: 'chante', tu: 'chantes', il: 'chante', elle: 'chante', on: 'chante', nous: 'chantons', vous: 'chantez', ils: 'chantent', elles: 'chantent' },
+                aimer: { je: 'aime', tu: 'aimes', il: 'aime', elle: 'aime', on: 'aime', nous: 'aimons', vous: 'aimez', ils: 'aiment', elles: 'aiment' },
+                donner: { je: 'donne', tu: 'donnes', il: 'donne', elle: 'donne', on: 'donne', nous: 'donnons', vous: 'donnez', ils: 'donnent', elles: 'donnent' },
+                trouver: { je: 'trouve', tu: 'trouves', il: 'trouve', elle: 'trouve', on: 'trouve', nous: 'trouvons', vous: 'trouvez', ils: 'trouvent', elles: 'trouvent' },
+                penser: { je: 'pense', tu: 'penses', il: 'pense', elle: 'pense', on: 'pense', nous: 'pensons', vous: 'pensez', ils: 'pensent', elles: 'pensent' },
+                appeler: { je: 'appelle', tu: 'appelles', il: 'appelle', elle: 'appelle', on: 'appelle', nous: 'appelons', vous: 'appelez', ils: 'appellent', elles: 'appellent' }
+            },
+            imparfait: {
+                être: { je: 'étais', tu: 'étais', il: 'était', elle: 'était', on: 'était', nous: 'étions', vous: 'étiez', ils: 'étaient', elles: 'étaient' },
+                avoir: { je: 'avais', tu: 'avais', il: 'avait', elle: 'avait', on: 'avait', nous: 'avions', vous: 'aviez', ils: 'avaient', elles: 'avaient' },
+                aller: { je: 'allais', tu: 'allais', il: 'allait', elle: 'allait', on: 'allait', nous: 'allions', vous: 'alliez', ils: 'allaient', elles: 'allaient' },
+                faire: { je: 'faisais', tu: 'faisais', il: 'faisait', elle: 'faisait', on: 'faisait', nous: 'faisions', vous: 'faisiez', ils: 'faisaient', elles: 'faisaient' },
+                dire: { je: 'disais', tu: 'disais', il: 'disait', elle: 'disait', on: 'disait', nous: 'disions', vous: 'disiez', ils: 'disaient', elles: 'disaient' },
+                voir: { je: 'voyais', tu: 'voyais', il: 'voyait', elle: 'voyait', on: 'voyait', nous: 'voyions', vous: 'voyiez', ils: 'voyaient', elles: 'voyaient' },
+                venir: { je: 'venais', tu: 'venais', il: 'venait', elle: 'venait', on: 'venait', nous: 'venions', vous: 'veniez', ils: 'venaient', elles: 'venaient' },
+                pouvoir: { je: 'pouvais', tu: 'pouvais', il: 'pouvait', elle: 'pouvait', on: 'pouvait', nous: 'pouvions', vous: 'pouviez', ils: 'pouvaient', elles: 'pouvaient' },
+                vouloir: { je: 'voulais', tu: 'voulais', il: 'voulait', elle: 'voulait', on: 'voulait', nous: 'voulions', vous: 'vouliez', ils: 'voulaient', elles: 'voulaient' },
+                savoir: { je: 'savais', tu: 'savais', il: 'savait', elle: 'savait', on: 'savait', nous: 'savions', vous: 'saviez', ils: 'savaient', elles: 'savaient' },
+                prendre: { je: 'prenais', tu: 'prenais', il: 'prenait', elle: 'prenait', on: 'prenait', nous: 'prenions', vous: 'preniez', ils: 'prenaient', elles: 'prenaient' },
+                mettre: { je: 'mettais', tu: 'mettais', il: 'mettait', elle: 'mettait', on: 'mettait', nous: 'mettions', vous: 'mettiez', ils: 'mettaient', elles: 'mettaient' },
+                partir: { je: 'partais', tu: 'partais', il: 'partait', elle: 'partait', on: 'partait', nous: 'partions', vous: 'partiez', ils: 'partaient', elles: 'partaient' },
+                sortir: { je: 'sortais', tu: 'sortais', il: 'sortait', elle: 'sortait', on: 'sortait', nous: 'sortions', vous: 'sortiez', ils: 'sortaient', elles: 'sortaient' },
+                finir: { je: 'finissais', tu: 'finissais', il: 'finissait', elle: 'finissait', on: 'finissait', nous: 'finissions', vous: 'finissiez', ils: 'finissaient', elles: 'finissaient' },
+                choisir: { je: 'choisissais', tu: 'choisissais', il: 'choisissait', elle: 'choisissait', on: 'choisissait', nous: 'choisissions', vous: 'choisissez', ils: 'choisissaient', elles: 'choisissaient' },
+                manger: { je: 'mangeais', tu: 'mangeais', il: 'mangeait', elle: 'mangeait', on: 'mangeait', nous: 'mangions', vous: 'mangiez', ils: 'mangeaient', elles: 'mangeaient' },
+                jouer: { je: 'jouais', tu: 'jouais', il: 'jouait', elle: 'jouait', on: 'jouait', nous: 'jouions', vous: 'jouiez', ils: 'jouaient', elles: 'jouaient' },
+                parler: { je: 'parlais', tu: 'parlais', il: 'parlait', elle: 'parlait', on: 'parlait', nous: 'parlions', vous: 'parliez', ils: 'parlaient', elles: 'parlaient' },
+                chanter: { je: 'chantais', tu: 'chantais', il: 'chantait', elle: 'chantait', on: 'chantait', nous: 'chantions', vous: 'chantiez', ils: 'chantaient', elles: 'chantaient' },
+                aimer: { je: 'aimais', tu: 'aimais', il: 'aimait', elle: 'aimait', on: 'aimait', nous: 'aimions', vous: 'aimiez', ils: 'aimaient', elles: 'aimaient' },
+                donner: { je: 'donnais', tu: 'donnais', il: 'donnait', elle: 'donnait', on: 'donnait', nous: 'donnions', vous: 'donniez', ils: 'donnaient', elles: 'donnaient' },
+                trouver: { je: 'trouvais', tu: 'trouvais', il: 'trouvait', elle: 'trouvait', on: 'trouvait', nous: 'trouvions', vous: 'trouviez', ils: 'trouvaient', elles: 'trouvaient' },
+                penser: { je: 'pensais', tu: 'pensais', il: 'pensait', elle: 'pensait', on: 'pensait', nous: 'pensions', vous: 'pensiez', ils: 'pensaient', elles: 'pensaient' },
+                appeler: { je: 'appelais', tu: 'appelais', il: 'appelait', elle: 'appelait', on: 'appelait', nous: 'appelions', vous: 'appeliez', ils: 'appelaient', elles: 'appelaient' }
+            },
+            futur: {
+                être: { je: 'serai', tu: 'seras', il: 'sera', elle: 'sera', on: 'sera', nous: 'serons', vous: 'serez', ils: 'seront', elles: 'seront' },
+                avoir: { je: 'aurai', tu: 'auras', il: 'aura', elle: 'aura', on: 'aura', nous: 'aurons', vous: 'aurez', ils: 'auront', elles: 'auront' },
+                aller: { je: 'irai', tu: 'iras', il: 'ira', elle: 'ira', on: 'ira', nous: 'irons', vous: 'irez', ils: 'iront', elles: 'iront' },
+                faire: { je: 'ferai', tu: 'feras', il: 'fera', elle: 'fera', on: 'fera', nous: 'ferons', vous: 'ferez', ils: 'feront', elles: 'feront' },
+                dire: { je: 'dirai', tu: 'diras', il: 'dira', elle: 'dira', on: 'dira', nous: 'dirons', vous: 'direz', ils: 'diront', elles: 'diront' },
+                voir: { je: 'verrai', tu: 'verras', il: 'verra', elle: 'verra', on: 'verra', nous: 'verrons', vous: 'verrez', ils: 'verront', elles: 'verront' },
+                venir: { je: 'viendrai', tu: 'viendras', il: 'viendra', elle: 'viendra', on: 'viendra', nous: 'viendrons', vous: 'viendrez', ils: 'viendront', elles: 'viendront' },
+                pouvoir: { je: 'pourrai', tu: 'pourras', il: 'pourra', elle: 'pourra', on: 'pourra', nous: 'pourrons', vous: 'pourrez', ils: 'pourront', elles: 'pourront' },
+                vouloir: { je: 'voudrai', tu: 'voudras', il: 'voudra', elle: 'voudra', on: 'voudra', nous: 'voudrons', vous: 'voudrez', ils: 'voudront', elles: 'voudront' },
+                savoir: { je: 'saurai', tu: 'sauras', il: 'saura', elle: 'saura', on: 'saura', nous: 'saurons', vous: 'saurez', ils: 'sauront', elles: 'sauront' },
+                prendre: { je: 'prendrai', tu: 'prendras', il: 'prendra', elle: 'prendra', on: 'prendra', nous: 'prendrons', vous: 'prendrez', ils: 'prendront', elles: 'prendront' },
+                mettre: { je: 'mettrai', tu: 'mettras', il: 'mettra', elle: 'mettra', on: 'mettra', nous: 'mettrons', vous: 'mettrez', ils: 'mettront', elles: 'mettront' },
+                partir: { je: 'partirai', tu: 'partiras', il: 'partira', elle: 'partira', on: 'partira', nous: 'partirons', vous: 'partirez', ils: 'partiront', elles: 'partiront' },
+                sortir: { je: 'sortirai', tu: 'sortiras', il: 'sortira', elle: 'sortira', on: 'sortira', nous: 'sortirons', vous: 'sortirez', ils: 'sortiront', elles: 'sortiront' },
+                finir: { je: 'finirai', tu: 'finiras', il: 'finira', elle: 'finira', on: 'finira', nous: 'finirons', vous: 'finirez', ils: 'finiront', elles: 'finiront' },
+                choisir: { je: 'choisirai', tu: 'choisiras', il: 'choisira', elle: 'choisira', on: 'choisira', nous: 'choisirons', vous: 'choisirez', ils: 'choisiront', elles: 'choisiront' },
+                manger: { je: 'mangerai', tu: 'mangeras', il: 'mangera', elle: 'mangera', on: 'mangera', nous: 'mangerons', vous: 'mangerez', ils: 'mangeront', elles: 'mangeront' },
+                jouer: { je: 'jouerai', tu: 'joueras', il: 'jouera', elle: 'jouera', on: 'jouera', nous: 'jouerons', vous: 'jouerez', ils: 'joueront', elles: 'joueront' },
+                parler: { je: 'parlerai', tu: 'parleras', il: 'parlera', elle: 'parlera', on: 'parlera', nous: 'parlerons', vous: 'parlerez', ils: 'parleront', elles: 'parleront' },
+                chanter: { je: 'chanterai', tu: 'chanteras', il: 'chantera', elle: 'chantera', on: 'chantera', nous: 'chanterons', vous: 'chanterez', ils: 'chanteront', elles: 'chanteront' },
+                aimer: { je: 'aimerai', tu: 'aimeras', il: 'aimera', elle: 'aimera', on: 'aimera', nous: 'aimerons', vous: 'aimerez', ils: 'aimeront', elles: 'aimeront' },
+                donner: { je: 'donnerai', tu: 'donneras', il: 'donnera', elle: 'donnera', on: 'donnera', nous: 'donnerons', vous: 'donnerez', ils: 'donneront', elles: 'donneront' },
+                trouver: { je: 'trouverai', tu: 'trouveras', il: 'trouvera', elle: 'trouvera', on: 'trouvera', nous: 'trouverons', vous: 'trouverez', ils: 'trouveront', elles: 'trouveront' },
+                penser: { je: 'penserai', tu: 'penseras', il: 'pensera', elle: 'pensera', on: 'pensera', nous: 'penserons', vous: 'penserez', ils: 'penseront', elles: 'penseront' },
+                appeler: { je: 'appellerai', tu: 'appelleras', il: 'appellera', elle: 'appellera', on: 'appellera', nous: 'appellerons', vous: 'appellerez', ils: 'appelleront', elles: 'appelleront' }
+            },
+            passe: {
+                être: { je: 'ai été', tu: 'as été', il: 'a été', elle: 'a été', on: 'a été', nous: 'avons été', vous: 'avez été', ils: 'ont été', elles: 'ont été' },
+                avoir: { je: 'ai eu', tu: 'as eu', il: 'a eu', elle: 'a eu', on: 'a eu', nous: 'avons eu', vous: 'avez eu', ils: 'ont eu', elles: 'ont eu' },
+                aller: { je: 'suis allé', tu: 'es allé', il: 'est allé', elle: 'est allée', on: 'est allé', nous: 'sommes allés', vous: 'êtes allés', ils: 'sont allés', elles: 'sont allées' },
+                faire: { je: 'ai fait', tu: 'as fait', il: 'a fait', elle: 'a fait', on: 'a fait', nous: 'avons fait', vous: 'avez fait', ils: 'ont fait', elles: 'ont fait' },
+                dire: { je: 'ai dit', tu: 'as dit', il: 'a dit', elle: 'a dit', on: 'a dit', nous: 'avons dit', vous: 'avez dit', ils: 'ont dit', elles: 'ont dit' },
+                voir: { je: 'ai vu', tu: 'as vu', il: 'a vu', elle: 'a vu', on: 'a vu', nous: 'avons vu', vous: 'avez vu', ils: 'ont vu', elles: 'ont vu' },
+                venir: { je: 'suis venu', tu: 'es venu', il: 'est venu', elle: 'est venue', on: 'est venu', nous: 'sommes venus', vous: 'êtes venus', ils: 'sont venus', elles: 'sont venues' },
+                pouvoir: { je: 'ai pu', tu: 'as pu', il: 'a pu', elle: 'a pu', on: 'a pu', nous: 'avons pu', vous: 'avez pu', ils: 'ont pu', elles: 'ont pu' },
+                vouloir: { je: 'ai voulu', tu: 'as voulu', il: 'a voulu', elle: 'a voulu', on: 'a voulu', nous: 'avons voulu', vous: 'avez voulu', ils: 'ont voulu', elles: 'ont voulu' },
+                savoir: { je: 'ai su', tu: 'as su', il: 'a su', elle: 'a su', on: 'a su', nous: 'avons su', vous: 'avez su', ils: 'ont su', elles: 'ont su' },
+                prendre: { je: 'ai pris', tu: 'as pris', il: 'a pris', elle: 'a pris', on: 'a pris', nous: 'avons pris', vous: 'avez pris', ils: 'ont pris', elles: 'ont pris' },
+                mettre: { je: 'ai mis', tu: 'as mis', il: 'a mis', elle: 'a mis', on: 'a mis', nous: 'avons mis', vous: 'avez mis', ils: 'ont mis', elles: 'ont mis' },
+                partir: { je: 'suis parti', tu: 'es parti', il: 'est parti', elle: 'est partie', on: 'est parti', nous: 'sommes partis', vous: 'êtes partis', ils: 'sont partis', elles: 'sont parties' },
+                sortir: { je: 'suis sorti', tu: 'es sorti', il: 'est sorti', elle: 'est sortie', on: 'est sorti', nous: 'sommes sortis', vous: 'êtes sortis', ils: 'sont sortis', elles: 'sont sorties' },
+                finir: { je: 'ai fini', tu: 'as fini', il: 'a fini', elle: 'a fini', on: 'a fini', nous: 'avons fini', vous: 'avez fini', ils: 'ont fini', elles: 'ont fini' },
+                choisir: { je: 'ai choisi', tu: 'as choisi', il: 'a choisi', elle: 'a choisi', on: 'a choisi', nous: 'avons choisi', vous: 'avez choisi', ils: 'ont choisi', elles: 'ont choisi' },
+                manger: { je: 'ai mangé', tu: 'as mangé', il: 'a mangé', elle: 'a mangé', on: 'a mangé', nous: 'avons mangé', vous: 'avez mangé', ils: 'ont mangé', elles: 'ont mangé' },
+                jouer: { je: 'ai joué', tu: 'as joué', il: 'a joué', elle: 'a joué', on: 'a joué', nous: 'avons joué', vous: 'avez joué', ils: 'ont joué', elles: 'ont joué' },
+                parler: { je: 'ai parlé', tu: 'as parlé', il: 'a parlé', elle: 'a parlé', on: 'a parlé', nous: 'avons parlé', vous: 'avez parlé', ils: 'ont parlé', elles: 'ont parlé' },
+                chanter: { je: 'ai chanté', tu: 'as chanté', il: 'a chanté', elle: 'a chanté', on: 'a chanté', nous: 'avons chanté', vous: 'avez chanté', ils: 'ont chanté', elles: 'ont chanté' },
+                aimer: { je: 'ai aimé', tu: 'as aimé', il: 'a aimé', elle: 'a aimé', on: 'a aimé', nous: 'avons aimé', vous: 'avez aimé', ils: 'ont aimé', elles: 'ont aimé' },
+                donner: { je: 'ai donné', tu: 'as donné', il: 'a donné', elle: 'a donné', on: 'a donné', nous: 'avons donné', vous: 'avez donné', ils: 'ont donné', elles: 'ont donné' },
+                trouver: { je: 'ai trouvé', tu: 'as trouvé', il: 'a trouvé', elle: 'a trouvé', on: 'a trouvé', nous: 'avons trouvé', vous: 'avez trouvé', ils: 'ont trouvé', elles: 'ont trouvé' },
+                penser: { je: 'ai pensé', tu: 'as pensé', il: 'a pensé', elle: 'a pensé', on: 'a pensé', nous: 'avons pensé', vous: 'avez pensé', ils: 'ont pensé', elles: 'ont pensé' },
+                appeler: { je: 'ai appelé', tu: 'as appelé', il: 'a appelé', elle: 'a appelé', on: 'a appelé', nous: 'avons appelé', vous: 'avez appelé', ils: 'ont appelé', elles: 'ont appelé' }
+            }
+        };
+
+        const pronouns = ['je', 'tu', 'il', 'elle', 'on', 'nous', 'vous', 'ils', 'elles'];
+        const verbs = Object.keys(conjugationData.present);
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedTense = null;
+        let questionsOrder = [];
+        let answered = false;
+        let tenseNames = { present: 'PRÉSENT', imparfait: 'IMPARFAIT', futur: 'FUTUR SIMPLE', passe: 'PASSÉ COMPOSÉ', mix: 'MIX' };
+
+        function showModeSelect() {
+            document.querySelector('.menu').classList.remove('active');
+            document.querySelector('.mode-select').classList.add('active');
+        }
+
+        function selectTense(tense) {
+            selectedTense = tense;
+            startGame();
+        }
+
+        function startGame() {
+            questionsOrder = [];
+            for (let i = 0; i < 20; i++) {
+                const verb = verbs[Math.floor(Math.random() * verbs.length)];
+                const pronoun = pronouns[Math.floor(Math.random() * pronouns.length)];
+                let tenseKey;
+                if (selectedTense === 'mix') {
+                    const tenses = ['present', 'imparfait', 'futur', 'passe'];
+                    tenseKey = tenses[Math.floor(Math.random() * tenses.length)];
+                } else {
+                    tenseKey = selectedTense;
+                }
+                questionsOrder.push({ verb, pronoun, tense: tenseKey });
+            }
+            currentQuestion = 0;
+            score = 0;
+            document.querySelector('.mode-select').classList.remove('active');
+            document.querySelector('.game').classList.add('active');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestion >= questionsOrder.length) {
+                endGame();
+                return;
+            }
+
+            answered = false;
+            const q = questionsOrder[currentQuestion];
+            document.getElementById('verbDisplay').textContent = q.verb;
+            document.getElementById('pronounDisplay').textContent = q.pronoun;
+            document.getElementById('tenseLabel').textContent = tenseNames[q.tense];
+            document.getElementById('questionCount').textContent = (currentQuestion + 1) + '/20';
+            document.getElementById('scoreDisplay').textContent = score;
+            document.getElementById('progressFill').style.width = ((currentQuestion + 1) / 20 * 100) + '%';
+            document.getElementById('answerInput').value = '';
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('answerDisplay').textContent = '';
+            document.getElementById('answerInput').className = 'input-box';
+            document.getElementById('answerInput').focus();
+        }
+
+        function checkAnswer() {
+            if (answered) return;
+            answered = true;
+
+            const q = questionsOrder[currentQuestion];
+            const userAnswer = document.getElementById('answerInput').value.trim().toLowerCase();
+            const correctAnswer = conjugationData[q.tense][q.verb][q.pronoun].toLowerCase();
+
+            const inputBox = document.getElementById('answerInput');
+            const feedback = document.getElementById('feedback');
+
+            if (userAnswer === correctAnswer) {
+                score++;
+                inputBox.classList.add('correct');
+                feedback.classList.add('correct');
+                feedback.textContent = '✓ Correct!';
+                setTimeout(() => nextQuestion(), 1500);
+            } else {
+                inputBox.classList.add('wrong');
+                feedback.classList.add('wrong');
+                feedback.textContent = '✗ Incorrect!';
+                document.getElementById('answerDisplay').innerHTML = '<strong>Bonne réponse:</strong> ' + conjugationData[q.tense][q.verb][q.pronoun];
+                setTimeout(() => nextQuestion(), 2500);
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            loadQuestion();
+        }
+
+        function endGame() {
+            document.querySelector('.game').classList.remove('active');
+            document.querySelector('.result').classList.add('active');
+
+            const percentage = Math.round((score / 20) * 100);
+            let stars = '⭐';
+            if (percentage >= 90) stars = '⭐⭐⭐';
+            else if (percentage >= 75) stars = '⭐⭐';
+
+            document.getElementById('finalScore').textContent = score + '/20';
+            document.getElementById('starsDisplay').textContent = stars;
+            document.getElementById('percentage').textContent = percentage + '%';
+
+            const now = new Date().toISOString();
+            const resultCode = `v:'p_conj'|dt:${now}|tense:${selectedTense}|score:${score}/20|pct:${percentage}%|stars:${stars.length}`;
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        function backToMenu() {
+            document.querySelector('.result').classList.remove('active');
+            document.querySelector('.mode-select').classList.remove('active');
+            document.querySelector('.game').classList.remove('active');
+            document.querySelector('.menu').classList.add('active');
+        }
+
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && document.querySelector('.game').classList.contains('active')) {
+                checkAnswer();
+            }
+        });
+    </script>
+</body>
+</html>

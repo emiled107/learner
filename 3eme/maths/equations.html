@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equations Express</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            font-family: 'Nunito', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .back-link {
+            color: #64dfdf;
+            text-decoration: none;
+            font-weight: 700;
+            padding: 8px 16px;
+            border: 2px solid #64dfdf;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: #64dfdf;
+            color: #08090f;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.4s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .level-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .level-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            text-align: center;
+        }
+
+        .level-btn:nth-child(1) { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .level-btn:nth-child(2) { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .level-btn:nth-child(3) { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+
+        .level-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 0, 110, 0.4);
+        }
+
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff006e, #8338ec);
+            transition: width 0.3s;
+        }
+
+        .timer {
+            font-size: 48px;
+            font-weight: 800;
+            text-align: center;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #00f2fe, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            min-height: 60px;
+        }
+
+        .question-num {
+            font-size: 12px;
+            color: #64dfdf;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .equation {
+            font-size: 36px;
+            font-weight: 800;
+            margin: 30px 0;
+            text-align: center;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+        }
+
+        .answer-box {
+            display: flex;
+            gap: 10px;
+            margin: 25px 0;
+            justify-content: center;
+        }
+
+        .input-field {
+            padding: 15px 20px;
+            border: 2px solid #64dfdf;
+            border-radius: 10px;
+            background: rgba(100, 223, 223, 0.1);
+            color: #fff;
+            font-family: 'Nunito', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #ff006e;
+            background: rgba(255, 0, 110, 0.1);
+        }
+
+        .submit-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            color: white;
+            font-family: 'Nunito', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 0, 110, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .feedback {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 700;
+            display: none;
+        }
+
+        .feedback.correct {
+            display: block;
+            background: linear-gradient(135deg, #00d084, #00f2fe);
+            color: #08090f;
+        }
+
+        .feedback.incorrect {
+            display: block;
+            background: linear-gradient(135deg, #ff006e, #f5576c);
+            color: white;
+        }
+
+        .solution {
+            background: rgba(100, 223, 223, 0.1);
+            border: 2px solid #64dfdf;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #64dfdf;
+            display: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .solution.show {
+            display: block;
+        }
+
+        .solution-step {
+            margin: 8px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(100, 223, 223, 0.3);
+        }
+
+        .solution-step:last-child {
+            border-bottom: none;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .stat-box {
+            text-align: center;
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64dfdf;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .results {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .score-display {
+            font-size: 64px;
+            font-weight: 800;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stars {
+            font-size: 40px;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+
+        .percentage {
+            font-size: 24px;
+            color: #64dfdf;
+            margin: 15px 0;
+        }
+
+        .result-code {
+            background: rgba(100, 223, 223, 0.1);
+            border: 2px solid #64dfdf;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            color: #64dfdf;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            color: white;
+            margin: 10px 5px;
+            display: inline-block;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 0, 110, 0.4);
+        }
+
+        .button.secondary {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: #08090f;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .equation {
+                font-size: 28px;
+            }
+
+            .timer {
+                font-size: 36px;
+            }
+
+            .input-field {
+                max-width: 150px;
+                font-size: 18px;
+            }
+
+            .level-select {
+                grid-template-columns: 1fr;
+            }
+
+            .answer-box {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📐 Equations Express</h1>
+            <a href="/index.html" class="back-link">← Retour</a>
+        </div>
+
+        <!-- LEVEL SELECT SCREEN -->
+        <div id="levelScreen" class="screen active">
+            <div class="quiz-container">
+                <h2 style="margin-bottom: 20px; text-align: center;">Choisissez votre niveau</h2>
+                <div class="level-select">
+                    <button class="level-btn" onclick="startQuiz(0)">
+                        <strong>Niveau 1</strong><br>
+                        ax + b = c
+                    </button>
+                    <button class="level-btn" onclick="startQuiz(1)">
+                        <strong>Niveau 2</strong><br>
+                        ax + b = cx + d
+                    </button>
+                    <button class="level-btn" onclick="startQuiz(2)">
+                        <strong>Niveau 3</strong><br>
+                        Produit nul
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="screen">
+            <div class="quiz-container">
+                <div class="question-num" id="questionNum"></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <div class="timer" id="timer">30</div>
+
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-label">Correctes</div>
+                        <div class="stat-value" id="correct">0/15</div>
+                    </div>
+                </div>
+
+                <div class="equation" id="equation"></div>
+
+                <div class="answer-box">
+                    <input type="text" class="input-field" id="answerInput" placeholder="Votre réponse" autocomplete="off">
+                    <button class="submit-btn" id="submitBtn" onclick="checkAnswer()">Valider</button>
+                </div>
+
+                <div class="feedback" id="feedback"></div>
+
+                <div class="solution" id="solution"></div>
+            </div>
+        </div>
+
+        <!-- RESULTS SCREEN -->
+        <div id="resultsScreen" class="screen">
+            <div class="quiz-container results">
+                <h2>Résultats</h2>
+                <div class="score-display" id="finalScore"></div>
+                <div class="percentage" id="finalPercentage"></div>
+                <div class="stars" id="finalStars"></div>
+
+                <div class="result-code" id="resultCode"></div>
+
+                <button class="button" onclick="location.reload()">Rejouer</button>
+                <button class="button secondary" onclick="showLevels()">Changer de niveau</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generateLevel1Questions() {
+            const questions = [];
+            for (let i = 0; i < 20; i++) {
+                const a = Math.floor(Math.random() * 9) + 1;
+                const b = Math.floor(Math.random() * 19) - 9;
+                const c = Math.floor(Math.random() * 99) + 1;
+                const x = (c - b) / a;
+                if (Number.isInteger(x)) {
+                    questions.push({
+                        eq: `${a}x + ${b >= 0 ? '+' : ''} ${b} = ${c}`,
+                        ans: x.toString(),
+                        steps: [
+                            `${a}x + ${b} = ${c}`,
+                            `${a}x = ${c} - (${b}) = ${c - b}`,
+                            `x = ${c - b} ÷ ${a}`,
+                            `x = ${x}`
+                        ]
+                    });
+                }
+            }
+            return questions.slice(0, 15);
+        }
+
+        function generateLevel2Questions() {
+            const questions = [];
+            for (let i = 0; i < 20; i++) {
+                const a = Math.floor(Math.random() * 7) + 1;
+                const b = Math.floor(Math.random() * 19) - 9;
+                const c = Math.floor(Math.random() * 7) + 1;
+                const d = Math.floor(Math.random() * 99) + 1;
+                const denom = a - c;
+                if (denom !== 0 && Number.isInteger((d - b) / denom)) {
+                    const x = (d - b) / denom;
+                    if (Math.abs(x) < 50) {
+                        questions.push({
+                            eq: `${a}x + ${b >= 0 ? '+' : ''} ${b} = ${c}x + ${d}`,
+                            ans: x.toString(),
+                            steps: [
+                                `${a}x + ${b} = ${c}x + ${d}`,
+                                `${a}x - ${c}x = ${d} - ${b}`,
+                                `${denom}x = ${d - b}`,
+                                `x = ${x}`
+                            ]
+                        });
+                    }
+                }
+            }
+            return questions.slice(0, 15);
+        }
+
+        function generateLevel3Questions() {
+            const questions = [];
+            for (let i = 0; i < 20; i++) {
+                const r1 = Math.floor(Math.random() * 19) - 9;
+                const r2 = Math.floor(Math.random() * 19) - 9;
+                if (r1 !== r2) {
+                    const a = 1;
+                    const b = -(r1 + r2);
+                    const c = r1 * r2;
+                    questions.push({
+                        eq: `(x + ${-r1 >= 0 ? '' : '-'} ${Math.abs(r1)})(x + ${-r2 >= 0 ? '' : '-'} ${Math.abs(r2)}) = 0`,
+                        ans: `${Math.min(r1, r2)}; ${Math.max(r1, r2)}`,
+                        steps: [
+                            `Produit nul: un des facteurs = 0`,
+                            `x + ${-r1} = 0  →  x = ${r1}`,
+                            `x + ${-r2} = 0  →  x = ${r2}`
+                        ]
+                    });
+                }
+            }
+            return questions.slice(0, 15);
+        }
+
+        const QUESTION_GENERATORS = [
+            generateLevel1Questions,
+            generateLevel2Questions,
+            generateLevel3Questions
+        ];
+
+        let currentLevel = 0;
+        let currentQuestion = 0;
+        let score = 0;
+        let timerInterval = null;
+        let timeLeft = 0;
+        let answered = false;
+        let questionPool = [];
+
+        function startQuiz(level) {
+            currentLevel = level;
+            currentQuestion = 0;
+            score = 0;
+            answered = false;
+            questionPool = QUESTION_GENERATORS[level]();
+
+            showScreen('quizScreen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestion >= 15) {
+                showResults();
+                return;
+            }
+
+            answered = false;
+            const q = questionPool[currentQuestion];
+
+            document.getElementById('questionNum').textContent = `Question ${currentQuestion + 1} / 15`;
+            document.getElementById('equation').textContent = q.eq;
+            document.getElementById('progressFill').style.width = ((currentQuestion / 15) * 100) + '%';
+
+            const input = document.getElementById('answerInput');
+            input.value = '';
+            input.focus();
+            input.disabled = false;
+
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('solution').className = 'solution';
+
+            startTimer(30);
+        }
+
+        function startTimer(duration) {
+            timeLeft = duration;
+            updateTimerDisplay();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    if (!answered) {
+                        answered = true;
+                        showFeedback(false);
+                        showSolution();
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timer').textContent = timeLeft;
+        }
+
+        function normalizeAnswer(ans) {
+            return ans.toLowerCase().replace(/\s+/g, '').replace(/,/g, '.');
+        }
+
+        function compareAnswers(userAns, correctAns) {
+            const user = normalizeAnswer(userAns);
+            const correct = normalizeAnswer(correctAns);
+
+            if (user === correct) return true;
+
+            if (user.includes('/') && correct.includes('/')) {
+                const [un, ud] = user.split('/');
+                const [cn, cd] = correct.split('/');
+                return (parseInt(un) * parseInt(cd)) === (parseInt(cn) * parseInt(ud));
+            }
+
+            return false;
+        }
+
+        function checkAnswer() {
+            if (answered) return;
+            answered = true;
+            clearInterval(timerInterval);
+
+            const input = document.getElementById('answerInput');
+            const userAns = input.value.trim();
+            const q = questionPool[currentQuestion];
+
+            const isCorrect = compareAnswers(userAns, q.ans);
+
+            if (isCorrect) {
+                score++;
+            }
+
+            document.getElementById('correct').textContent = score + '/15';
+            input.disabled = true;
+            document.getElementById('submitBtn').disabled = true;
+
+            showFeedback(isCorrect);
+            showSolution();
+
+            setTimeout(nextQuestion, 3000);
+        }
+
+        function showFeedback(isCorrect) {
+            const fb = document.getElementById('feedback');
+            fb.className = 'feedback ' + (isCorrect ? 'correct' : 'incorrect');
+            fb.textContent = isCorrect ? '✅ Correct!' : '❌ Incorrect';
+        }
+
+        function showSolution() {
+            const q = questionPool[currentQuestion];
+            const sol = document.getElementById('solution');
+            sol.innerHTML = q.steps.map(step => `<div class="solution-step">${step}</div>`).join('');
+            sol.classList.add('show');
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            loadQuestion();
+        }
+
+        function showResults() {
+            clearInterval(timerInterval);
+            const pct = Math.round((score / 15) * 100);
+            let stars = '';
+            if (pct >= 90) stars = '⭐⭐⭐';
+            else if (pct >= 75) stars = '⭐⭐';
+            else if (pct >= 50) stars = '⭐';
+
+            const levels = ['Niveau 1', 'Niveau 2', 'Niveau 3'];
+            const resultCode = btoa(JSON.stringify({
+                v: 'c_equations',
+                dt: new Date().toISOString(),
+                level: levels[currentLevel],
+                score: score + '/15',
+                pct: pct,
+                stars: stars.length
+            }));
+
+            document.getElementById('finalScore').textContent = score + '/15';
+            document.getElementById('finalPercentage').textContent = pct + '%';
+            document.getElementById('finalStars').textContent = stars || '❌';
+            document.getElementById('resultCode').textContent = resultCode;
+
+            showScreen('resultsScreen');
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function showLevels() {
+            showScreen('levelScreen');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const input = document.getElementById('answerInput');
+            if (input) {
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !document.getElementById('submitBtn').disabled) {
+                        checkAnswer();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

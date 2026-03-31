@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Written Expression - 1ère</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #08090f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #ff006e 0%, #fb5607 100%);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(255, 0, 110, 0.3);
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .subtitle {
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .question-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 0, 110, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+        }
+        .question-number {
+            color: #ff006e;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        .question-text {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        .context {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 4px solid #fb5607;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            color: #d0d0d0;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 12px;
+            background: rgba(255, 0, 110, 0.1);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            border-color: #ff006e;
+            background: rgba(255, 0, 110, 0.2);
+        }
+        .option.selected {
+            background: rgba(255, 0, 110, 0.3);
+            border-color: #ff006e;
+        }
+        .option.correct {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+        }
+        .option.incorrect {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #f44336;
+        }
+        .explanation {
+            background: rgba(255, 195, 0, 0.1);
+            border-left: 4px solid #ffc300;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 5px;
+            color: #d0d0d0;
+            font-size: 0.95em;
+            display: none;
+        }
+        .explanation.show {
+            display: block;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff006e 0%, #fb5607 100%);
+            transition: width 0.3s;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Nunito', sans-serif;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #ff006e 0%, #fb5607 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 0, 110, 0.4);
+        }
+        .btn-secondary {
+            background: rgba(255, 0, 110, 0.2);
+            color: #ff006e;
+            border: 2px solid #ff006e;
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 0, 110, 0.3);
+        }
+        .results {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.2) 0%, rgba(251, 86, 7, 0.2) 100%);
+            border-radius: 12px;
+            border: 2px solid rgba(255, 0, 110, 0.3);
+        }
+        .score-display {
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff006e 0%, #fb5607 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        .stars {
+            font-size: 2.5em;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+        .result-code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            word-break: break-all;
+            font-size: 0.9em;
+            color: #4caf50;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #ff006e;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            color: #fb5607;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            .question-container {
+                padding: 18px;
+            }
+            .score-display {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Written Expression</h1>
+            <p class="subtitle">Classe de 1ère - English Bac</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div id="quizContent"></div>
+
+        <div id="resultsSection" style="display:none;">
+            <div class="results">
+                <h2>Results</h2>
+                <div class="score-display" id="scoreDisplay">0/0</div>
+                <div class="stars" id="starsDisplay">☆☆☆☆☆</div>
+                <p id="percentageText"></p>
+                <div class="result-code" id="resultCode"></div>
+                <a href="/index.html" class="back-link">← Back to home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Which linking word best fits here?",
+                context: "He failed the test ____ he studied hard.",
+                options: [
+                    "because",
+                    "although",
+                    "therefore",
+                    "besides"
+                ],
+                correct: 1,
+                explanation: "'Although' shows contrast (failure despite studying). 'Because' shows cause, which contradicts the meaning."
+            },
+            {
+                question: "Complete the reformulation:",
+                context: "Original: 'I cannot accept your offer.' Better reformulation: ____",
+                options: [
+                    "I can accept your offer",
+                    "I'm unable to accept your offer",
+                    "You cannot make an offer",
+                    "The offer is impossible"
+                ],
+                correct: 1,
+                explanation: "The reformulation maintains meaning while using different structure and register."
+            },
+            {
+                question: "Identify the correct linking word:",
+                context: "She was tired; ____, she continued working.",
+                options: [
+                    "because",
+                    "nevertheless",
+                    "so",
+                    "as"
+                ],
+                correct: 1,
+                explanation: "'Nevertheless' shows opposition between tiredness and continuing work."
+            },
+            {
+                question: "Which linking word shows a conclusion?",
+                context: "The evidence is clear, the witness is reliable. ____, we must believe his testimony.",
+                options: [
+                    "however",
+                    "furthermore",
+                    "therefore",
+                    "meanwhile"
+                ],
+                correct: 2,
+                explanation: "'Therefore' introduces a logical conclusion from the premises."
+            },
+            {
+                question: "How would you reformulate this in a more formal register?",
+                context: "Original: 'It's a really cool idea.' Formal version: ____",
+                options: [
+                    "It's a cool idea",
+                    "It's an interesting and promising concept",
+                    "It's awesome",
+                    "It's cool, right?"
+                ],
+                correct: 1,
+                explanation: "Formal register replaces colloquial 'really cool' with 'interesting and promising concept'."
+            },
+            {
+                question: "Choose the best linking word for addition:",
+                context: "Climate change is a serious threat. ____, rising sea levels endanger coastal cities.",
+                options: [
+                    "However",
+                    "Moreover",
+                    "Nevertheless",
+                    "On the other hand"
+                ],
+                correct: 1,
+                explanation: "'Moreover' adds additional supporting evidence to the argument."
+            },
+            {
+                question: "Reformulate to avoid repetition:",
+                context: "Original: 'Technology is important. Technology improves our lives.' Better: ____",
+                options: [
+                    "Technology is important and technology improves our lives",
+                    "Technology is important and improves our lives",
+                    "Technology is important, and it is improving our lives",
+                    "Technology improves lives, which is important"
+                ],
+                correct: 1,
+                explanation: "Option B avoids repetition while maintaining clarity and grammar."
+            },
+            {
+                question: "Which register is appropriate for a formal essay?",
+                context: "Compare: A) 'Students gotta study hard' B) 'Students must study diligently'",
+                options: [
+                    "A is better for formal essays",
+                    "B is better for formal essays",
+                    "Both are equally formal",
+                    "Neither works"
+                ],
+                correct: 1,
+                explanation: "B uses formal structure ('must'), proper vocabulary ('diligently'), while A is informal ('gotta')."
+            },
+            {
+                question: "Select the best linking phrase for contrast:",
+                context: "The plan was ambitious. ____, it failed due to poor execution.",
+                options: [
+                    "For example",
+                    "In conclusion",
+                    "Notwithstanding its ambition",
+                    "Furthermore"
+                ],
+                correct: 2,
+                explanation: "'Notwithstanding its ambition' acknowledges the ambition while contrasting with failure."
+            },
+            {
+                question: "Reformulate in more academic language:",
+                context: "Original: 'A lot of people think this is bad.' Academic version: ____",
+                options: [
+                    "Many people think this is bad",
+                    "A significant proportion of the population considers this unfavorable",
+                    "Some people think it's bad",
+                    "People say it's bad"
+                ],
+                correct: 1,
+                explanation: "Academic reformulation uses precise vocabulary and formal structure."
+            },
+            {
+                question: "Which word best connects these sentences?",
+                context: "The evidence was overwhelming. ____, the jury found him not guilty.",
+                options: [
+                    "Nevertheless",
+                    "Moreover",
+                    "Therefore",
+                    "Similarly"
+                ],
+                correct: 0,
+                explanation: "'Nevertheless' shows the unexpected contrast between evidence and verdict."
+            },
+            {
+                question: "Identify the register (formal/informal):",
+                context: "'The government should, without a doubt, prioritize educational infrastructure.'",
+                options: [
+                    "Informal",
+                    "Formal",
+                    "Mixed",
+                    "Neutral"
+                ],
+                correct: 1,
+                explanation: "Formal register: complex structure, academic vocabulary, measured tone."
+            },
+            {
+                question: "How to better structure this essay paragraph?",
+                context: "Original: 'Technology helps. Society changes. Education is different. We need adaptation.'",
+                options: [
+                    "Keep the original structure",
+                    "Technology facilitates societal changes, fundamentally transforming education and necessitating adaptive strategies",
+                    "Technology, society, education, and adaptation matter",
+                    "Technology, change, education"
+                ],
+                correct: 1,
+                explanation: "Better structure links ideas with proper connectors and complex syntax."
+            },
+            {
+                question: "Which linking word shows exemplification?",
+                context: "Democracy requires several elements. ____, freedom of speech is essential.",
+                options: [
+                    "Conversely",
+                    "For instance",
+                    "Yet",
+                    "Similarly"
+                ],
+                correct: 1,
+                explanation: "'For instance' introduces a specific example supporting the general statement."
+            },
+            {
+                question: "Reformulate avoiding informal contractions:",
+                context: "Original: 'They can't succeed if they don't try.' Better: ____",
+                options: [
+                    "They cannot succeed",
+                    "They cannot succeed if they do not attempt",
+                    "They can't achieve success without trying",
+                    "Trying is how they succeed"
+                ],
+                correct: 1,
+                explanation: "Formal writing avoids contractions: 'cannot' not 'can't', 'do not' not 'don't'."
+            },
+            {
+                question: "Which transition best concludes an argument?",
+                context: "Several factors contribute to climate change. Carbon emissions are rising. Deforestation continues. ____",
+                options: [
+                    "Besides",
+                    "Clearly, immediate action is necessary",
+                    "In addition",
+                    "However"
+                ],
+                correct: 1,
+                explanation: "'Clearly, immediate action is necessary' draws a logical conclusion from evidence."
+            },
+            {
+                question: "Identify the most formal reformulation:",
+                context: "Original: 'People like this a lot.' Options:",
+                options: [
+                    "Lots of people like it",
+                    "This enjoys considerable popularity",
+                    "People really like this",
+                    "It's pretty popular"
+                ],
+                correct: 1,
+                explanation: "'This enjoys considerable popularity' uses sophisticated vocabulary and structure."
+            },
+            {
+                question: "Which connector shows cause and effect?",
+                context: "The economy weakened. ____, unemployment increased.",
+                options: [
+                    "Although",
+                    "Consequently",
+                    "Meanwhile",
+                    "However"
+                ],
+                correct: 1,
+                explanation: "'Consequently' shows that unemployment is a direct result of economic weakness."
+            },
+            {
+                question: "How to improve register in this sentence?",
+                context: "Original: 'The gov says we gotta do stuff about pollution.' Better: ____",
+                options: [
+                    "The government says we have to do stuff",
+                    "The government advocates implementing comprehensive environmental policies",
+                    "The gov says we must act",
+                    "The government says we must do things"
+                ],
+                correct: 1,
+                explanation: "Formal register: complete words, precise vocabulary, complex syntax."
+            },
+            {
+                question: "Which linking word best shows sequence?",
+                context: "First, we identify the problem. ____, we develop solutions.",
+                options: [
+                    "However",
+                    "Subsequently",
+                    "Yet",
+                    "Therefore"
+                ],
+                correct: 1,
+                explanation: "'Subsequently' shows the next step in a logical sequence."
+            },
+            {
+                question: "Reformulate to enhance academic style:",
+                context: "Original: 'Bad stuff happens when people don't care.' Better: ____",
+                options: [
+                    "Bad things occur without care",
+                    "Negative consequences ensue when civic engagement is lacking",
+                    "Bad stuff occurs when apathy exists",
+                    "Negative results happen with no care"
+                ],
+                correct: 1,
+                explanation: "Academic style uses abstract nouns ('civic engagement', 'consequences'), formal verbs ('ensue')."
+            },
+            {
+                question: "Which transition shows addition of similar points?",
+                context: "Education improves career prospects. ____, it enhances personal development.",
+                options: [
+                    "Nevertheless",
+                    "Similarly",
+                    "In contrast",
+                    "However"
+                ],
+                correct: 1,
+                explanation: "'Similarly' introduces another benefit that parallels the first point."
+            },
+            {
+                question: "Identify the most appropriate register for a university essay:",
+                context: "A) 'This is really important stuff.' B) 'This constitutes a matter of considerable significance.' C) 'This is pretty important.'",
+                options: [
+                    "A",
+                    "B",
+                    "C",
+                    "All are equal"
+                ],
+                correct: 1,
+                explanation: "Option B uses university-appropriate formal register with complex vocabulary and structure."
+            },
+            {
+                question: "How would you reformulate for clarity?",
+                context: "Original: 'The thing about the problem is that things are problematic.' Better: ____",
+                options: [
+                    "The problem is that things are problematic",
+                    "The fundamental issue is the inherent complexity of the situation",
+                    "Problems exist because of problems",
+                    "The issue is problematic"
+                ],
+                correct: 1,
+                explanation: "Better reformulation eliminates repetition and uses precise terminology."
+            },
+            {
+                question: "Which connector introduces an opposing viewpoint?",
+                context: "Some argue that technology harms society. ____, others highlight its benefits.",
+                options: [
+                    "Furthermore",
+                    "Conversely",
+                    "Indeed",
+                    "Moreover"
+                ],
+                correct: 1,
+                explanation: "'Conversely' introduces an opposite perspective to the previously stated argument."
+            },
+            {
+                question: "Improve the register of this sentence:",
+                context: "Original: 'We gotta make schools better 'cause students need good education.' Better: ____",
+                options: [
+                    "We have to make schools better because students need education",
+                    "Educational institutions require substantial investment to ensure optimal learning outcomes",
+                    "We must improve schools so students learn well",
+                    "Schools need improvement because students require education"
+                ],
+                correct: 1,
+                explanation: "Formal reformulation: no contractions, sophisticated vocabulary, complex syntax."
+            },
+            {
+                question: "Select the best essay structure opening:",
+                context: "Choose the most effective introduction:",
+                options: [
+                    "This essay is about technology",
+                    "Technology has profoundly transformed modern society, raising critical questions about sustainability and human values",
+                    "I will talk about technology",
+                    "Technology is cool"
+                ],
+                correct: 1,
+                explanation: "Effective opening engages with complexity and provides context for the argument."
+            },
+            {
+                question: "Which linking phrase best shows consequence?",
+                context: "The project exceeded budget. ____, it was delayed by six months.",
+                options: [
+                    "In the same way",
+                    "As a result",
+                    "In addition",
+                    "On the other hand"
+                ],
+                correct: 1,
+                explanation: "'As a result' shows the delay is a direct consequence of exceeding budget."
+            },
+            {
+                question: "How to reformulate using passive voice appropriately?",
+                context: "Original: 'Researchers found that X causes Y.' Passive: ____",
+                options: [
+                    "X was found to cause Y by researchers",
+                    "It was found by researchers that X causes Y",
+                    "X has been found to cause Y",
+                    "The causation of Y by X was found"
+                ],
+                correct: 2,
+                explanation: "Passive voice is appropriate in academic writing when focusing on findings over researchers."
+            },
+            {
+                question: "Identify which sentence has the most appropriate formal register:",
+                context: "A) 'The data showed stuff.' B) 'The empirical data demonstrated substantial correlation.' C) 'The data showed correlation.'",
+                options: [
+                    "A",
+                    "B",
+                    "C",
+                    "All equal"
+                ],
+                correct: 1,
+                explanation: "Option B uses precise academic vocabulary ('empirical', 'demonstrated', 'substantial correlation')."
+            },
+            {
+                question: "Which transition best summarizes an argument?",
+                context: "Multiple factors contribute to obesity... ____",
+                options: [
+                    "For example",
+                    "Meanwhile",
+                    "In summary",
+                    "However"
+                ],
+                correct: 2,
+                explanation: "'In summary' introduces a conclusion synthesizing the multiple factors discussed."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        const userAnswers = [];
+        const startTime = Date.now();
+
+        function initQuiz() {
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const question = quizData[currentQuestion];
+            const total = quizData.length;
+            const progress = ((currentQuestion + 1) / total) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            let html = `
+                <div class="question-container">
+                    <div class="question-number">Question ${currentQuestion + 1}/${total}</div>
+                    <div class="question-text">${question.question}</div>
+                    <div class="context">${question.context}</div>
+                    <div class="options">
+            `;
+
+            question.options.forEach((option, index) => {
+                html += `
+                    <div class="option" onclick="selectOption(${index})">
+                        <input type="radio" name="question${currentQuestion}" value="${index}" id="opt${index}">
+                        <label for="opt${index}">${option}</label>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <div class="explanation" id="explanation${currentQuestion}">
+                        <strong>Explanation:</strong> ${question.explanation}
+                    </div>
+                    <div class="button-group">
+                        ${currentQuestion > 0 ? '<button class="btn-secondary" onclick="previousQuestion()">← Previous</button>' : ''}
+                        <button class="btn-primary" onclick="nextQuestion()" id="nextBtn">Next →</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('quizContent').innerHTML = html;
+            document.getElementById('nextBtn').disabled = true;
+        }
+
+        function selectOption(index) {
+            userAnswers[currentQuestion] = index;
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('.option')[index].classList.add('selected');
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById(`explanation${currentQuestion}`).classList.add('show');
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function showResults() {
+            score = userAnswers.filter((ans, i) => ans === quizData[i].correct).length;
+            const percentage = Math.round((score / quizData.length) * 100);
+            const stars = Math.ceil((percentage / 100) * 5);
+
+            const dt = new Date().toISOString();
+            const resultData = {
+                v: '1_expr',
+                dt: dt,
+                score: score,
+                total: quizData.length,
+                pct: percentage,
+                stars: stars
+            };
+
+            const resultCode = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('scoreDisplay').textContent = `${score}/${quizData.length}`;
+            document.getElementById('percentageText').innerHTML = `Result: ${percentage}%`;
+            document.getElementById('starsDisplay').textContent = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        window.addEventListener('load', initQuiz);
+    </script>
+</body>
+</html>

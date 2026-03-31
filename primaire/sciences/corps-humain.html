@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Corps Humain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            font-family: 'Nunito', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #08090f 0%, #1a1b2e 50%, #0f1628 100%);
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #ff006e, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 0, 110, 0.3);
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 1rem;
+        }
+
+        .mode-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .category-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .category-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1a1b2e 0%, #2d1b3d 100%);
+            border: 2px solid #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .question-number {
+            color: #00d4ff;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .question {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .choices {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .choice-btn {
+            padding: 15px 20px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            background: #0f1628;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .choice-btn:hover {
+            border-color: #00d4ff;
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .choice-btn.correct {
+            background: linear-gradient(135deg, #00c896 0%, #00e5a0 100%);
+            border-color: #00e5a0;
+            box-shadow: 0 5px 20px rgba(0, 229, 160, 0.4);
+        }
+
+        .choice-btn.incorrect {
+            background: linear-gradient(135deg, #ff006e 0%, #ff4081 100%);
+            border-color: #ff4081;
+            box-shadow: 0 5px 20px rgba(255, 64, 129, 0.4);
+        }
+
+        .choice-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            min-height: 30px;
+        }
+
+        .feedback.correct {
+            color: #00e5a0;
+        }
+
+        .feedback.incorrect {
+            color: #ff4081;
+        }
+
+        .fact {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(124, 58, 237, 0.2);
+            border-left: 4px solid #7c3aed;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #b3a7e6;
+            line-height: 1.5;
+        }
+
+        .next-btn {
+            margin-top: 20px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .stars {
+            font-size: 2rem;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+
+        .result-code {
+            background: #0a0b14;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+            margin-top: 30px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #00d4ff;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-link a {
+            color: #00d4ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-link a:hover {
+            color: #7c3aed;
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 25px;
+                min-height: 250px;
+            }
+
+            .question {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🩺 Le Corps Humain</h1>
+            <p class="subtitle">Apprends l'anatomie et le corps humain</p>
+        </header>
+
+        <div id="setupScreen" class="card">
+            <h2>Choose a Category</h2>
+            <div class="mode-select">
+                <button class="category-btn" onclick="selectCategory('skeleton')">🦴 Squelette (Bones)</button>
+                <button class="category-btn" onclick="selectCategory('organs')">❤️ Organes (Organs)</button>
+                <button class="category-btn" onclick="selectCategory('senses')">👁️ Les 5 Sens (Senses)</button>
+                <button class="category-btn" onclick="selectCategory('mix')">🎲 Mix All</button>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="hidden">
+            <div class="question-number">Question <span id="questionNum">1</span>/20</div>
+            <div class="card">
+                <div class="question" id="question"></div>
+                <div class="choices" id="choices"></div>
+                <div class="feedback" id="feedback"></div>
+                <div class="fact" id="fact"></div>
+            </div>
+            <div style="text-align: center;">
+                <button class="next-btn" id="nextBtn" onclick="nextQuestion()" disabled>Next Question</button>
+            </div>
+        </div>
+
+        <div id="resultScreen" class="hidden">
+            <div class="card">
+                <h2>Excellente Performance! 🎉</h2>
+                <div class="stars" id="starsDisplay"></div>
+                <p style="font-size: 1.5rem; margin: 20px 0;">Score: <span id="scoreDisplay"></span>/20</p>
+                <p style="color: #aaa;">Percentage: <span id="percentDisplay"></span>%</p>
+                <button class="category-btn" onclick="location.reload()" style="margin-top: 20px;">Play Again</button>
+            </div>
+            <div class="result-code" id="resultCode"></div>
+        </div>
+
+        <div class="back-link">
+            <a href="/index.html">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        const bodyParts = {
+            skeleton: [
+                { name: 'Crâne', emoji: '💀', description: 'Cet os protège le cerveau', fact: 'Le crâne est composé de 22 os qui protègent notre cerveau précieux.' },
+                { name: 'Clavicule', emoji: '🦴', description: 'L\'os qui relie l\'épaule à la poitrine', fact: 'La clavicule est souvent cassée dans les chutes sur le bras tendu.' },
+                { name: 'Humérus', emoji: '💪', description: 'L\'os du bras entre l\'épaule et le coude', fact: 'L\'humérus est l\'un des os les plus longs du bras.' },
+                { name: 'Radius', emoji: '🖐️', description: 'Un des deux os de l\'avant-bras', fact: 'Le radius permet la rotation du poignet.' },
+                { name: 'Cubitus', emoji: '✋', description: 'L\'autre os de l\'avant-bras', fact: 'Le cubitus est plus long que le radius.' },
+                { name: 'Côtes', emoji: '🫀', description: 'Les os qui protègent le cœur et les poumons', fact: 'Les humains ont généralement 12 paires de côtes.' },
+                { name: 'Colonne vertébrale', emoji: '🏃', description: 'La structure osseuse de la colonne de la tête aux fesses', fact: 'La colonne vertébrale contient 33 vertèbres.' },
+                { name: 'Bassin', emoji: '🩴', description: 'L\'os large au bas de la colonne vertébrale', fact: 'Le bassin supporte le poids de tout le corps debout.' },
+                { name: 'Fémur', emoji: '🦵', description: 'L\'os de la cuisse, le plus long de ton corps', fact: 'Le fémur est l\'os le plus fort du corps humain.' },
+                { name: 'Tibia', emoji: '🧗', description: 'Le grand os du tibia', fact: 'Le tibia est le second os le plus long du corps.' },
+                { name: 'Péroné', emoji: '🎿', description: 'Le petit os à côté du tibia', fact: 'Le péroné aide à stabiliser la jambe et la cheville.' },
+                { name: 'Rotule', emoji: '🦘', description: 'L\'os rond devant le genou', fact: 'La rotule protège l\'articulation du genou.' }
+            ],
+            organs: [
+                { name: 'Cœur', emoji: '❤️', description: 'Cet organe pompe le sang dans tout le corps', fact: 'Le cœur bat environ 100 000 fois par jour.' },
+                { name: 'Poumons', emoji: '💨', description: 'Ces organes permettent de respirer l\'oxygène', fact: 'Les poumons contiennent environ 600 millions d\'alvéoles.' },
+                { name: 'Estomac', emoji: '🍽️', description: 'Cet organe digère la nourriture que tu manges', fact: 'L\'estomac produit un acide très fort pour digérer.' },
+                { name: 'Intestins', emoji: '🌀', description: 'Ils aident à digérer la nourriture et à absorber l\'énergie', fact: 'Les intestins grêles mesurent environ 6 mètres de long!' },
+                { name: 'Cerveau', emoji: '🧠', description: 'Cet organe contrôle tout dans le corps', fact: 'Le cerveau utilise 20% de l\'énergie du corps.' },
+                { name: 'Foie', emoji: '🍌', description: 'Cet organe purifie le sang', fact: 'Le foie est le plus grand organe interne du corps.' },
+                { name: 'Reins', emoji: '🫘', description: 'Ils filtrent les déchets du sang', fact: 'Tu as deux reins, mais tu peux vivre avec un seul.' },
+                { name: 'Vessie', emoji: '💧', description: 'Cet organe stocke l\'urine', fact: 'La vessie peut contenir jusqu\'à 500 ml de liquide.' }
+            ],
+            senses: [
+                { name: 'Yeux', emoji: '👁️', description: 'Quel organe te permet de voir?', fact: 'Les yeux voient plus de 10 millions de couleurs différentes.' },
+                { name: 'Oreilles', emoji: '👂', description: 'Quel organe te permet d\'entendre?', fact: 'Les oreilles peuvent entendre des sons entre 20 et 20 000 Hz.' },
+                { name: 'Nez', emoji: '👃', description: 'Quel organe te permet de sentir les odeurs?', fact: 'Le nez peut distinguer plus d\'un million d\'odeurs différentes.' },
+                { name: 'Langue', emoji: '👅', description: 'Quel organe te permet de goûter?', fact: 'La langue a environ 10 000 papilles gustatives.' },
+                { name: 'Peau', emoji: '🤚', description: 'Quel organe te permet de sentir le toucher?', fact: 'La peau est le plus grand organe du corps.' }
+            ]
+        };
+
+        let currentCategory = '';
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let questions = [];
+        let answered = false;
+
+        function selectCategory(category) {
+            currentCategory = category;
+            score = 0;
+            currentQuestionIndex = 0;
+            answered = false;
+
+            let allParts = [];
+            if (category === 'mix') {
+                Object.keys(bodyParts).forEach(key => {
+                    allParts = allParts.concat(bodyParts[key]);
+                });
+            } else {
+                allParts = bodyParts[category];
+            }
+
+            questions = [...allParts].sort(() => Math.random() - 0.5).slice(0, 20);
+            document.getElementById('setupScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                endGame();
+                return;
+            }
+
+            answered = false;
+            const q = questions[currentQuestionIndex];
+            document.getElementById('questionNum').textContent = currentQuestionIndex + 1;
+            document.getElementById('question').textContent = q.description;
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('fact').textContent = '';
+            document.getElementById('nextBtn').disabled = true;
+
+            showChoices(q);
+        }
+
+        function showChoices(correct) {
+            const choices = [correct];
+            const allParts = Object.values(bodyParts).flat();
+
+            while (choices.length < 4) {
+                const random = allParts[Math.floor(Math.random() * allParts.length)];
+                if (!choices.some(c => c.name === random.name)) {
+                    choices.push(random);
+                }
+            }
+
+            const shuffled = choices.sort(() => Math.random() - 0.5);
+            const choicesHtml = shuffled.map((choice, idx) => {
+                return `<button class="choice-btn" onclick="checkAnswer(${idx}, '${choice.name}', '${correct.name}', '${correct.fact.replace(/'/g, "\\'")}')">${choice.emoji} ${choice.name}</button>`;
+            }).join('');
+
+            document.getElementById('choices').innerHTML = choicesHtml;
+        }
+
+        function checkAnswer(idx, selected, correct, fact) {
+            if (answered) return;
+            answered = true;
+
+            const buttons = document.querySelectorAll('.choice-btn');
+            const isCorrect = selected === correct;
+
+            buttons.forEach((btn, index) => {
+                btn.disabled = true;
+                const btnText = btn.textContent.trim();
+                if (isCorrect && btnText.includes(correct)) {
+                    btn.classList.add('correct');
+                } else if (!isCorrect && index === idx) {
+                    btn.classList.add('incorrect');
+                } else if (!isCorrect && btnText.includes(correct)) {
+                    btn.classList.add('correct');
+                }
+            });
+
+            if (isCorrect) {
+                score++;
+                document.getElementById('feedback').textContent = '✓ Correct!';
+                document.getElementById('feedback').classList.add('correct');
+            } else {
+                document.getElementById('feedback').textContent = '✗ Incorrect';
+                document.getElementById('feedback').classList.add('incorrect');
+            }
+
+            document.getElementById('fact').textContent = '📚 ' + fact;
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            showQuestion();
+        }
+
+        function endGame() {
+            const percent = Math.round((score / 20) * 100);
+            let stars = '☆☆☆';
+            if (percent >= 80) stars = '★★★';
+            else if (percent >= 60) stars = '★★☆';
+            else if (percent >= 40) stars = '★☆☆';
+
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            document.getElementById('scoreDisplay').textContent = score;
+            document.getElementById('percentDisplay').textContent = percent;
+            document.getElementById('starsDisplay').textContent = stars;
+
+            const now = new Date().toISOString();
+            const resultCode = `v:'p_corps', dt:'${now}', score:'${score}/20', pct:${percent}, stars:'${stars}'`;
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+    </script>
+</body>
+</html>

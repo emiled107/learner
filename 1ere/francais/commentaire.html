@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commentaire Littéraire - 1ère</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #08090f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #9d4edd 0%, #5a189a 100%);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(157, 78, 221, 0.3);
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .subtitle {
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .question-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(157, 78, 221, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+        }
+        .question-number {
+            color: #9d4edd;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        .question-text {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        .excerpt {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 4px solid #5a189a;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-style: italic;
+            color: #d0d0d0;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 12px;
+            background: rgba(157, 78, 221, 0.1);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            border-color: #9d4edd;
+            background: rgba(157, 78, 221, 0.2);
+        }
+        .option.selected {
+            background: rgba(157, 78, 221, 0.3);
+            border-color: #9d4edd;
+        }
+        .option.correct {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+        }
+        .option.incorrect {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #f44336;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #9d4edd 0%, #5a189a 100%);
+            transition: width 0.3s;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Nunito', sans-serif;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #9d4edd 0%, #5a189a 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(157, 78, 221, 0.4);
+        }
+        .btn-secondary {
+            background: rgba(157, 78, 221, 0.2);
+            color: #9d4edd;
+            border: 2px solid #9d4edd;
+        }
+        .btn-secondary:hover {
+            background: rgba(157, 78, 221, 0.3);
+        }
+        .results {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(157, 78, 221, 0.2) 0%, rgba(90, 24, 154, 0.2) 100%);
+            border-radius: 12px;
+            border: 2px solid rgba(157, 78, 221, 0.3);
+        }
+        .score-display {
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #9d4edd 0%, #5a189a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        .stars {
+            font-size: 2.5em;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+        .result-code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            word-break: break-all;
+            font-size: 0.9em;
+            color: #4caf50;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #9d4edd;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            color: #5a189a;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            .question-container {
+                padding: 18px;
+            }
+            .score-display {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Commentaire Littéraire</h1>
+            <p class="subtitle">Classe de 1ère - Français Bac</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div id="quizContent"></div>
+
+        <div id="resultsSection" style="display:none;">
+            <div class="results">
+                <h2>Résultats</h2>
+                <div class="score-display" id="scoreDisplay">0/0</div>
+                <div class="stars" id="starsDisplay">☆☆☆☆☆</div>
+                <p id="percentageText"></p>
+                <div class="result-code" id="resultCode"></div>
+                <a href="/index.html" class="back-link">← Retour à l'accueil</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Dans ce sonnet, identifiez l'effet principal créé par l'alexandrin:",
+                excerpt: "\"O doux printemps, source de nos amours éternels,\\n Qui ramènes au coeur la joie et l'espérance\"",
+                options: [
+                    "Un rythme lent et mélancolique",
+                    "Un rythme régulier et majestueux",
+                    "Un rythme rapide et chaotique",
+                    "Un rythme désorganisé"
+                ],
+                correct: 1,
+                explanation: "L'alexandrin (12 syllabes) crée une harmonie régulière et majestueuse, typique de la poésie lyrique."
+            },
+            {
+                question: "Quel type de texte théâtral privilégie la réflexion personnelle du personnage?",
+                excerpt: "Fragment d'une pièce classique où un personnage parle seul sur scène pendant plusieurs minutes.",
+                options: [
+                    "Une didascalie",
+                    "Une tirade",
+                    "Un monologue",
+                    "Un acte"
+                ],
+                correct: 2,
+                explanation: "Le monologue permet à un personnage d'exprimer ses pensées intimes sans être entendu par d'autres personnages."
+            },
+            {
+                question: "Dans le théâtre, à quoi servent les didascalies?",
+                excerpt: "\"[Voltaire entre lentement, le regard sombre, tenant un parchemin brûlé]\"",
+                options: [
+                    "À exprimer les dialogues",
+                    "À fournir des indications de mise en scène et de jeu des acteurs",
+                    "À faire des commentaires critiques",
+                    "À résumer l'intrigue"
+                ],
+                correct: 1,
+                explanation: "Les didascalies donnent les instructions de mise en scène, de décor, d'éclairage et de comportement des acteurs."
+            },
+            {
+                question: "Quel procédé narratif consiste à voir l'histoire par les yeux d'un personnage?",
+                options: [
+                    "La narration omnisciente",
+                    "La focalisation interne",
+                    "La narration objective",
+                    "Le style libre"
+                ],
+                correct: 1,
+                explanation: "La focalisation interne limite la perspective au point de vue d'un personnage unique."
+            },
+            {
+                question: "Dans un roman réaliste, quelle technique narrative est privilégiée?",
+                excerpt: "\"Madame Bovary se tenait à la fenêtre. Elle regardait les champs avec une indifférence mélancolique.\"",
+                options: [
+                    "Le fantastique",
+                    "La description détaillée et la focalisation omnisciente",
+                    "Le dialogue exclusif",
+                    "La narration fragmentée"
+                ],
+                correct: 1,
+                explanation: "Le réalisme privilégie la description minutieuse et une narration qui accède aux pensées de plusieurs personnages."
+            },
+            {
+                question: "Quel est l'objectif principal d'un texte argumentatif (essai)?",
+                excerpt: "\"Nous devons reconnaître que l'éducation est la clé du progrès social. Or, notre système éducatif montre des carences...\"",
+                options: [
+                    "Raconter une histoire",
+                    "Défendre une thèse avec des preuves et des exemples",
+                    "Décrire un paysage",
+                    "Exprimer des émotions"
+                ],
+                correct: 1,
+                explanation: "Un essai argumentatif vise à convaincre le lecteur en présentant une thèse et ses preuves logiques."
+            },
+            {
+                question: "Comment s'appelle l'accumulation de figures de style créant une insistance?",
+                excerpt: "\"C'est une souffrance douce, une douleur agréable, une mort délicieuse.\"",
+                options: [
+                    "Une métaphore",
+                    "Un parallélisme",
+                    "Une accumulation",
+                    "Une anaphore"
+                ],
+                correct: 2,
+                explanation: "L'accumulation de propositions similaires crée une insistance rhétorique."
+            },
+            {
+                question: "Quel est l'effet rhétorique d'une antithèse?",
+                excerpt: "\"Dans la nuit de la mort brille l'espoir de vie.\"",
+                options: [
+                    "Adoucir l'expression",
+                    "Mettre en relief par le contraste",
+                    "Créer une confusion",
+                    "Fragmenter la pensée"
+                ],
+                correct: 1,
+                explanation: "L'antithèse oppose deux idées pour souligner leur contraste et amplifier le sens."
+            },
+            {
+                question: "En poésie, comment s'appelle la répétition d'un mot en début de vers?",
+                excerpt: "\"Amour, tu es venu.\\nAmour, tu restes.\\nAmour, tu règnes.\"",
+                options: [
+                    "Une épiphore",
+                    "Une anaphore",
+                    "Une allitération",
+                    "Une assonance"
+                ],
+                correct: 1,
+                explanation: "L'anaphore répète un mot ou une expression en début de vers pour créer un rythme insistant."
+            },
+            {
+                question: "Dans un texte dramatique classique, quelle est la fonction de la tirade?",
+                excerpt: "Long discours d'un personnage exprimant sa passion ou justifiant ses actes.",
+                options: [
+                    "Faire avancer l'intrigue rapidement",
+                    "Permettre au personnage d'exprimer ses sentiments profonds ou sa philosophie",
+                    "Décrire le décor",
+                    "Ennuyer le spectateur"
+                ],
+                correct: 1,
+                explanation: "La tirade permet au personnage de s'exprimer longuement et de révéler sa psychologie."
+            },
+            {
+                question: "Quel registre de langue est utilisé dans ce texte poétique symboliste?",
+                excerpt: "\"En ces jours où l'essence floue des choses s'évanouît dans le crépuscule de l'âme...\"",
+                options: [
+                    "Familier et décontracté",
+                    "Soutenu et énigmatique",
+                    "Comique et léger",
+                    "Scientifique et technique"
+                ],
+                correct: 1,
+                explanation: "Le symbolisme use d'un langage soutenu et obscur pour exprimer des vérités métaphysiques."
+            },
+            {
+                question: "Comment analyser la versification d'un poème?",
+                excerpt: "Texte comportant des vers de longueurs variées et des rimes.",
+                options: [
+                    "En ignorant la structure",
+                    "En étudiant les mètres, les rimes, les enjambements et les césures",
+                    "En ne lisant que le sens",
+                    "En comptant les strophes uniquement"
+                ],
+                correct: 1,
+                explanation: "L'analyse versifiée examine tous les éléments formels du vers: mètre, rime, rythme et structure."
+            },
+            {
+                question: "Quel est l'effet créé par un enjambement?",
+                excerpt: "\"Le matin arrive, porteur\\nde promesses nouvelles.\"",
+                options: [
+                    "Ralentir la lecture",
+                    "Créer une rupture et continuer la phrase au vers suivant",
+                    "Augmenter le nombre de syllabes",
+                    "Changer la rime"
+                ],
+                correct: 1,
+                explanation: "L'enjambement crée une tension entre le rythme poétique et le rythme syntaxique."
+            },
+            {
+                question: "En prose narrative, qu'est-ce que la focalisation omnisciente?",
+                options: [
+                    "Limiter la vision à un personnage",
+                    "Accès illimité aux pensées de tous les personnages",
+                    "Raconter de manière objective",
+                    "Utiliser un narrateur à la première personne"
+                ],
+                correct: 1,
+                explanation: "La focalisation omnisciente permet au narrateur d'accéder aux pensées de tous les personnages."
+            },
+            {
+                question: "Quel procédé stylistique crée une accélération dramatique?",
+                excerpt: "\"Il courut. Il grimpa. Il cria. Rien. Le silence.\"",
+                options: [
+                    "Une énumération descriptive",
+                    "Une accumulation de phrases courtes",
+                    "Un dialogue détaillé",
+                    "Une digression narrative"
+                ],
+                correct: 1,
+                explanation: "La succession de phrases courtes accélère le rythme et crée une tension dramatique."
+            },
+            {
+                question: "Comment identifier le registre d'un texte argumentatif?",
+                excerpt: "\"Il est impensable que nous tolérations cette injustice flagrante! Nous devons réagir immédiatement!\"",
+                options: [
+                    "Par le nombre de mots",
+                    "Par le ton, les termes utilisés et l'intention du locuteur",
+                    "Par la longueur des phrases",
+                    "Par l'absence de ponctuation"
+                ],
+                correct: 1,
+                explanation: "Le registre dépend du ton (solennel, ironique, etc.), du vocabulaire et de l'intention communicative."
+            },
+            {
+                question: "Quel est l'effet de l'ironie dans un texte littéraire?",
+                excerpt: "\"Comme c'est merveilleux d'avoir des amis qui vous abandonnent au moment critique.\"",
+                options: [
+                    "Renforcer le message littéralement",
+                    "Créer un contraste entre ce qui est dit et ce qui est pensé",
+                    "Augmenter la clarté",
+                    "Simplifier le message"
+                ],
+                correct: 1,
+                explanation: "L'ironie exprime l'opposé de ce qu'on pense pour produire un effet critique ou humoristique."
+            },
+            {
+                question: "Dans un discours argumentatif, qu'est-ce qu'un argument par l'absurde?",
+                excerpt: "\"Si nous acceptons cette logique, nous arriverons à des conclusions absurdes et inacceptables.\"",
+                options: [
+                    "Raconter une anecdote drôle",
+                    "Montrer que l'affirmation de l'opposant mène à des conséquences absurdes",
+                    "Utiliser des insultes",
+                    "Ignorer les preuves"
+                ],
+                correct: 1,
+                explanation: "L'argument par l'absurde réfute une thèse en montrant ses conséquences logiquement inacceptables."
+            },
+            {
+                question: "Quelle figure de style combine deux mots contradictoires?",
+                excerpt: "\"une obscure clarté\", \"un silence éloquent\"",
+                options: [
+                    "Une métaphore",
+                    "Une comparaison",
+                    "Un oxymore",
+                    "Un parallélisme"
+                ],
+                correct: 2,
+                explanation: "L'oxymore unit deux termes contradictoires pour créer une image frappante et paradoxale."
+            },
+            {
+                question: "Comment analyser la structure d'un essai argumentatif?",
+                options: [
+                    "En ignorant l'organisation",
+                    "En relevant l'introduction de la thèse, les arguments, les exemples et la conclusion",
+                    "En comptant uniquement les paragraphes",
+                    "En lisant de manière aléatoire"
+                ],
+                correct: 1,
+                explanation: "L'analyse structure étudie comment l'auteur organise sa pensée pour convaincre."
+            },
+            {
+                question: "Quel est le rôle de la métaphore en poésie?",
+                excerpt: "\"Mon cœur est une forêt où naissent les tempêtes.\"",
+                options: [
+                    "Utiliser des mots exacts",
+                    "Transfigurer la réalité et créer des images poétiques",
+                    "Raconter une histoire",
+                    "Expliquer scientifiquement"
+                ],
+                correct: 1,
+                explanation: "La métaphore poétique crée des images nouvelles en rapprochant des réalités différentes."
+            },
+            {
+                question: "Dans un texte théâtral, comment les répliques courtes créent-elles un effet?",
+                excerpt: "\"Quoi?\\n- Rien.\\n- Dis-moi!\\n- C'est inutile.\"",
+                options: [
+                    "Elles apaisent l'action",
+                    "Elles accélèrent l'échange et créent une tension",
+                    "Elles ennuient",
+                    "Elles ont peu d'importance"
+                ],
+                correct: 1,
+                explanation: "Les répliques courtes créent un rythme tendu et des silences parlants qui augmentent la tension dramatique."
+            },
+            {
+                question: "Quel procédé argumentatif utilise l'appel à l'émotion?",
+                excerpt: "\"Pensez à ces enfants malheureux sans abri, tremblant sous la pluie...\"",
+                options: [
+                    "L'argument par la statistique",
+                    "L'argument d'autorité",
+                    "L'argument pathétique",
+                    "L'argument logique"
+                ],
+                correct: 2,
+                explanation: "L'argument pathétique cherche à émouvoir le lecteur pour le convaincre."
+            },
+            {
+                question: "Comment s'appelle la réitération d'une même sonorité en fin de vers?",
+                excerpt: "\"Tout m'afflige et m'étonne, et je ne puis songer.\"",
+                options: [
+                    "Une allitération",
+                    "Une assonance",
+                    "Une épiphore",
+                    "Une paronomase"
+                ],
+                correct: 2,
+                explanation: "L'épiphore répète le même son en fin de vers pour créer une harmonie musicale."
+            },
+            {
+                question: "Qu'est-ce qu'une tirade égoïste dans une pièce théâtrale?",
+                excerpt: "Monologue où le personnage parle longuement de lui-même et de ses intérêts.",
+                options: [
+                    "Un dialogue courtois",
+                    "Une expression brève de sentiment",
+                    "Un long discours révélant l'égocentrisme du personnage",
+                    "Une indication de mise en scène"
+                ],
+                correct: 2,
+                explanation: "Une tirade égoïste révèle le caractère vaniteux et narcissique d'un personnage à travers son discours."
+            },
+            {
+                question: "Dans un texte narratif, quel effet crée la juxtaposition de paragraphes courts et longs?",
+                excerpt: "Alternance de descriptions longues et détaillées puis de phrases brèves et sèches.",
+                options: [
+                    "Un ennui constant",
+                    "Un rythme varié créant tension et apaisement alternés",
+                    "Un manque de clarté",
+                    "Une volonté de confusion"
+                ],
+                correct: 1,
+                explanation: "La variation de rythme narratif crée des effets esthétiques et dramatiques."
+            },
+            {
+                question: "Quel est le principal enjeu de l'analyse d'un texte poétique du XIXe siècle?",
+                options: [
+                    "Ignorer la forme",
+                    "Articuler l'étude formelle (versification, images) avec l'analyse thématique",
+                    "Ne lire que le titre",
+                    "Inventer une interprétation sans preuves"
+                ],
+                correct: 1,
+                explanation: "L'analyse poétique complète unit l'étude technique à l'interprétation du sens et des thèmes."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        const userAnswers = [];
+        const startTime = Date.now();
+
+        function initQuiz() {
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const question = quizData[currentQuestion];
+            const total = quizData.length;
+            const progress = ((currentQuestion + 1) / total) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            let html = `
+                <div class="question-container">
+                    <div class="question-number">Question ${currentQuestion + 1}/${total}</div>
+                    <div class="question-text">${question.question}</div>
+                    <div class="excerpt">${question.excerpt}</div>
+                    <div class="options">
+            `;
+
+            question.options.forEach((option, index) => {
+                html += `
+                    <div class="option" onclick="selectOption(${index})">
+                        <input type="radio" name="question${currentQuestion}" value="${index}" id="opt${index}">
+                        <label for="opt${index}">${option}</label>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <div class="button-group">
+                        ${currentQuestion > 0 ? '<button class="btn-secondary" onclick="previousQuestion()">← Précédent</button>' : ''}
+                        <button class="btn-primary" onclick="nextQuestion()" id="nextBtn">Suivant →</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('quizContent').innerHTML = html;
+            document.getElementById('nextBtn').disabled = true;
+        }
+
+        function selectOption(index) {
+            userAnswers[currentQuestion] = index;
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('.option')[index].classList.add('selected');
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function showResults() {
+            score = userAnswers.filter((ans, i) => ans === quizData[i].correct).length;
+            const percentage = Math.round((score / quizData.length) * 100);
+            const stars = Math.ceil((percentage / 100) * 5);
+
+            const dt = new Date().toISOString();
+            const resultData = {
+                v: '1_comment',
+                dt: dt,
+                score: score,
+                total: quizData.length,
+                pct: percentage,
+                stars: stars
+            };
+
+            const resultCode = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('scoreDisplay').textContent = `${score}/${quizData.length}`;
+            document.getElementById('percentageText').innerHTML = `Résultat: ${percentage}%`;
+            document.getElementById('starsDisplay').textContent = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        window.addEventListener('load', initQuiz);
+    </script>
+</body>
+</html>

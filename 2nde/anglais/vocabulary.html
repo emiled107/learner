@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Vocabulary - 2nde</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #08090f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.3);
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .subtitle {
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .theme-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .theme-btn {
+            padding: 10px 20px;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            background: rgba(0, 212, 255, 0.1);
+            color: #00d4ff;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .theme-btn.active {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            color: white;
+            border-color: #00d4ff;
+        }
+        .theme-btn:hover {
+            border-color: #00d4ff;
+        }
+        .question-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+        }
+        .question-number {
+            color: #00d4ff;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        .question-text {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        .context {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 4px solid #0099ff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            color: #d0d0d0;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 12px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.2);
+        }
+        .option.selected {
+            background: rgba(0, 212, 255, 0.3);
+            border-color: #00d4ff;
+        }
+        .option.correct {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+        }
+        .option.incorrect {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #f44336;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff 0%, #0099ff 100%);
+            transition: width 0.3s;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Nunito', sans-serif;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+        }
+        .btn-secondary {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+            border: 2px solid #00d4ff;
+        }
+        .btn-secondary:hover {
+            background: rgba(0, 212, 255, 0.3);
+        }
+        .results {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(0, 153, 255, 0.2) 100%);
+            border-radius: 12px;
+            border: 2px solid rgba(0, 212, 255, 0.3);
+        }
+        .score-display {
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        .stars {
+            font-size: 2.5em;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+        .result-code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            word-break: break-all;
+            font-size: 0.9em;
+            color: #4caf50;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #00d4ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            color: #0099ff;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            .question-container {
+                padding: 18px;
+            }
+            .score-display {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Advanced Vocabulary</h1>
+            <p class="subtitle">Classe de 2nde - English</p>
+        </header>
+
+        <div class="theme-selector" id="themeSelector"></div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div id="quizContent"></div>
+
+        <div id="resultsSection" style="display:none;">
+            <div class="results">
+                <h2>Results</h2>
+                <div class="score-display" id="scoreDisplay">0/0</div>
+                <div class="stars" id="starsDisplay">☆☆☆☆☆</div>
+                <p id="percentageText"></p>
+                <div class="result-code" id="resultCode"></div>
+                <a href="/index.html" class="back-link">← Back to home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const vocabularyByTheme = {
+            'Environment & Climate': [
+                { word: 'carbon footprint', definition: 'The total greenhouse gas emissions produced by human activities', context: 'We need to reduce our ___ to fight climate change.' },
+                { word: 'renewable energy', definition: 'Energy from sources that naturally replenish', context: 'Solar and wind are types of ___.' },
+                { word: 'biodiversity', definition: 'The variety of plants and animals in a specific region', context: 'The rainforest is known for its rich ___.' },
+                { word: 'deforestation', definition: 'The clearing of forests for other uses', context: '___ is a major cause of habitat loss.' },
+                { word: 'climate change', definition: 'Long-term shifts in global temperatures and weather patterns', context: '___ affects ecosystems worldwide.' },
+                { word: 'sustainable', definition: 'Able to be maintained without depleting resources', context: 'We need ___ farming practices.' },
+                { word: 'ecosystem', definition: 'A community of organisms interacting with their environment', context: 'Each ___ plays a crucial role in nature.' },
+                { word: 'pollution', definition: 'The introduction of harmful substances into the environment', context: 'Air ___ is a serious health concern.' },
+                { word: 'extinct', definition: 'No longer existing or living', context: 'Dinosaurs went ___ millions of years ago.' },
+                { word: 'conservation', definition: 'The protection and preservation of nature', context: 'Wildlife ___ is essential for endangered species.' },
+                { word: 'greenhouse gas', definition: 'Gas that traps heat in the atmosphere', context: 'Carbon dioxide is a major ___.' },
+                { word: 'habitat', definition: 'The natural environment where an organism lives', context: 'Forests are the ___ of many animals.' },
+                { word: 'erosion', definition: 'The gradual wearing away of land or rock', context: 'Water causes soil ___.' },
+                { word: 'drought', definition: 'A prolonged period of abnormally low rainfall', context: 'The region suffered from a severe ___.' },
+                { word: 'pesticide', definition: 'A chemical used to kill insects or weeds', context: 'Some ___ are harmful to the environment.' }
+            ],
+            'Technology & Digital': [
+                { word: 'artificial intelligence', definition: 'Computer systems that mimic human intelligence', context: '___ is revolutionizing many industries.' },
+                { word: 'algorithm', definition: 'A set of step-by-step instructions for solving a problem', context: 'Search engines use complex ___.' },
+                { word: 'cybersecurity', definition: 'Protection against digital attacks and data theft', context: 'Strong passwords improve ___.' },
+                { word: 'innovation', definition: 'The development of new ideas or products', context: 'Tech companies drive ___.' },
+                { word: 'digital literacy', definition: 'The ability to use digital tools effectively', context: '___ is essential in modern society.' },
+                { word: 'data breach', definition: 'Unauthorized access to confidential information', context: 'A ___ can compromise user privacy.' },
+                { word: 'blockchain', definition: 'A distributed ledger technology underlying cryptocurrencies', context: '___ ensures transaction security.' },
+                { word: 'virtual reality', definition: 'Immersive computer-simulated environment', context: '___ offers new gaming experiences.' },
+                { word: 'cloud storage', definition: 'Data stored on remote servers accessed via internet', context: 'Many use ___ to backup files.' },
+                { word: 'bandwidth', definition: 'The maximum data transfer rate of a connection', context: 'High ___ is needed for video streaming.' },
+                { word: 'bug', definition: 'An error in a computer program', context: 'Programmers work to fix ___.' },
+                { word: 'interface', definition: 'The point of interaction between user and system', context: 'The app has a user-friendly ___.' },
+                { word: 'database', definition: 'An organized collection of data', context: 'Companies store information in ___.' },
+                { word: 'encryption', definition: 'Converting data into a code to protect it', context: '___ secures sensitive communications.' },
+                { word: 'server', definition: 'A computer that provides data or services to clients', context: 'Websites are hosted on ___.' }
+            ],
+            'Society & Identity': [
+                { word: 'diversity', definition: 'The state of being varied and different', context: '___ strengthens communities.' },
+                { word: 'discrimination', definition: 'Unjust treatment based on prejudice', context: 'Laws protect against ___.' },
+                { word: 'inclusion', definition: 'The practice of including all people regardless of differences', context: 'Schools promote ___.' },
+                { word: 'empathy', definition: 'The ability to understand others\' feelings', context: '___ is important in communication.' },
+                { word: 'stereotype', definition: 'A fixed, oversimplified belief about a group', context: 'It\'s wrong to believe in ___.' },
+                { word: 'privilege', definition: 'A special right or advantage granted to some', context: 'Recognizing ___ promotes fairness.' },
+                { word: 'community', definition: 'A group of people living in the same area or with shared interests', context: 'A strong ___ supports its members.' },
+                { word: 'tolerance', definition: 'The willingness to accept different beliefs and practices', context: '___ is key to peaceful coexistence.' },
+                { word: 'prejudice', definition: 'An unfair preconceived opinion about someone', context: 'Education helps overcome ___.' },
+                { word: 'equality', definition: 'The state of being equal in rights and opportunities', context: 'We strive for social ___.' },
+                { word: 'indigenous', definition: 'Originating or occurring naturally in a place', context: '___ peoples have rich cultures.' },
+                { word: 'marginalized', definition: 'Treated as unimportant or excluded from society', context: 'Programs help ___ communities.' },
+                { word: 'identity', definition: 'The characteristics that define who someone is', context: 'Cultural ___ is important.' },
+                { word: 'advocate', definition: 'To publicly support or recommend something', context: 'Activists ___ for social change.' },
+                { word: 'justice', definition: 'Fair treatment and respect for rights', context: '___ systems aim to protect all.' }
+            ],
+            'Travel & Culture': [
+                { word: 'tourism', definition: 'Travel for pleasure or recreation', context: '___ boosts local economies.' },
+                { word: 'heritage', definition: 'Cultural or historical traditions passed down', context: 'UNESCO protects world ___.' },
+                { word: 'itinerary', definition: 'A planned route or schedule for a journey', context: 'We planned our ___ carefully.' },
+                { word: 'destination', definition: 'The place where someone is going', context: 'Paris is a popular travel ___.' },
+                { word: 'expedition', definition: 'A journey undertaken for exploration', context: 'The ___ discovered new territories.' },
+                { word: 'souvenir', definition: 'An object kept as a reminder of a place or event', context: 'I bought a ___ from the museum.' },
+                { word: 'visa', definition: 'An official permission to enter a country', context: 'You need a ___ to travel abroad.' },
+                { word: 'custom', definition: 'Traditional behavior or practice of a group', context: 'It\'s a local ___ to greet with a bow.' },
+                { word: 'tradition', definition: 'A belief or behavior passed down through generations', context: 'This ___ dates back centuries.' },
+                { word: 'dialect', definition: 'A regional variation of a language', context: 'Each region has its own ___.' },
+                { word: 'accommodation', definition: 'A place to stay during travel', context: 'The ___ was comfortable.' },
+                { word: 'landmark', definition: 'A notable feature or building in a place', context: 'The Eiffel Tower is a famous ___.' },
+                { word: 'exotic', definition: 'Strikingly unusual or different', context: 'We explored ___ markets.' },
+                { word: 'tourist', definition: 'A person traveling for leisure', context: 'Many ___ visit the city yearly.' },
+                { word: 'cultural', definition: 'Related to the beliefs and practices of a group', context: '___ diversity enriches society.' }
+            ]
+        };
+
+        let currentTheme = 'Environment & Climate';
+        let currentQuestion = 0;
+        let score = 0;
+        let questionsData = [];
+        const userAnswers = [];
+        const startTime = Date.now();
+
+        function initQuiz() {
+            renderThemeSelector();
+            setTheme('Environment & Climate');
+        }
+
+        function renderThemeSelector() {
+            const themes = Object.keys(vocabularyByTheme);
+            let html = '';
+            themes.forEach(theme => {
+                html += `<button class="theme-btn ${theme === 'Environment & Climate' ? 'active' : ''}" onclick="setTheme('${theme}')">${theme}</button>`;
+            });
+            document.getElementById('themeSelector').innerHTML = html;
+        }
+
+        function setTheme(theme) {
+            currentTheme = theme;
+            currentQuestion = 0;
+            score = 0;
+            userAnswers.length = 0;
+            questionsData = vocabularyByTheme[theme];
+
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('quizContent').style.display = 'block';
+
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const vocab = questionsData[currentQuestion];
+            const total = questionsData.length;
+            const progress = ((currentQuestion + 1) / total) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            const choices = [vocab.word];
+            const allWords = questionsData.map(v => v.word);
+            while (choices.length < 4) {
+                const random = allWords[Math.floor(Math.random() * allWords.length)];
+                if (!choices.includes(random)) {
+                    choices.push(random);
+                }
+            }
+            choices.sort(() => Math.random() - 0.5);
+
+            let html = `
+                <div class="question-container">
+                    <div class="question-number">Question ${currentQuestion + 1}/${total}</div>
+                    <div class="question-text">Select the word that matches the definition:</div>
+                    <div class="context"><strong>Definition:</strong> ${vocab.definition}</div>
+                    <div class="context"><strong>Context:</strong> ${vocab.context}</div>
+                    <div class="options">
+            `;
+
+            choices.forEach((choice, index) => {
+                html += `
+                    <div class="option" onclick="selectOption(${index}, '${choice}')">
+                        <input type="radio" name="question${currentQuestion}" value="${index}" id="opt${index}">
+                        <label for="opt${index}">${choice}</label>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <div class="button-group">
+                        ${currentQuestion > 0 ? '<button class="btn-secondary" onclick="previousQuestion()">← Previous</button>' : ''}
+                        <button class="btn-primary" onclick="nextQuestion()" id="nextBtn">Next →</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('quizContent').innerHTML = html;
+            document.getElementById('nextBtn').disabled = true;
+        }
+
+        function selectOption(index, word) {
+            userAnswers[currentQuestion] = word;
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('.option')[index].classList.add('selected');
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questionsData.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function showResults() {
+            score = userAnswers.filter((ans, i) => ans === questionsData[i].word).length;
+            const percentage = Math.round((score / questionsData.length) * 100);
+            const stars = Math.ceil((percentage / 100) * 5);
+
+            const dt = new Date().toISOString();
+            const resultData = {
+                v: '2_vocab',
+                dt: dt,
+                theme: currentTheme,
+                score: score,
+                total: questionsData.length,
+                pct: percentage,
+                stars: stars
+            };
+
+            const resultCode = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('scoreDisplay').textContent = `${score}/${questionsData.length}`;
+            document.getElementById('percentageText').innerHTML = `Result: ${percentage}%`;
+            document.getElementById('starsDisplay').textContent = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        window.addEventListener('load', initQuiz);
+    </script>
+</body>
+</html>

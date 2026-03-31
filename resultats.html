@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bilan de progression — Notes &amp; QCM</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);min-height:100vh;color:#e2e8f0;padding:1rem}
+.container{max-width:900px;margin:0 auto}
+
+.back-link{display:inline-flex;align-items:center;gap:.4rem;color:#60a5fa;text-decoration:none;font-weight:700;font-size:.9rem;margin-bottom:1rem;transition:opacity .2s}
+.back-link:hover{opacity:.7}
+.header{text-align:center;padding:2rem 0 1.5rem}
+.header h1{font-size:2rem;font-weight:900;background:linear-gradient(135deg,#60a5fa,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header p{color:#64748b;font-size:.95rem;margin-top:.3rem}
+
+/* Input */
+.input-zone{background:rgba(255,255,255,0.05);border:2px dashed rgba(255,255,255,0.15);border-radius:1rem;padding:1.5rem;margin-bottom:1.5rem;transition:border-color .3s}
+.input-zone:focus-within{border-color:#60a5fa}
+.input-zone label{display:block;font-weight:700;font-size:1rem;margin-bottom:.5rem;color:#94a3b8}
+.input-zone textarea{width:100%;min-height:140px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:.75rem;padding:1rem;color:#e2e8f0;font-family:'Courier New',monospace;font-size:.85rem;resize:vertical;outline:none;transition:border-color .2s}
+.input-zone textarea:focus{border-color:#60a5fa}
+.input-zone textarea::placeholder{color:#475569}
+.input-hint{font-size:.8rem;color:#475569;margin-top:.5rem}
+
+.btn-row{display:flex;gap:.8rem;margin-bottom:2rem;flex-wrap:wrap}
+.btn{padding:.75rem 1.5rem;border-radius:.75rem;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;font-size:.95rem;transition:all .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{background:linear-gradient(135deg,#2563eb,#7c3aed);color:white;box-shadow:0 4px 15px rgba(37,99,235,0.3)}
+.btn-secondary{background:rgba(255,255,255,0.08);color:#94a3b8;border:1px solid rgba(255,255,255,0.1)}
+
+/* Dashboard */
+.dashboard{display:none}
+.dashboard.visible{display:block;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* Section titles */
+.section-title{font-size:1.15rem;font-weight:800;margin:1.5rem 0 .8rem;color:#94a3b8;display:flex;align-items:center;gap:.5rem}
+
+/* Detected codes summary */
+.detected{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.det-badge{padding:.4rem 1rem;border-radius:2rem;font-size:.82rem;font-weight:700;display:flex;align-items:center;gap:.4rem}
+.det-notes{background:rgba(74,222,128,0.15);color:#4ade80;border:1px solid rgba(74,222,128,0.2)}
+.det-qcm{background:rgba(96,165,250,0.15);color:#60a5fa;border:1px solid rgba(96,165,250,0.2)}
+.det-exam{background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.2)}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.8rem;margin-bottom:1.5rem}
+.stat-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:1rem;padding:1.2rem;text-align:center;transition:transform .2s}
+.stat-card:hover{transform:translateY(-3px)}
+.stat-icon{font-size:1.8rem;margin-bottom:.4rem}
+.stat-value{font-size:1.8rem;font-weight:900;line-height:1}
+.stat-label{font-size:.78rem;color:#64748b;margin-top:.3rem;font-weight:600}
+
+/* Radar chart container */
+.radar-section{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:1rem;padding:1.5rem;margin-bottom:1.5rem;text-align:center}
+.radar-section canvas{max-width:100%;margin:0 auto}
+.radar-legend{display:flex;justify-content:center;gap:1.5rem;margin-top:1rem;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:.4rem;font-size:.85rem;font-weight:700;color:#94a3b8}
+.legend-dot{width:12px;height:12px;border-radius:3px}
+
+/* Comparison table */
+.comp-table{width:100%;border-collapse:separate;border-spacing:0;margin-bottom:1.5rem}
+.comp-table th{background:rgba(255,255,255,0.06);padding:.8rem;font-size:.8rem;color:#64748b;text-transform:uppercase;letter-spacing:.05em;text-align:center}
+.comp-table th:first-child{text-align:left;border-radius:.75rem 0 0 0}
+.comp-table th:last-child{border-radius:0 .75rem 0 0}
+.comp-table td{padding:.8rem;text-align:center;border-top:1px solid rgba(255,255,255,0.05);font-weight:700;font-size:.95rem}
+.comp-table td:first-child{text-align:left;font-weight:800}
+.comp-table tr:last-child td:first-child{border-radius:0 0 0 .75rem}
+.comp-table tr:last-child td:last-child{border-radius:0 0 .75rem 0}
+.comp-table tr:hover td{background:rgba(255,255,255,0.03)}
+.score-high{color:#4ade80}.score-mid{color:#fbbf24}.score-low{color:#f87171}
+.score-na{color:#475569;font-style:italic;font-weight:400}
+.gap-tag{display:inline-block;padding:.15rem .5rem;border-radius:.5rem;font-size:.72rem;font-weight:800}
+.gap-ok{background:rgba(74,222,128,0.15);color:#4ade80}
+.gap-warn{background:rgba(251,191,36,0.15);color:#fbbf24}
+.gap-danger{background:rgba(248,113,113,0.15);color:#f87171}
+
+/* Priorities */
+.priorities{background:linear-gradient(135deg,rgba(248,113,113,0.08),rgba(251,191,36,0.08));border:1px solid rgba(248,113,113,0.15);border-radius:1rem;padding:1.5rem;margin-bottom:1.5rem}
+.priority-item{display:flex;gap:.8rem;padding:.6rem 0;font-size:.9rem;color:#e2e8f0;line-height:1.5;align-items:flex-start}
+.priority-item .pi{font-size:1.2rem;flex-shrink:0}
+
+/* Advice */
+.advice-section{background:linear-gradient(135deg,rgba(74,222,128,0.08),rgba(96,165,250,0.08));border:1px solid rgba(74,222,128,0.15);border-radius:1rem;padding:1.5rem;margin-bottom:1.5rem}
+.advice-item{display:flex;gap:.8rem;padding:.6rem 0;font-size:.9rem;color:#94a3b8;line-height:1.5}
+.advice-item .ai{font-size:1.2rem;flex-shrink:0}
+
+/* Timeline */
+.timeline{position:relative;padding-left:2rem;margin-bottom:1.5rem}
+.timeline::before{content:'';position:absolute;left:.6rem;top:0;bottom:0;width:2px;background:rgba(255,255,255,0.1)}
+.tl-item{position:relative;padding-bottom:1rem}
+.tl-item::before{content:'';position:absolute;left:-.85rem;top:.35rem;width:10px;height:10px;border-radius:50%;border:2px solid #2563eb;background:#0f172a}
+.tl-item.good::before{border-color:#4ade80;background:#0a1f10}
+.tl-item.ok::before{border-color:#fbbf24;background:#1f1a0a}
+.tl-item.bad::before{border-color:#f87171;background:#1f0a0a}
+.tl-date{font-size:.75rem;color:#475569;font-weight:700}
+.tl-text{font-size:.9rem;font-weight:700;margin-top:.15rem}
+.tl-sub{font-size:.8rem;color:#64748b}
+
+.error-msg{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.2);border-radius:.75rem;padding:1rem;color:#fca5a5;font-size:.9rem;margin-bottom:1rem;display:none}
+.error-msg.visible{display:block;animation:fadeUp .3s ease}
+
+@media(max-width:600px){
+    .header h1{font-size:1.5rem}
+    .stats-row{grid-template-columns:repeat(2,1fr)}
+    .btn-row{flex-direction:column}
+    .btn{width:100%;text-align:center}
+    .comp-table{font-size:.8rem}
+    .comp-table td,.comp-table th{padding:.5rem}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <a href="index.html" class="back-link">&larr; Retour a l'accueil</a>
+
+    <div class="header">
+        <h1>Bilan de progression</h1>
+        <p>Colle tes codes (notes, QCM, examen) pour comparer et identifier tes points faibles</p>
+    </div>
+
+    <div class="input-zone">
+        <label>Colle tous tes codes ici :</label>
+        <textarea id="codes-input" placeholder="Colle ici tous tes codes de resultats...&#10;&#10;- Codes de notes (depuis la page Mes Notes)&#10;- Codes de QCM (depuis les activites)&#10;- Codes d'examen brevet (depuis le Grand Examen)&#10;&#10;Tu peux tout coller d'un coup !"></textarea>
+        <div class="input-hint">Accepte tous les types de codes : notes de controle, QCM par matiere, examen brevet.</div>
+    </div>
+
+    <div class="btn-row">
+        <button class="btn btn-primary" onclick="decode()">Analyser mes resultats</button>
+        <button class="btn btn-secondary" onclick="clearAll()">Effacer</button>
+    </div>
+
+    <div class="error-msg" id="error-msg"></div>
+
+    <div class="dashboard" id="dashboard">
+        <div id="detected-zone"></div>
+        <div id="stats-zone"></div>
+        <div class="radar-section" id="radar-section" style="display:none">
+            <div class="section-title">Carte des competences par matiere</div>
+            <canvas id="radar-canvas" width="500" height="400"></canvas>
+            <div class="radar-legend" id="radar-legend"></div>
+        </div>
+        <div id="comparison-zone"></div>
+        <div id="priorities-zone"></div>
+        <div id="advice-zone"></div>
+        <div id="timeline-zone"></div>
+    </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+// SUBJECTS MAPPING
+// ════════════════════════════════════════════
+const SUBJECT_ALIASES = {
+    'Mathématiques': 'maths', 'maths': 'maths', 'math': 'maths',
+    'Français': 'francais', 'francais': 'francais',
+    'Anglais': 'anglais', 'anglais': 'anglais',
+    'Histoire-Géographie': 'histoire-geo', 'histoire-geo': 'histoire-geo', 'Histoire-Géo': 'histoire-geo',
+    'Sciences': 'sciences', 'sciences': 'sciences',
+    'SVT': 'sciences', 'Physique-Chimie': 'sciences', 'Technologie': 'sciences'
+};
+
+const SUBJECT_DISPLAY = {
+    'maths': { name: 'Maths', icon: '🧮', color: '#4facfe' },
+    'francais': { name: 'Francais', icon: '📖', color: '#43e97b' },
+    'anglais': { name: 'Anglais', icon: '🇬🇧', color: '#f472b6' },
+    'histoire-geo': { name: 'Histoire-Geo', icon: '🏛️', color: '#fbbf24' },
+    'sciences': { name: 'Sciences', icon: '🔬', color: '#a78bfa' }
+};
+
+const ACTIVITY_META = {
+    // Primaire
+    'p_tables': { name: 'Tables de multiplication', subject: 'maths' },
+    'p_calcul': { name: 'Calcul mental express', subject: 'maths' },
+    'p_homo': { name: 'Homophones battle', subject: 'francais' },
+    'p_conj': { name: 'Conjugaison express', subject: 'francais' },
+    'p_vocab': { name: 'Vocabulaire anglais', subject: 'anglais' },
+    'p_corps': { name: 'Le corps humain', subject: 'sciences' },
+    'p_geo': { name: 'Geographie de France', subject: 'histoire-geo' },
+    // 6eme
+    '6_maths': { name: 'Nombres et decimaux', subject: 'maths' },
+    '6_gram': { name: 'Nature des mots', subject: 'francais' },
+    '6_angl': { name: 'English basics', subject: 'anglais' },
+    '6_hist': { name: 'Civilisations antiques', subject: 'histoire-geo' },
+    '6_sci': { name: 'La matiere', subject: 'sciences' },
+    // 5eme
+    '5_frac': { name: 'Fractions', subject: 'maths' },
+    '5_ortho': { name: 'Orthographe', subject: 'francais' },
+    '5_tense': { name: 'English tenses', subject: 'anglais' },
+    '5_hist': { name: 'Le Moyen Age', subject: 'histoire-geo' },
+    '5_elec': { name: 'Circuits electriques', subject: 'sciences' },
+    // 4eme
+    '4_pytha': { name: 'Theoreme de Pythagore', subject: 'maths' },
+    '4_argu': { name: 'Argumentation', subject: 'francais' },
+    '4_pp': { name: 'Present Perfect', subject: 'anglais' },
+    '4_rev': { name: 'Les Revolutions', subject: 'histoire-geo' },
+    '4_atome': { name: 'Atomes et molecules', subject: 'sciences' },
+    // 3eme
+    'vm3': { name: 'Verbes Irreguliers', subject: 'anglais' },
+    'c_grammar': { name: 'Grammar drills', subject: 'anglais' },
+    'c_calcul': { name: 'Calcul mental chrono', subject: 'maths' },
+    'c_equations': { name: 'Equations express', subject: 'maths' },
+    'c_conj': { name: 'Conjugaison battle', subject: 'francais' },
+    'c_figures': { name: 'Figures de style', subject: 'francais' },
+    'c_frise': { name: 'Frise chronologique', subject: 'histoire-geo' },
+    'c_reperes': { name: 'Reperes du brevet', subject: 'histoire-geo' },
+    'c_sciences': { name: 'QCM diagnostique sciences', subject: 'sciences' },
+    // 2nde
+    'l_auto': { name: 'Automatismes maths', subject: 'maths' },
+    '2_comment': { name: 'Analyse de texte', subject: 'francais' },
+    '2_vocab': { name: 'Advanced vocabulary', subject: 'anglais' },
+    '2_histgeo': { name: 'QCM Histoire-Geo 2nde', subject: 'histoire-geo' },
+    '2_pc': { name: 'Physique-Chimie 2nde', subject: 'sciences' },
+    // 1ere
+    'l_deriv': { name: 'Derivees express', subject: 'maths' },
+    '1_comment': { name: 'Commentaire litteraire', subject: 'francais' },
+    '1_expr': { name: 'Written expression', subject: 'anglais' },
+    '1_histgeo': { name: 'QCM Histoire-Geo 1ere', subject: 'histoire-geo' },
+    '1_es': { name: 'Enseignement scientifique 1ere', subject: 'sciences' },
+    'l_python': { name: 'Python debugger', subject: 'multi' },
+    // Terminale
+    't_suites': { name: 'Suites numeriques', subject: 'maths' },
+    'l_philo': { name: 'Concepts cles philo', subject: 'multi' },
+    't_angl': { name: 'Bac English', subject: 'anglais' },
+    't_histgeo': { name: 'QCM Histoire-Geo Terminale', subject: 'histoire-geo' },
+    't_es': { name: 'Enseignement scientifique Tle', subject: 'sciences' },
+    // Examen
+    'exam500': { name: 'Examen Brevet 500', subject: 'multi' },
+};
+
+// ════════════════════════════════════════════
+// DECODE
+// ════════════════════════════════════════════
+function decode() {
+    const raw = document.getElementById('codes-input').value.trim();
+    if (!raw) { showError('Colle au moins un code !'); return; }
+
+    const chunks = raw.split(/\s+/).filter(c => c.length > 5);
+    const results = [];
+    let buffer = '';
+
+    for (const chunk of chunks) {
+        buffer += chunk;
+        try {
+            const json = decodeURIComponent(escape(atob(buffer)));
+            const data = JSON.parse(json);
+            if (data && (data.v || data.score || data.subjects)) { results.push(data); buffer = ''; }
+        } catch {
+            if (buffer.length > 500) { buffer = ''; }
+        }
+    }
+    if (buffer.length > 0) {
+        try {
+            const json = decodeURIComponent(escape(atob(buffer)));
+            const data = JSON.parse(json);
+            if (data && (data.v || data.score || data.subjects)) results.push(data);
+        } catch {}
+    }
+
+    if (results.length === 0) {
+        showError('Aucun code valide trouve. Verifie tes codes.');
+        return;
+    }
+    hideError();
+    buildDashboard(results);
+}
+
+// ════════════════════════════════════════════
+// CLASSIFY RESULTS
+// ════════════════════════════════════════════
+function classify(results) {
+    const notes = [];   // from notes.html (v: "notes")
+    const qcm = [];     // from activity QCMs (v: "vm3", etc.)
+    const exams = [];   // from brevet exam (v: "exam500")
+
+    results.forEach(r => {
+        if (r.v === 'notes') notes.push(r);
+        else if (r.v === 'exam500') exams.push(r);
+        else qcm.push(r);
+    });
+    return { notes, qcm, exams };
+}
+
+// ════════════════════════════════════════════
+// BUILD DASHBOARD
+// ════════════════════════════════════════════
+function buildDashboard(results) {
+    const dash = document.getElementById('dashboard');
+    dash.classList.add('visible');
+
+    const { notes, qcm, exams } = classify(results);
+
+    // ── Detected codes badges ──
+    const detZone = document.getElementById('detected-zone');
+    let detHtml = '<div class="detected">';
+    if (notes.length) detHtml += `<span class="det-badge det-notes">📝 ${notes.length} code${notes.length>1?'s':''} notes</span>`;
+    if (qcm.length) detHtml += `<span class="det-badge det-qcm">🎯 ${qcm.length} code${qcm.length>1?'s':''} QCM</span>`;
+    if (exams.length) detHtml += `<span class="det-badge det-exam">🏆 ${exams.length} code${exams.length>1?'s':''} examen</span>`;
+    detHtml += '</div>';
+    detZone.innerHTML = detHtml;
+
+    // ── Build per-subject data ──
+    const subjects = {};
+    for (const key of Object.keys(SUBJECT_DISPLAY)) {
+        subjects[key] = { noteAvg: null, qcmAvg: null, examPct: null, noteChapters: [], qcmDetails: [], examDetail: null };
+    }
+
+    // Process notes
+    notes.forEach(n => {
+        if (n.subjects) {
+            for (const [key, data] of Object.entries(n.subjects)) {
+                const skey = SUBJECT_ALIASES[key] || key;
+                if (subjects[skey]) {
+                    subjects[skey].noteAvg = data.avg != null ? data.avg : null;
+                    if (data.chapters) subjects[skey].noteChapters = data.chapters;
+                }
+            }
+        }
+    });
+
+    // Process QCM activities
+    qcm.forEach(q => {
+        const meta = ACTIVITY_META[q.v];
+        if (meta && meta.subject && subjects[meta.subject]) {
+            const pct = parseInt(q.score) || 0;
+            subjects[meta.subject].qcmDetails.push({ ...q, pct });
+        }
+    });
+
+    // Compute QCM averages
+    for (const s of Object.values(subjects)) {
+        if (s.qcmDetails.length > 0) {
+            s.qcmAvg = Math.round(s.qcmDetails.reduce((a, q) => a + q.pct, 0) / s.qcmDetails.length);
+        }
+    }
+
+    // Process exams
+    exams.forEach(e => {
+        if (e.subj) {
+            for (const [name, val] of Object.entries(e.subj)) {
+                const skey = SUBJECT_ALIASES[name] || name;
+                if (subjects[skey]) {
+                    const match = val.match(/(\d+)\/(\d+)/);
+                    if (match) {
+                        subjects[skey].examPct = Math.round(parseInt(match[1]) / parseInt(match[2]) * 100);
+                        subjects[skey].examDetail = val;
+                    }
+                }
+            }
+        }
+    });
+
+    // ── Stats overview ──
+    const statsZone = document.getElementById('stats-zone');
+    const allNoteAvgs = Object.values(subjects).filter(s => s.noteAvg !== null).map(s => s.noteAvg);
+    const globalNote = allNoteAvgs.length ? (allNoteAvgs.reduce((a,b)=>a+b,0) / allNoteAvgs.length).toFixed(1) : null;
+    const allQcmAvgs = Object.values(subjects).filter(s => s.qcmAvg !== null).map(s => s.qcmAvg);
+    const globalQcm = allQcmAvgs.length ? Math.round(allQcmAvgs.reduce((a,b)=>a+b,0) / allQcmAvgs.length) : null;
+    const latestExam = exams.length ? exams[exams.length - 1] : null;
+
+    let statsHtml = '<div class="stats-row">';
+    if (globalNote !== null) statsHtml += `<div class="stat-card"><div class="stat-icon">📝</div><div class="stat-value ${noteColor(parseFloat(globalNote))}">${globalNote}/20</div><div class="stat-label">Moyenne notes</div></div>`;
+    if (globalQcm !== null) statsHtml += `<div class="stat-card"><div class="stat-icon">🎯</div><div class="stat-value ${pctColor(globalQcm)}">${globalQcm}%</div><div class="stat-label">Moyenne QCM</div></div>`;
+    if (latestExam) statsHtml += `<div class="stat-card"><div class="stat-icon">🏆</div><div class="stat-value ${pctColor(latestExam.pct)}">${latestExam.pct}%</div><div class="stat-label">Examen brevet</div></div>`;
+    if (latestExam && latestExam.hack > 0) statsHtml += `<div class="stat-card"><div class="stat-icon">🚨</div><div class="stat-value score-low">${latestExam.hack}</div><div class="stat-label">Triches detectees</div></div>`;
+    const totalCodes = notes.length + qcm.length + exams.length;
+    statsHtml += `<div class="stat-card"><div class="stat-icon">📊</div><div class="stat-value">${totalCodes}</div><div class="stat-label">Codes analyses</div></div>`;
+    statsHtml += '</div>';
+    statsZone.innerHTML = statsHtml;
+
+    // ── Radar chart ──
+    drawRadar(subjects);
+
+    // ── Comparison table ──
+    const compZone = document.getElementById('comparison-zone');
+    let hasNotes = Object.values(subjects).some(s => s.noteAvg !== null);
+    let hasQcm = Object.values(subjects).some(s => s.qcmAvg !== null);
+    let hasExam = Object.values(subjects).some(s => s.examPct !== null);
+
+    let compHtml = '<div class="section-title">Comparaison Notes vs QCM vs Examen</div>';
+    compHtml += '<table class="comp-table"><thead><tr><th>Matiere</th>';
+    if (hasNotes) compHtml += '<th>Notes /20</th>';
+    if (hasQcm) compHtml += '<th>QCM</th>';
+    if (hasExam) compHtml += '<th>Examen</th>';
+    compHtml += '<th>Diagnostic</th></tr></thead><tbody>';
+
+    for (const [key, s] of Object.entries(subjects)) {
+        const disp = SUBJECT_DISPLAY[key];
+        const notePct = s.noteAvg !== null ? Math.round(s.noteAvg / 20 * 100) : null;
+        const scores = [notePct, s.qcmAvg, s.examPct].filter(x => x !== null);
+        const avg = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0) / scores.length) : null;
+
+        let diagHtml = '<span class="score-na">—</span>';
+        if (avg !== null) {
+            if (avg >= 70) diagHtml = '<span class="gap-tag gap-ok">Acquis</span>';
+            else if (avg >= 50) diagHtml = '<span class="gap-tag gap-warn">A renforcer</span>';
+            else diagHtml = '<span class="gap-tag gap-danger">Prioritaire</span>';
+
+            // Check coherence
+            if (notePct !== null && s.qcmAvg !== null) {
+                const gap = Math.abs(notePct - s.qcmAvg);
+                if (gap > 20) {
+                    if (notePct > s.qcmAvg) diagHtml += ' <span style="font-size:.75rem;color:#fbbf24" title="Les notes sont meilleures que les QCM : revoir les bases">⚠️ QCM &lt; Notes</span>';
+                    else diagHtml += ' <span style="font-size:.75rem;color:#60a5fa" title="Les QCM sont meilleurs que les notes : bien revise mais attention aux controles">💡 Notes &lt; QCM</span>';
+                }
+            }
+        }
+
+        compHtml += `<tr>
+            <td>${disp.icon} ${disp.name}</td>
+            ${hasNotes ? `<td>${s.noteAvg !== null ? `<span class="${noteColor(s.noteAvg)}">${s.noteAvg.toFixed(1)}</span>` : '<span class="score-na">—</span>'}</td>` : ''}
+            ${hasQcm ? `<td>${s.qcmAvg !== null ? `<span class="${pctColor(s.qcmAvg)}">${s.qcmAvg}%</span>` : '<span class="score-na">—</span>'}</td>` : ''}
+            ${hasExam ? `<td>${s.examPct !== null ? `<span class="${pctColor(s.examPct)}">${s.examPct}%</span>` : '<span class="score-na">—</span>'}</td>` : ''}
+            <td>${diagHtml}</td>
+        </tr>`;
+    }
+    compHtml += '</tbody></table>';
+    compZone.innerHTML = compHtml;
+
+    // ── Priorities ──
+    const prioZone = document.getElementById('priorities-zone');
+    const priorities = buildPriorities(subjects);
+    if (priorities.length > 0) {
+        let prioHtml = '<div class="priorities"><div class="section-title" style="color:#f87171;margin-top:0">Matieres a travailler en priorite</div>';
+        priorities.forEach(p => {
+            prioHtml += `<div class="priority-item"><span class="pi">${p.icon}</span><span>${p.text}</span></div>`;
+        });
+        prioHtml += '</div>';
+        prioZone.innerHTML = prioHtml;
+    } else {
+        prioZone.innerHTML = '';
+    }
+
+    // ── Advice ──
+    const advZone = document.getElementById('advice-zone');
+    const advices = buildAdvice(subjects, notes, qcm, exams);
+    let advHtml = '<div class="advice-section"><div class="section-title" style="margin-top:0">Conseils</div>';
+    advices.forEach(a => {
+        advHtml += `<div class="advice-item"><span class="ai">${a.icon}</span><span>${a.text}</span></div>`;
+    });
+    advHtml += '</div>';
+    advZone.innerHTML = advHtml;
+
+    // ── Timeline ──
+    const tlZone = document.getElementById('timeline-zone');
+    const events = buildTimeline(notes, qcm, exams);
+    if (events.length > 0) {
+        let tlHtml = '<div class="section-title">Historique</div><div class="timeline">';
+        events.slice(0, 15).forEach(e => {
+            tlHtml += `<div class="tl-item ${e.cls}"><div class="tl-date">${e.date}</div><div class="tl-text">${e.text}</div><div class="tl-sub">${e.sub}</div></div>`;
+        });
+        tlHtml += '</div>';
+        tlZone.innerHTML = tlHtml;
+    }
+
+    dash.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ════════════════════════════════════════════
+// RADAR CHART (pure canvas)
+// ════════════════════════════════════════════
+function drawRadar(subjects) {
+    const section = document.getElementById('radar-section');
+    const canvas = document.getElementById('radar-canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const cx = W / 2, cy = H / 2 + 10, R = Math.min(W, H) * 0.35;
+
+    const keys = Object.keys(subjects);
+    const n = keys.length;
+    const hasNotes = keys.some(k => subjects[k].noteAvg !== null);
+    const hasQcm = keys.some(k => subjects[k].qcmAvg !== null);
+    const hasExam = keys.some(k => subjects[k].examPct !== null);
+
+    if (!hasNotes && !hasQcm && !hasExam) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Draw grid
+    for (let level = 1; level <= 5; level++) {
+        const r = R * level / 5;
+        ctx.beginPath();
+        for (let i = 0; i <= n; i++) {
+            const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+            const x = cx + r * Math.cos(angle);
+            const y = cy + r * Math.sin(angle);
+            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.stroke();
+    }
+
+    // Draw axes + labels
+    keys.forEach((key, i) => {
+        const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+        const x = cx + R * Math.cos(angle);
+        const y = cy + R * Math.sin(angle);
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(x, y);
+        ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.stroke();
+
+        const lx = cx + (R + 25) * Math.cos(angle);
+        const ly = cy + (R + 25) * Math.sin(angle);
+        ctx.fillStyle = '#94a3b8'; ctx.font = '700 13px Nunito'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(SUBJECT_DISPLAY[key].icon + ' ' + SUBJECT_DISPLAY[key].name, lx, ly);
+    });
+
+    // Draw data
+    const datasets = [];
+    if (hasNotes) datasets.push({ label: 'Notes', color: '#4ade80', getData: k => subjects[k].noteAvg !== null ? subjects[k].noteAvg / 20 * 100 : 0 });
+    if (hasQcm) datasets.push({ label: 'QCM', color: '#60a5fa', getData: k => subjects[k].qcmAvg || 0 });
+    if (hasExam) datasets.push({ label: 'Examen', color: '#a78bfa', getData: k => subjects[k].examPct || 0 });
+
+    datasets.forEach(ds => {
+        ctx.beginPath();
+        keys.forEach((key, i) => {
+            const val = ds.getData(key) / 100;
+            const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+            const x = cx + R * val * Math.cos(angle);
+            const y = cy + R * val * Math.sin(angle);
+            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        });
+        ctx.closePath();
+        ctx.fillStyle = ds.color + '20'; ctx.fill();
+        ctx.strokeStyle = ds.color; ctx.lineWidth = 2.5; ctx.stroke();
+
+        // Dots
+        keys.forEach((key, i) => {
+            const val = ds.getData(key) / 100;
+            const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+            const x = cx + R * val * Math.cos(angle);
+            const y = cy + R * val * Math.sin(angle);
+            ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2);
+            ctx.fillStyle = ds.color; ctx.fill();
+        });
+    });
+
+    // Legend
+    const legendEl = document.getElementById('radar-legend');
+    legendEl.innerHTML = datasets.map(ds =>
+        `<div class="legend-item"><div class="legend-dot" style="background:${ds.color}"></div>${ds.label}</div>`
+    ).join('');
+}
+
+// ════════════════════════════════════════════
+// PRIORITIES
+// ════════════════════════════════════════════
+function buildPriorities(subjects) {
+    const prios = [];
+    for (const [key, s] of Object.entries(subjects)) {
+        const disp = SUBJECT_DISPLAY[key];
+        const scores = [];
+        if (s.noteAvg !== null) scores.push({ src: 'notes', val: s.noteAvg / 20 * 100 });
+        if (s.qcmAvg !== null) scores.push({ src: 'QCM', val: s.qcmAvg });
+        if (s.examPct !== null) scores.push({ src: 'examen', val: s.examPct });
+        if (scores.length === 0) continue;
+
+        const avg = scores.reduce((a, s) => a + s.val, 0) / scores.length;
+
+        if (avg < 50) {
+            let reason = `${disp.icon} ${disp.name} — moyenne a ${Math.round(avg)}%`;
+            if (scores.length >= 2) {
+                const low = scores.reduce((a, b) => a.val < b.val ? a : b);
+                reason += `. Point le plus faible : ${low.src} (${Math.round(low.val)}%).`;
+            }
+            // Add chapter-level detail if available
+            if (s.noteChapters.length > 0) {
+                const weakChaps = s.noteChapters.filter(c => c.note < 10).sort((a, b) => a.note - b.note).slice(0, 3);
+                if (weakChaps.length > 0) {
+                    reason += ` Chapitres faibles : ${weakChaps.map(c => c.name + ' (' + c.note + '/20)').join(', ')}.`;
+                }
+            }
+            prios.push({ icon: '🔴', text: reason, avg });
+        } else if (avg < 65) {
+            let reason = `${disp.icon} ${disp.name} — a renforcer (${Math.round(avg)}%)`;
+            if (s.noteAvg !== null && s.qcmAvg !== null && Math.abs(s.noteAvg / 20 * 100 - s.qcmAvg) > 20) {
+                reason += '. Ecart important entre notes et QCM : revoir les bases.';
+            }
+            prios.push({ icon: '🟡', text: reason, avg });
+        }
+    }
+    prios.sort((a, b) => a.avg - b.avg);
+    return prios;
+}
+
+// ════════════════════════════════════════════
+// ADVICE
+// ════════════════════════════════════════════
+function buildAdvice(subjects, notes, qcm, exams) {
+    const advices = [];
+
+    // Global advice based on what data we have
+    const hasNotes = notes.length > 0;
+    const hasQcm = qcm.length > 0;
+    const hasExam = exams.length > 0;
+
+    if (hasNotes && !hasQcm) {
+        advices.push({ icon: '🎯', text: 'Tu as entre tes notes mais pas encore de resultats de QCM. Fais des exercices pour verifier si tu maitrises vraiment les bases !' });
+    }
+    if (hasQcm && !hasNotes) {
+        advices.push({ icon: '📝', text: 'Tu as des resultats de QCM mais pas encore tes notes. Ajoute tes notes de controle pour comparer avec les QCM !' });
+    }
+
+    // Compare notes vs QCM
+    if (hasNotes && hasQcm) {
+        let notesBetter = 0, qcmBetter = 0;
+        for (const s of Object.values(subjects)) {
+            if (s.noteAvg !== null && s.qcmAvg !== null) {
+                const notePct = s.noteAvg / 20 * 100;
+                if (notePct > s.qcmAvg + 15) notesBetter++;
+                if (s.qcmAvg > notePct + 15) qcmBetter++;
+            }
+        }
+        if (notesBetter > qcmBetter && notesBetter > 0) {
+            advices.push({ icon: '💡', text: 'Tes notes de controle sont meilleures que tes scores QCM dans certaines matieres. Cela peut indiquer que les bases restent fragiles. Entraine-toi davantage aux exercices.' });
+        }
+        if (qcmBetter > notesBetter && qcmBetter > 0) {
+            advices.push({ icon: '💡', text: 'Tes scores QCM sont meilleurs que tes notes dans certaines matieres. Tu connais les bases mais il faut travailler la methode et la redaction pour les controles.' });
+        }
+    }
+
+    // Exam-specific advice
+    if (hasExam) {
+        const e = exams[exams.length - 1];
+        if (e.pct >= 75) advices.push({ icon: '🎉', text: `Excellent resultat a l'examen brevet (${e.pct}%) ! Continue sur cette lancee.` });
+        else if (e.pct >= 50) advices.push({ icon: '📈', text: `Resultat correct a l'examen (${e.pct}%). Concentre-toi sur les matieres sous 50% pour progresser.` });
+        else advices.push({ icon: '💪', text: `L'examen brevet montre des lacunes (${e.pct}%). Pas de panique, travaille les matieres prioritaires regulierement.` });
+
+        if (e.hack > 0) advices.push({ icon: '🚨', text: `${e.hack} tentative${e.hack > 1 ? 's' : ''} de triche detectee${e.hack > 1 ? 's' : ''}. Les resultats sont plus fiables quand tu restes concentre sur l'examen.` });
+        if (e.mins) advices.push({ icon: '⏱️', text: `Tu as mis ${e.mins} minutes pour l'examen. ${e.mins > 60 ? 'Essaie d\'aller un peu plus vite pour le vrai brevet.' : 'Bon rythme !'}` });
+    }
+
+    // Regularity
+    if (qcm.length >= 2) {
+        const dates = qcm.map(q => parseDate(q.dt)).filter(d => d.getTime() > 0).sort((a, b) => a - b);
+        if (dates.length >= 2) {
+            const last = dates[dates.length - 1];
+            const days = Math.floor((new Date() - last) / 86400000);
+            if (days > 7) advices.push({ icon: '⏰', text: `Ca fait ${days} jours que tu n'as pas fait de QCM. La regularite est la cle !` });
+        }
+    }
+
+    if (advices.length === 0) {
+        advices.push({ icon: '🔄', text: 'Continue a ajouter tes notes et faire des QCM pour obtenir des conseils personnalises !' });
+    }
+
+    return advices.slice(0, 6);
+}
+
+// ════════════════════════════════════════════
+// TIMELINE
+// ════════════════════════════════════════════
+function buildTimeline(notes, qcm, exams) {
+    const events = [];
+
+    notes.forEach(n => {
+        const avg = n.avg_global || (n.subjects ? Object.values(n.subjects).reduce((a, s) => a + (s.avg || 0), 0) / Object.values(n.subjects).length : 0);
+        const pct = avg / 20 * 100;
+        events.push({
+            date: n.dt || '—', dateObj: parseDate(n.dt),
+            text: '📝 Saisie de notes',
+            sub: `Moyenne generale : ${avg.toFixed(1)}/20`,
+            cls: pct >= 70 ? 'good' : pct >= 50 ? 'ok' : 'bad'
+        });
+    });
+
+    qcm.forEach(q => {
+        const pct = parseInt(q.score) || 0;
+        const meta = ACTIVITY_META[q.v] || { name: q.v || 'QCM' };
+        events.push({
+            date: q.dt || '—', dateObj: parseDate(q.dt),
+            text: `🎯 ${meta.name} — Session ${q.sess || '?'}`,
+            sub: `${pct}% ${'⭐'.repeat(q.stars || 0)}`,
+            cls: pct >= 70 ? 'good' : pct >= 50 ? 'ok' : 'bad'
+        });
+    });
+
+    exams.forEach(e => {
+        events.push({
+            date: e.d || '—', dateObj: parseDate(e.d),
+            text: '🏆 Examen Brevet — 500 questions',
+            sub: `${e.pct}% (${e.score})${e.hack > 0 ? ' — 🚨 ' + e.hack + ' triche(s)' : ''}`,
+            cls: e.pct >= 70 ? 'good' : e.pct >= 50 ? 'ok' : 'bad'
+        });
+    });
+
+    events.sort((a, b) => b.dateObj - a.dateObj);
+    return events;
+}
+
+// ════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════
+function pctColor(pct) { return pct >= 70 ? 'score-high' : pct >= 50 ? 'score-mid' : 'score-low'; }
+function noteColor(note) { return note >= 14 ? 'score-high' : note >= 10 ? 'score-mid' : 'score-low'; }
+function parseDate(str) {
+    if (!str || str === '—') return new Date(0);
+    const parts = str.split('/');
+    if (parts.length === 3) return new Date(parts[2], parts[1] - 1, parts[0]);
+    return new Date(str);
+}
+function showError(msg) { const el = document.getElementById('error-msg'); el.textContent = msg; el.classList.add('visible'); }
+function hideError() { document.getElementById('error-msg').classList.remove('visible'); }
+function clearAll() {
+    document.getElementById('codes-input').value = '';
+    document.getElementById('dashboard').classList.remove('visible');
+    hideError();
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Drills - Brevet English</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            color: #e0e0e0;
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: linear-gradient(135deg, #1a1b2e 0%, #16213e 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffd93d 50%, #6bcf7f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-link {
+            color: #6bcf7f;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 8px 15px;
+            border: 1px solid #6bcf7f;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #6bcf7f;
+            color: #08090f;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffd93d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .mode-selection, .topic-selection {
+            display: none;
+        }
+
+        .mode-selection.active, .topic-selection.active {
+            display: block;
+        }
+
+        .selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .selection-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8a80 100%);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .selection-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+        }
+
+        .selection-btn.alt {
+            background: linear-gradient(135deg, #6bcf7f 0%, #4dffac 100%);
+        }
+
+        .selection-btn.mix {
+            background: linear-gradient(135deg, #ffd93d 0%, #ffed4e 100%);
+            color: #08090f;
+        }
+
+        .quiz-section {
+            display: none;
+        }
+
+        .quiz-section.active {
+            display: block;
+        }
+
+        .progress-container {
+            margin-bottom: 25px;
+        }
+
+        .question-counter {
+            font-size: 12px;
+            color: #a0a0a0;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b 0%, #ffd93d 50%, #6bcf7f 100%);
+            transition: width 0.4s ease;
+        }
+
+        .streak-display {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #ffd93d;
+            font-weight: 600;
+        }
+
+        .question-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 107, 107, 0.2);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .question-text {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            color: #e0e0e0;
+            font-weight: 600;
+        }
+
+        .blank-word {
+            background: rgba(255, 107, 107, 0.3);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            color: #ff8a80;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            color: #e0e0e0;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: left;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            border-color: rgba(255, 107, 107, 0.5);
+            background: rgba(255, 107, 107, 0.1);
+            transform: translateX(5px);
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8a80 100%);
+            border-color: #ff6b6b;
+            color: white;
+        }
+
+        .option-btn.correct {
+            background: linear-gradient(135deg, #6bcf7f 0%, #4dffac 100%);
+            border-color: #6bcf7f;
+            color: white;
+        }
+
+        .option-btn.incorrect {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8a80 100%);
+            border-color: #ff6b6b;
+            color: white;
+        }
+
+        .option-btn.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .explanation {
+            background: rgba(107, 207, 127, 0.1);
+            border-left: 4px solid #6bcf7f;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #c0e0c0;
+            display: none;
+        }
+
+        .explanation.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffd93d 100%);
+            color: #08090f;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            display: none;
+            font-family: 'Nunito', sans-serif;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .next-btn.show {
+            display: block;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .results-section {
+            display: none;
+            text-align: center;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .results-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffd93d 50%, #6bcf7f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stars-display {
+            font-size: 60px;
+            margin: 20px 0;
+            letter-spacing: 10px;
+        }
+
+        .score-display {
+            font-size: 24px;
+            margin: 20px 0;
+            color: #ffd93d;
+            font-weight: 700;
+        }
+
+        .percentage {
+            font-size: 18px;
+            color: #a0a0a0;
+            margin-bottom: 30px;
+        }
+
+        .result-code {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            word-break: break-all;
+            color: #6bcf7f;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            font-family: 'Nunito', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8a80 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6bcf7f 0%, #4dffac 100%);
+            color: #08090f;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(107, 207, 127, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
+            .selection-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                justify-content: space-between;
+            }
+
+            .results-title {
+                font-size: 28px;
+            }
+
+            .stars-display {
+                font-size: 48px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🎮 Grammar Drills</div>
+            <a href="/index.html" class="back-link">← Back</a>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-label">Questions</div>
+                <div class="stat-value" id="statQuestions">0/20</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Correct</div>
+                <div class="stat-value" id="statCorrect">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Streak</div>
+                <div class="stat-value" id="statStreak">0</div>
+            </div>
+        </div>
+
+        <!-- Mode Selection -->
+        <div class="mode-selection active">
+            <h2 style="margin-bottom: 20px; text-align: center; font-size: 20px;">Choose a Grammar Topic</h2>
+            <div class="selection-grid">
+                <button class="selection-btn" onclick="startQuiz('present-perfect')">Present Perfect vs Preterit</button>
+                <button class="selection-btn alt" onclick="startQuiz('comparatives')">Comparatives & Superlatives</button>
+                <button class="selection-btn" onclick="startQuiz('passive')">Passive Voice</button>
+                <button class="selection-btn alt" onclick="startQuiz('conditional')">Conditional (If Clauses)</button>
+                <button class="selection-btn" onclick="startQuiz('modals')">Modal Verbs</button>
+                <button class="selection-btn alt" onclick="startQuiz('pronouns')">Relative Pronouns</button>
+                <button class="selection-btn mix" onclick="startQuiz('mix')" style="grid-column: 1 / -1;">🎲 Brevet Mix (All Topics)</button>
+            </div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div class="quiz-section">
+            <div class="progress-container">
+                <div class="question-counter" id="questionCounter">Question 1/20</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <div class="streak-display" id="streakDisplay">Streak: 0 ✓</div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-text" id="questionText"></div>
+                <div class="options-grid" id="optionsGrid"></div>
+                <div class="explanation" id="explanation"></div>
+                <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question</button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section">
+            <div class="results-title">Quiz Complete!</div>
+            <div class="stars-display" id="starsDisplay">⭐</div>
+            <div class="score-display" id="scoreDisplay">0/20</div>
+            <div class="percentage" id="percentageDisplay">0%</div>
+            <div class="result-code" id="resultCode"></div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="resetQuiz()">Try Another Topic</button>
+                <button class="btn btn-secondary" onclick="window.location.href='/index.html'">Back to Home</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const grammarData = {
+            'present-perfect': [
+                { q: 'I _____ to Paris three times.', opts: ['have been', 'was', 'went', 'am going'], ans: 0, rule: 'Present Perfect: "have/has + past participle" pour une expérience complétée jusqu\'à maintenant.' },
+                { q: 'She _____ her homework yet.', opts: ['didn\'t finish', 'hasn\'t finished', 'doesn\'t finish', 'won\'t finish'], ans: 1, rule: 'Present Perfect Negative: "hasn\'t/haven\'t + past participle".' },
+                { q: 'They _____ here for 5 years.', opts: ['live', 'have lived', 'lived', 'are living'], ans: 1, rule: 'Present Perfect: exprime une durée qui continue au présent.' },
+                { q: 'He _____ the movie last night.', opts: ['has watched', 'watched', 'have watched', 'watches'], ans: 1, rule: 'Preterit: action passée terminée (with "last night").' },
+                { q: 'We _____ already eaten.', opts: ['have', 'had', 'did', 'has'], ans: 0, rule: 'Present Perfect + "already": nous avons déjà mangé.' },
+                { q: 'You _____ your keys. Where are they?', opts: ['lost', 'have lost', 'are losing', 'had lost'], ans: 1, rule: 'Present Perfect Perfect pour un problème présent causé par une action passée.' },
+                { q: 'It _____ for two weeks.', opts: ['rains', 'rained', 'has rained', 'is raining'], ans: 2, rule: 'Present Perfect avec une durée qui continue.' },
+                { q: 'I _____ him when I was young.', opts: ['have known', 'knew', 'know', 'had known'], ans: 1, rule: 'Preterit: action complètement passée et terminée.' },
+                { q: 'They _____ to Brazil once.', opts: ['went', 'have gone', 'have been', 'are going'], ans: 2, rule: 'Present Perfect: "have been" pour une visite passée; "have gone" signifie qu\'ils y sont toujours.' },
+                { q: 'She _____ five languages.', opts: ['speaks', 'spoke', 'has spoken', 'had spoken'], ans: 0, rule: 'Simple Present: une capacité actuelle, pas une expérience.' },
+                { q: 'We _____ that movie three times.', opts: ['saw', 'have seen', 'are seeing', 'will see'], ans: 1, rule: 'Present Perfect: répétition jusqu\'à maintenant.' },
+                { q: 'He _____ his job yesterday.', opts: ['has quit', 'quit', 'quits', 'is quitting'], ans: 1, rule: 'Preterit: "yesterday" indique un moment passé précis.' },
+                { q: 'I _____ never been to Italy.', opts: ['have', 'had', 'am', 'was'], ans: 0, rule: 'Present Perfect Negative + "never": jamais.' },
+                { q: 'You _____ the answer yet?', opts: ['found', 'have found', 'did find', 'are finding'], ans: 1, rule: 'Present Perfect Question avec "yet".' },
+                { q: 'They _____ dinner when I arrived.', opts: ['have eaten', 'ate', 'were eating', 'had eaten'], ans: 3, rule: 'Past Perfect: action avant une autre action passée.' }
+            ],
+            'comparatives': [
+                { q: 'This book is _____ than that one.', opts: ['good', 'better', 'best', 'gooder'], ans: 1, rule: 'Comparatif: "better" (meilleur).' },
+                { q: 'She is _____ student in the class.', opts: ['better', 'best', 'the best', 'more best'], ans: 2, rule: 'Superlatif: "the best" (le meilleur).' },
+                { q: 'Paris is _____ London.', opts: ['smaller than', 'the smallest', 'more smaller', 'as small as'], ans: 0, rule: 'Comparatif: "smaller than" (plus petit que).' },
+                { q: 'This is _____ movie I\'ve ever seen.', opts: ['most interesting', 'the most interesting', 'more interesting', 'interesting'], ans: 1, rule: 'Superlatif avec adjectif long: "the most + adj".' },
+                { q: 'My house is _____ yours.', opts: ['as big as', 'bigger as', 'the biggest', 'more big'], ans: 0, rule: 'Égalité: "as...as".' },
+                { q: 'She runs _____ than her brother.', opts: ['more fast', 'faster', 'the fastest', 'more faster'], ans: 1, rule: 'Comparatif d\'adverbe court: "faster".' },
+                { q: 'This is _____ expensive item in the store.', opts: ['most', 'the most', 'more', 'very most'], ans: 1, rule: 'Superlatif avec adjectif long.' },
+                { q: 'He is _____ I am.', opts: ['as tall as', 'taller as', 'the tallest', 'tall than'], ans: 0, rule: 'Égalité: "as + adj + as".' },
+                { q: 'That was _____ idea we had.', opts: ['worse', 'the worst', 'worst', 'more worse'], ans: 1, rule: 'Superlatif irrégulier: "the worst".' },
+                { q: 'My car is _____ his.', opts: ['more newer', 'newer than', 'the newest', 'new as'], ans: 1, rule: 'Comparatif: "newer than".' },
+                { q: 'This coffee is _____ that tea.', opts: ['hotter than', 'the hottest', 'more hot', 'as hot'], ans: 0, rule: 'Comparatif court: "hotter than".' },
+                { q: 'She is _____ person here.', opts: ['prettier', 'the prettiest', 'more prettier', 'pretty'], ans: 1, rule: 'Superlatif: adjectif long → "the prettiest".' },
+                { q: 'This is _____ that.', opts: ['more bad', 'badder', 'worse', 'the worst'], ans: 2, rule: 'Comparatif irrégulier: "worse" (pire).' },
+                { q: 'She speaks English _____ than French.', opts: ['more fluently', 'fluently more', 'most fluently', 'more fluent'], ans: 0, rule: 'Comparatif d\'adverbe long: "more + adv".' },
+                { q: 'That\'s _____ film I\'ve seen.', opts: ['more interesting', 'the most interesting', 'interesting', 'most interesting'], ans: 1, rule: 'Superlatif: "the most + adj long".' }
+            ],
+            'passive': [
+                { q: 'The cake _____ by the baker.', opts: ['is made', 'made', 'makes', 'is making'], ans: 0, rule: 'Voix passive présent: "is/are + past participle".' },
+                { q: 'The book _____ yesterday.', opts: ['was published', 'published', 'is published', 'publishes'], ans: 0, rule: 'Voix passive passé: "was/were + past participle".' },
+                { q: 'The house _____ by workers.', opts: ['is building', 'is built', 'builds', 'built'], ans: 1, rule: 'Voix passive: "is + past participle".' },
+                { q: 'The letter _____ by John.', opts: ['written', 'was written', 'writes', 'is writing'], ans: 1, rule: 'Voix passive passé: "was + past participle".' },
+                { q: 'English _____ in many countries.', opts: ['speaks', 'is spoken', 'speak', 'are spoken'], ans: 1, rule: 'Voix passive présent: "is + past participle".' },
+                { q: 'The problem _____ next week.', opts: ['will solve', 'will be solved', 'is solved', 'solves'], ans: 1, rule: 'Voix passive futur: "will be + past participle".' },
+                { q: 'The song _____ by everyone.', opts: ['is loving', 'is loved', 'loves', 'loved'], ans: 1, rule: 'Voix passive présent continu.' },
+                { q: 'The car _____ by Tom.', opts: ['was repaired', 'repaired', 'is repaired', 'repairs'], ans: 0, rule: 'Voix passive passé: "was + past participle".' },
+                { q: 'New rules _____ next month.', opts: ['will introduce', 'will be introduced', 'are introduced', 'introduce'], ans: 1, rule: 'Voix passive futur simple.' },
+                { q: 'The game _____ by millions.', opts: ['is played', 'plays', 'are played', 'play'], ans: 0, rule: 'Voix passive: "is + past participle" avec sujet singulier.' },
+                { q: 'The documents _____ carefully.', opts: ['are check', 'are checked', 'checks', 'check'], ans: 1, rule: 'Voix passive avec adverbe: "are + past participle".' },
+                { q: 'This building _____ in 1980.', opts: ['was built', 'is built', 'builds', 'built'], ans: 0, rule: 'Voix passive passé avec année précise.' },
+                { q: 'The prizes _____ next week.', opts: ['are announce', 'are announced', 'announces', 'announced'], ans: 1, rule: 'Voix passive avec sujet pluriel: "are + past participle".' },
+                { q: 'The film _____ by Spielberg.', opts: ['was directed', 'directed', 'is directing', 'directs'], ans: 0, rule: 'Voix passive passé: structure agent (by).' },
+                { q: 'The children _____ carefully.', opts: ['are watched', 'watches', 'watch', 'are watching'], ans: 0, rule: 'Voix passive présent continu: "are being + past participle" ou simple "are + past participle".' }
+            ],
+            'conditional': [
+                { q: 'If you study, you _____ pass.', opts: ['will pass', 'would pass', 'pass', 'passed'], ans: 0, rule: 'Conditionnelle type 1 (possible): "If + present, will + infinitive".' },
+                { q: 'If I were rich, I _____ travel.', opts: ['will travel', 'would travel', 'travel', 'am traveling'], ans: 1, rule: 'Conditionnelle type 2 (hypothétique): "If + past, would + infinitive".' },
+                { q: 'If she _____ hard, she\'d succeed.', opts: ['studied', 'studies', 'will study', 'study'], ans: 0, rule: 'Conditionnelle type 2: "If + past tense".' },
+                { q: 'If you don\'t hurry, you _____ late.', opts: ['are', 'will be', 'would be', 'were'], ans: 1, rule: 'Conditionnelle type 1: futur après "if".' },
+                { q: 'If I had known, I _____ told you.', opts: ['would have', 'will have', 'have', 'had'], ans: 0, rule: 'Conditionnelle type 3 (passée): "If + past perfect, would have + past participle".' },
+                { q: 'If he _____, he\'d be happy.', opts: ['won', 'would win', 'wins', 'will win'], ans: 0, rule: 'Conditionnelle type 2: "If + past".' },
+                { q: 'Unless you call, I _____ come.', opts: ['won\'t', 'wouldn\'t', 'don\'t', 'didn\'t'], ans: 0, rule: '"Unless" (à moins que) = "if not".' },
+                { q: 'If I _____ younger, I\'d try it.', opts: ['am', 'was', 'were', 'will be'], ans: 2, rule: 'Conditionnelle type 2 avec "were" (hypothétique).' },
+                { q: 'If you ask, she _____ help you.', opts: ['will', 'would', 'helped', 'helps'], ans: 0, rule: 'Conditionnelle type 1: "will" après un "if" au présent.' },
+                { q: 'I _____ visit if I had time.', opts: ['will', 'would', 'visit', 'visited'], ans: 1, rule: 'Conditionnelle type 2: "would + infinitive".' },
+                { q: 'If they _____ invited, they\'d come.', opts: ['are', 'were', 'will be', 'would be'], ans: 1, rule: 'Conditionnelle type 2: "If + were/was".' },
+                { q: 'If it rains, we _____ stay home.', opts: ['will', 'would', 'stayed', 'stay'], ans: 0, rule: 'Conditionnelle type 1: "If + present, will + verb".' },
+                { q: 'Had I known, I _____ gone.', opts: ['would have', 'have', 'will have', 'would'], ans: 0, rule: 'Conditionnelle type 3 (inversion): "Had + past perfect".' },
+                { q: 'If we _____ go, we\'d miss it.', opts: ['don\'t', 'didn\'t', 'won\'t', 'wouldn\'t'], ans: 1, rule: 'Conditionnelle type 2 négatif: "If + past".' },
+                { q: 'Should you need help, _____ me.', opts: ['call', 'calls', 'called', 'calling'], ans: 0, rule: '"Should" (inversion): "should you + infinitive".' }
+            ],
+            'modals': [
+                { q: 'You _____ finish your homework.', opts: ['can', 'must', 'may', 'might'], ans: 1, rule: '"Must" = obligation.' },
+                { q: 'I _____ swim when I was five.', opts: ['can', 'could', 'must', 'may'], ans: 1, rule: '"Could" = capacité passée.' },
+                { q: 'She _____ speak three languages.', opts: ['must', 'can', 'have to', 'should'], ans: 1, rule: '"Can" = capacité présente.' },
+                { q: 'You _____ ask before taking.', opts: ['must', 'can', 'will', 'may'], ans: 0, rule: '"Must" = obligation / devoir moral.' },
+                { q: 'It _____ rain tomorrow.', opts: ['may', 'must', 'can', 'should'], ans: 0, rule: '"May" = possibilité.' },
+                { q: 'You _____ wear a helmet.', opts: ['may', 'can', 'should', 'will'], ans: 2, rule: '"Should" = conseil, recommandation.' },
+                { q: 'He _____ be at home now.', opts: ['must', 'may', 'can', 'will'], ans: 0, rule: '"Must" + présent = déduction logique.' },
+                { q: 'I _____ help you if you want.', opts: ['will', 'may', 'can', 'could'], ans: 2, rule: '"Can" = capacité à faire.' },
+                { q: 'They _____ leave early.', opts: ['could', 'may', 'must', 'should'], ans: 1, rule: '"May" = permission.' },
+                { q: 'We _____ be late.', opts: ['may', 'must', 'can', 'will'], ans: 0, rule: '"May" = possibilité.' },
+                { q: 'You _____ come if you\'re busy.', opts: ['don\'t have to', 'must not', 'cannot', 'should not'], ans: 0, rule: '"Don\'t have to" = pas d\'obligation.' },
+                { q: 'Students _____ work hard.', opts: ['will', 'should', 'can', 'may'], ans: 1, rule: '"Should" = devoir moral.' },
+                { q: 'I _____ finish this today.', opts: ['can', 'might', 'must', 'could'], ans: 2, rule: '"Must" = obligation.' },
+                { q: 'She _____ drive. She\'s too young.', opts: ['can', 'cannot', 'should', 'may'], ans: 1, rule: '"Cannot" = incapacité.' },
+                { q: 'You _____ smoke here.', opts: ['can', 'must not', 'may', 'could'], ans: 1, rule: '"Must not" = interdiction.' }
+            ],
+            'pronouns': [
+                { q: 'The girl _____ lives here is my friend.', opts: ['which', 'who', 'whom', 'that'], ans: 1, rule: '"Who" pronom relatif pour les personnes (sujet).' },
+                { q: 'The book _____ I read was great.', opts: ['who', 'which', 'that', 'what'], ans: 1, rule: '"Which/that" pour les choses (complément d\'objet).' },
+                { q: 'The man _____ I saw was tall.', opts: ['who', 'whom', 'which', 'that'], ans: 1, rule: '"Whom" = complément d\'objet direct, mais "who" est accepté en anglais moderne.' },
+                { q: 'This is the house _____ I was born.', opts: ['where', 'which', 'that', 'who'], ans: 0, rule: '"Where" pour les lieux.' },
+                { q: 'The day _____ she arrived was sunny.', opts: ['when', 'which', 'that', 'where'], ans: 0, rule: '"When" pour les moments temporels.' },
+                { q: 'People _____ exercise are healthy.', opts: ['who', 'which', 'that', 'where'], ans: 0, rule: '"Who" pour les personnes.' },
+                { q: 'The reason _____ he left is unclear.', opts: ['why', 'which', 'that', 'when'], ans: 0, rule: '"Why" pour exprimer la raison.' },
+                { q: 'The films _____ you like are popular.', opts: ['that', 'who', 'when', 'where'], ans: 0, rule: '"That" pour les choses (anglais moins formel).' },
+                { q: 'The girl to _____ I spoke was kind.', opts: ['whom', 'who', 'which', 'that'], ans: 0, rule: '"Whom" = complément indirect (to whom).' },
+                { q: 'Everything _____ glitters is not gold.', opts: ['that', 'which', 'who', 'when'], ans: 0, rule: '"That" après "everything".' },
+                { q: 'The company _____ she works for is large.', opts: ['which', 'that', 'who', 'where'], ans: 0, rule: '"Which/that" pour les entreprises.' },
+                { q: 'The moment _____ we met was special.', opts: ['when', 'where', 'which', 'who'], ans: 0, rule: '"When" pour les moments.' },
+                { q: 'The place _____ I live is quiet.', opts: ['where', 'which', 'that', 'who'], ans: 0, rule: '"Where" pour les lieux.' },
+                { q: 'Scientists _____ discover new things are innovative.', opts: ['who', 'which', 'that', 'when'], ans: 0, rule: '"Who" pour les personnes (sujet).' },
+                { q: 'The car _____ is parked outside is mine.', opts: ['which', 'that', 'who', 'where'], ans: 0, rule: '"Which/that" pour les objets.' }
+            ]
+        };
+
+        let currentTopic = '';
+        let currentQuestionIndex = 0;
+        let currentQuestions = [];
+        let score = 0;
+        let streak = 0;
+        let selectedAnswer = null;
+        let answered = false;
+
+        function startQuiz(topic) {
+            currentTopic = topic;
+            currentQuestionIndex = 0;
+            score = 0;
+            streak = 0;
+            selectedAnswer = null;
+            answered = false;
+
+            if (topic === 'mix') {
+                const allQuestions = [];
+                Object.values(grammarData).forEach(questions => {
+                    allQuestions.push(...questions);
+                });
+                currentQuestions = allQuestions.sort(() => Math.random() - 0.5).slice(0, 20);
+            } else {
+                currentQuestions = grammarData[topic].sort(() => Math.random() - 0.5);
+            }
+
+            document.querySelector('.mode-selection').classList.remove('active');
+            document.querySelector('.quiz-section').classList.add('active');
+
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = currentQuestions[currentQuestionIndex];
+            document.getElementById('questionText').innerHTML = q.q.replace('_____', `<span class="blank-word">_____</span>`);
+            document.getElementById('questionCounter').textContent = `Question ${currentQuestionIndex + 1}/20`;
+            document.getElementById('progressFill').style.width = `${(currentQuestionIndex / 20) * 100}%`;
+            document.getElementById('statQuestions').textContent = `${currentQuestionIndex}/20`;
+            document.getElementById('statCorrect').textContent = score;
+            document.getElementById('statStreak').textContent = streak;
+            document.getElementById('streakDisplay').textContent = `Streak: ${streak} ✓`;
+
+            const optionsGrid = document.getElementById('optionsGrid');
+            optionsGrid.innerHTML = '';
+            q.opts.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => selectAnswer(idx);
+                optionsGrid.appendChild(btn);
+            });
+
+            document.getElementById('explanation').classList.remove('show');
+            document.getElementById('nextBtn').classList.remove('show');
+            selectedAnswer = null;
+            answered = false;
+        }
+
+        function selectAnswer(idx) {
+            if (answered) return;
+
+            const q = currentQuestions[currentQuestionIndex];
+            answered = true;
+            selectedAnswer = idx;
+
+            const options = document.querySelectorAll('.option-btn');
+            options.forEach((btn, i) => {
+                btn.classList.add('disabled');
+                if (i === q.ans) {
+                    btn.classList.add('correct');
+                } else if (i === idx && idx !== q.ans) {
+                    btn.classList.add('incorrect');
+                }
+            });
+
+            if (idx === q.ans) {
+                score++;
+                streak++;
+                document.getElementById('statCorrect').textContent = score;
+            } else {
+                streak = 0;
+            }
+
+            document.getElementById('statStreak').textContent = streak;
+            document.getElementById('explanation').textContent = q.rule;
+            document.getElementById('explanation').classList.add('show');
+            document.getElementById('nextBtn').classList.add('show');
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < 20) {
+                showQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function endQuiz() {
+            const percentage = Math.round((score / 20) * 100);
+            const stars = percentage >= 90 ? '⭐⭐⭐' : percentage >= 75 ? '⭐⭐' : '⭐';
+
+            document.querySelector('.quiz-section').classList.remove('active');
+            document.querySelector('.results-section').classList.add('active');
+
+            document.getElementById('starsDisplay').textContent = stars;
+            document.getElementById('scoreDisplay').textContent = `${score}/20`;
+            document.getElementById('percentageDisplay').textContent = `${percentage}%`;
+
+            const resultCode = `v:'c_grammar'|dt:'${new Date().toISOString().split('T')[0]}'|topic:'${currentTopic}'|score:'${score}/20'|pct:${percentage}|stars:${stars.length}`;
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        function resetQuiz() {
+            document.querySelector('.results-section').classList.remove('active');
+            document.querySelector('.mode-selection').classList.add('active');
+            currentQuestionIndex = 0;
+            score = 0;
+            streak = 0;
+        }
+    </script>
+</body>
+</html>

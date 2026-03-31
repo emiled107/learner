@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homophones Battle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            color: #fff;
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #08090f 0%, #1a1b2e 100%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #00d4ff, #0099ff, #6600ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #0099ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #0099ff, #6600ff);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .menu, .game, .result {
+            display: none;
+        }
+
+        .menu.active, .game.active, .result.active {
+            display: block;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 15px 25px;
+            font-size: 1.1em;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #0099ff);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6600ff, #9933ff);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(102, 0, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 0, 255, 0.4);
+        }
+
+        .btn-choice {
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .btn-choice:hover {
+            background: rgba(0, 212, 255, 0.15);
+            border-color: #00d4ff;
+            transform: translateX(5px);
+        }
+
+        .btn-choice.correct {
+            background: rgba(0, 255, 0, 0.3);
+            border-color: #00ff00;
+            color: #00ff00;
+            animation: correctFlash 0.5s ease;
+        }
+
+        .btn-choice.wrong {
+            background: rgba(255, 0, 0, 0.3);
+            border-color: #ff0000;
+            animation: wrongShake 0.4s ease;
+        }
+
+        @keyframes correctFlash {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .question-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #e0e0e0;
+        }
+
+        .blank {
+            background: linear-gradient(135deg, #ff6600, #ffaa00);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .explanation {
+            font-size: 0.9em;
+            color: #aaa;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-style: italic;
+        }
+
+        .timer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6600, #ffaa00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #000;
+            box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
+        }
+
+        .timer.warning {
+            animation: timerPulse 0.5s infinite;
+        }
+
+        @keyframes timerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .game {
+            position: relative;
+        }
+
+        .result-box {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .score-display {
+            font-size: 3em;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #00d4ff, #0099ff, #6600ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stars {
+            font-size: 3em;
+            margin-bottom: 15px;
+            letter-spacing: 5px;
+        }
+
+        .result-code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            word-break: break-all;
+            color: #00ff00;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .result-label {
+            color: #888;
+            font-size: 0.8em;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #0099ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #00d4ff;
+            transform: translateX(-3px);
+        }
+
+        .back-link::before {
+            content: '← ';
+        }
+
+        .combo-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 2em;
+            font-weight: 700;
+            color: #ffaa00;
+            text-shadow: 0 0 10px rgba(255, 170, 0, 0.5);
+            display: none;
+        }
+
+        .combo-indicator.active {
+            display: block;
+            animation: comboPop 0.5s ease;
+        }
+
+        @keyframes comboPop {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .stats-bar {
+                gap: 10px;
+            }
+
+            .stat-item {
+                min-width: 70px;
+            }
+
+            .stat-value {
+                font-size: 1.4em;
+            }
+
+            .timer {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2em;
+            }
+
+            button {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="combo-indicator" id="comboIndicator"></div>
+
+    <div class="container">
+        <!-- MENU -->
+        <div class="menu active">
+            <div class="header">
+                <h1>⚔️ HOMOPHONES BATTLE</h1>
+                <p class="subtitle">Maîtrise les homophones français!</p>
+            </div>
+            <p style="text-align: center; margin-bottom: 20px; color: #aaa;">
+                Choisis le bon homophones parmi les options. 30 questions, 10 secondes par réponse.
+            </p>
+            <div class="button-group">
+                <button class="btn-primary" onclick="startGame()">🎮 COMMENCER</button>
+                <button class="btn-secondary" onclick="showInstructions()">📖 INSTRUCTIONS</button>
+            </div>
+        </div>
+
+        <!-- GAME -->
+        <div class="game">
+            <div class="timer" id="timer">10</div>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-label">Question</div>
+                    <div class="stat-value" id="questionCount">1/30</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Score</div>
+                    <div class="stat-value" id="scoreDisplay">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Streak</div>
+                    <div class="stat-value" id="streakDisplay">0</div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-box">
+                <div class="question-text" id="questionText"></div>
+                <div id="choicesContainer"></div>
+                <div class="explanation" id="explanation" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- RESULT -->
+        <div class="result">
+            <div class="result-box">
+                <h2 style="font-size: 1.5em; margin-bottom: 20px;">Session Terminée!</h2>
+                <div class="score-display" id="finalScore">0/30</div>
+                <div class="stars" id="starsDisplay">⭐</div>
+                <p id="percentage" style="font-size: 1.2em; margin-bottom: 20px;"></p>
+                <div class="result-code">
+                    <div id="resultCode"></div>
+                </div>
+                <div class="result-label">Copie ce code pour sauvegarder ton résultat</div>
+            </div>
+            <div class="button-group" style="margin-top: 25px;">
+                <button class="btn-primary" onclick="backToMenu()">🏠 ACCUEIL</button>
+                <button class="btn-secondary" onclick="startGame()">🔄 REJOUER</button>
+            </div>
+            <a href="/index.html" class="back-link" style="display: block; text-align: center; width: 100%;"></a>
+        </div>
+    </div>
+
+    <script>
+        const homophones = [
+            // a/à
+            { q: "Il va _____ l'école.", choices: ["a", "à"], correct: "à", explain: "à (préposition) = direction. 'a' est le verbe avoir." },
+            { q: "Elle _____ un chat.", choices: ["a", "à"], correct: "a", explain: "'a' = verbe avoir (3e personne). 'à' = préposition." },
+            { q: "Je vais _____ Paris.", choices: ["a", "à"], correct: "à", explain: "'à' indique le lieu de destination." },
+            { q: "Il _____ une voiture rouge.", choices: ["a", "à"], correct: "a", explain: "'a' = il possède (verbe avoir)." },
+
+            // et/est
+            { q: "Elle _____ très intelligente.", choices: ["et", "est"], correct: "est", explain: "'est' = verbe être. 'et' = conjonction." },
+            { q: "Tom _____ Julie sont amis.", choices: ["et", "est"], correct: "et", explain: "'et' relie deux personnes. 'est' = être." },
+            { q: "Il _____ content.", choices: ["et", "est"], correct: "est", explain: "'est' = verbe être (3e personne)." },
+            { q: "Paul _____ Marie jouent ensemble.", choices: ["et", "est"], correct: "et", explain: "'et' = conjonction pour lier." },
+
+            // on/ont
+            { q: "Ils _____ finalement réussi!", choices: ["on", "ont"], correct: "ont", explain: "'ont' = verbe avoir (3e personne pl.). 'on' = pronom indéfini." },
+            { q: "On _____ un professeur gentil.", choices: ["on", "ont"], correct: "a", explain: "'on a' = nous avons (verbe avoir)." },
+            { q: "Les enfants _____ beaucoup joué.", choices: ["on", "ont"], correct: "ont", explain: "'ont' = verbe avoir au pluriel." },
+            { q: "_____ dit qu'elle est malade.", choices: ["on", "ont"], correct: "on", explain: "'on' = pronom indéfini (quelqu'un)." },
+
+            // son/sont
+            { q: "Elles _____ très heureuses.", choices: ["son", "sont"], correct: "sont", explain: "'sont' = verbe être. 'son' = adjectif possessif." },
+            { q: "C'est _____ stylo.", choices: ["son", "sont"], correct: "son", explain: "'son' = son stylo (adjectif possessif)." },
+            { q: "Les garçons _____ arrivés.", choices: ["son", "sont"], correct: "sont", explain: "'sont' = verbe être (3e personne pl.)." },
+            { q: "Il a perdu _____ livre.", choices: ["son", "sont"], correct: "son", explain: "'son' = adjectif possessif masculin." },
+
+            // ce/se
+            { q: "_____ magasin est fermé.", choices: ["ce", "se"], correct: "ce", explain: "'ce' = déterminant. 'se' = pronom réfléchi." },
+            { q: "Il _____ réveille tôt.", choices: ["ce", "se"], correct: "se", explain: "'se' pronom réfléchi pour 'il se réveille'." },
+            { q: "_____ film est intéressant.", choices: ["ce", "se"], correct: "ce", explain: "'ce' = ce film (déterminant démonstratif)." },
+            { q: "Elle _____ brosse les dents.", choices: ["ce", "se"], correct: "se", explain: "'se' = elle se brosse (pronom réfléchi)." },
+
+            // ou/où
+            { q: "Tu veux du jus _____ de l'eau?", choices: ["ou", "où"], correct: "ou", explain: "'ou' = conjonction (alternative). 'où' = lieu." },
+            { q: "_____ habites-tu?", choices: ["ou", "où"], correct: "où", explain: "'où' = adverbe interrogatif de lieu." },
+            { q: "C'est un chat _____ un chien?", choices: ["ou", "où"], correct: "ou", explain: "'ou' = alternative." },
+            { q: "Le lieu _____ je suis...", choices: ["ou", "où"], correct: "où", explain: "'où' = adverbe relatif de lieu." },
+
+            // la/là/l'a
+            { q: "_____ fille est sympa.", choices: ["la", "là", "l'a"], correct: "la", explain: "'la' = article défini féminin. 'là' = adverbe de lieu, 'l'a' = l'a verbe avoir." },
+            { q: "Tu vois ce livre _____ bas?", choices: ["la", "là", "l'a"], correct: "là", explain: "'là' = adverbe (ici bas, là-bas)." },
+            { q: "Il _____ trouvée hier.", choices: ["la", "là", "l'a"], correct: "l'a", explain: "'l'a' = l'a trouvée (verbe avoir + participe)." },
+            { q: "_____ musique est belle.", choices: ["la", "là", "l'a"], correct: "la", explain: "'la' = article féminin." },
+
+            // mais/mes/met/mets
+            { q: "Je veux y aller, _____ je suis fatigué.", choices: ["mais", "mes", "met", "mets"], correct: "mais", explain: "'mais' = conjonction (opposition). Autres = possessif/verbes." },
+            { q: "Voici _____ affaires.", choices: ["mais", "mes", "met", "mets"], correct: "mes", explain: "'mes' = adjectif possessif (mes affaires)." },
+            { q: "Il _____ ses chaussures.", choices: ["mais", "mes", "met", "mets"], correct: "met", explain: "'met' = verbe mettre 3e personne du singulier." },
+            { q: "Tu _____ la table pour le dîner.", choices: ["mais", "mes", "met", "mets"], correct: "mets", explain: "'mets' = verbe mettre à l'impératif (tu mets)." },
+
+            // ces/ses/c'est/s'est
+            { q: "_____ chaussures sont neuves.", choices: ["ces", "ses", "c'est", "s'est"], correct: "ses", explain: "'ses' = adjectif possessif. 'ces' = adjectif démonstratif." },
+            { q: "_____ enfants sont sages.", choices: ["ces", "ses", "c'est", "s'est"], correct: "ces", explain: "'ces' = ces enfants (pluriel démonstratif)." },
+            { q: "_____ magnifique!", choices: ["ces", "ses", "c'est", "s'est"], correct: "c'est", explain: "'c'est' = cela est (verbe être)." },
+            { q: "Elle _____ réveillée tard.", choices: ["ces", "ses", "c'est", "s'est"], correct: "s'est", explain: "'s'est' = elle s'est réveillée (passé composé réfléchi)." },
+
+            // Additional diverse sentences
+            { q: "Les enfants _____ joué dehors.", choices: ["on", "ont"], correct: "ont", explain: "'ont' = verbe avoir au pluriel." },
+            { q: "Il y _____ beaucoup de monde.", choices: ["a", "à"], correct: "a", explain: "'a' = il y a (il possède)." },
+            { q: "Je vais _____ la gare.", choices: ["a", "à"], correct: "à", explain: "'à' = préposition de direction." },
+            { q: "Les fleurs _____ belles.", choices: ["sont", "son"], correct: "sont", explain: "'sont' = verbe être." },
+            { q: "C'est _____ copain.", choices: ["son", "sont"], correct: "son", explain: "'son' = adjectif possessif." },
+            { q: "Préfères-tu le café _____ le thé?", choices: ["ou", "où"], correct: "ou", explain: "'ou' = conjonction alternative." },
+            { q: "_____ vous venez?", choices: ["ou", "où"], correct: "où", explain: "'où' = adverbe de lieu." },
+            { q: "Je voudrais _____ pommes.", choices: ["des", "dé"], correct: "des", explain: "Article 'des' pour le pluriel." },
+            { q: "Il _____ un problème.", choices: ["y a", "ya"], correct: "y a", explain: "'y a' = il existe (verbe avoir)." },
+            { q: "Tu _____ raison.", choices: ["as", "a"], correct: "as", explain: "'as' = tu as (2e personne du singulier)." }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let streak = 0;
+        let questionsOrder = [];
+        let answered = false;
+        let timeLeft = 10;
+        let timerInterval = null;
+
+        function shuffleArray(arr) {
+            return arr.sort(() => Math.random() - 0.5);
+        }
+
+        function startGame() {
+            questionsOrder = shuffleArray([...Array(homophones.length).keys()]).slice(0, 30);
+            currentQuestion = 0;
+            score = 0;
+            streak = 0;
+            document.querySelector('.menu').classList.remove('active');
+            document.querySelector('.game').classList.add('active');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestion >= questionsOrder.length) {
+                endGame();
+                return;
+            }
+
+            answered = false;
+            timeLeft = 10;
+            const idx = questionsOrder[currentQuestion];
+            const q = homophones[idx];
+
+            document.getElementById('questionText').innerHTML = q.q.replace('_____', '<span class="blank">?</span>');
+            document.getElementById('questionCount').textContent = (currentQuestion + 1) + '/30';
+            document.getElementById('progressFill').style.width = ((currentQuestion + 1) / 30 * 100) + '%';
+            document.getElementById('scoreDisplay').textContent = score;
+            document.getElementById('streakDisplay').textContent = streak;
+            document.getElementById('explanation').style.display = 'none';
+            document.getElementById('explanation').textContent = '';
+
+            const container = document.getElementById('choicesContainer');
+            container.innerHTML = '';
+
+            q.choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-choice';
+                btn.textContent = choice;
+                btn.onclick = () => selectAnswer(choice, q, btn);
+                container.appendChild(btn);
+            });
+
+            clearInterval(timerInterval);
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            document.getElementById('timer').textContent = timeLeft;
+            if (timeLeft <= 3) {
+                document.getElementById('timer').classList.add('warning');
+            } else {
+                document.getElementById('timer').classList.remove('warning');
+            }
+
+            timeLeft--;
+            if (timeLeft < 0) {
+                clearInterval(timerInterval);
+                if (!answered) {
+                    answered = true;
+                    streak = 0;
+                    showExplanation(homophones[questionsOrder[currentQuestion]]);
+                    setTimeout(nextQuestion, 2000);
+                }
+            }
+        }
+
+        function selectAnswer(choice, q, btn) {
+            if (answered) return;
+            answered = true;
+            clearInterval(timerInterval);
+
+            const buttons = document.querySelectorAll('.btn-choice');
+            buttons.forEach(b => b.disabled = true);
+
+            if (choice === q.correct) {
+                score++;
+                streak++;
+                showCombo();
+                btn.classList.add('correct');
+                setTimeout(() => nextQuestion(), 1500);
+            } else {
+                streak = 0;
+                btn.classList.add('wrong');
+                document.querySelectorAll('.btn-choice').forEach(b => {
+                    if (b.textContent === q.correct) b.classList.add('correct');
+                });
+                showExplanation(q);
+                setTimeout(() => nextQuestion(), 2500);
+            }
+        }
+
+        function showExplanation(q) {
+            document.getElementById('explanation').style.display = 'block';
+            document.getElementById('explanation').textContent = '💡 ' + q.explain;
+        }
+
+        function showCombo() {
+            if (streak > 1) {
+                const indicator = document.getElementById('comboIndicator');
+                indicator.textContent = 'COMBO x' + streak;
+                indicator.classList.remove('active');
+                void indicator.offsetWidth;
+                indicator.classList.add('active');
+                setTimeout(() => indicator.classList.remove('active'), 500);
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            loadQuestion();
+        }
+
+        function endGame() {
+            document.querySelector('.game').classList.remove('active');
+            document.querySelector('.result').classList.add('active');
+
+            const percentage = Math.round((score / 30) * 100);
+            let stars = '⭐';
+            if (percentage >= 90) stars = '⭐⭐⭐';
+            else if (percentage >= 75) stars = '⭐⭐';
+
+            document.getElementById('finalScore').textContent = score + '/30';
+            document.getElementById('starsDisplay').textContent = stars;
+            document.getElementById('percentage').textContent = percentage + '%';
+
+            const now = new Date().toISOString();
+            const resultCode = `v:'p_homo'|dt:${now}|score:${score}/30|pct:${percentage}%|stars:${stars.length}|streak:${streak}`;
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        function backToMenu() {
+            document.querySelector('.result').classList.remove('active');
+            document.querySelector('.menu').classList.add('active');
+        }
+
+        function showInstructions() {
+            alert('INSTRUCTIONS:\n\n🎯 Complète chaque phrase avec le bon homophones.\n\n⏱️ 10 secondes par question.\n\n⭐ 3 stars si score > 90%\n⭐⭐ 2 stars si score > 75%\n⭐ 1 star si score > 50%\n\nHomophones: a/à, et/est, on/ont, son/sont, ce/se, ou/où, la/là/l\'a, mais/mes/met/mets, ces/ses/c\'est/s\'est');
+        }
+    </script>
+</body>
+</html>

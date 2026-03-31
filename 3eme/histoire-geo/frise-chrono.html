@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frise Chronologique - 3ème</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            font-family: 'Nunito', sans-serif;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .title {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #b0b0b0;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 20px;
+            text-decoration: none;
+            color: white;
+            font-weight: 700;
+            transition: transform 0.3s;
+        }
+
+        .back-link:hover {
+            transform: scale(1.05);
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+
+        .start-btn {
+            padding: 20px 40px;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.3em;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            margin-top: 30px;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 0, 110, 0.3);
+        }
+
+        .game-container {
+            display: none;
+            background: linear-gradient(135deg, rgba(30, 30, 50, 0.8), rgba(20, 20, 40, 0.8));
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 0, 110, 0.2);
+        }
+
+        .game-container.active {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 0, 110, 0.1);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff);
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        .question-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .question-num {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .event-display {
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.1), rgba(51, 56, 236, 0.1));
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .event-name {
+            font-size: 1.8em;
+            color: #ff006e;
+            font-weight: 900;
+            margin-bottom: 15px;
+        }
+
+        .event-description {
+            font-size: 1.1em;
+            color: #b0b0b0;
+            line-height: 1.6;
+        }
+
+        .choices {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .choice-btn {
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(58, 134, 255, 0.1), rgba(131, 56, 236, 0.1));
+            border: 2px solid #3a86ff;
+            border-radius: 10px;
+            color: #e0e0e0;
+            font-size: 1.2em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .choice-btn:hover {
+            background: linear-gradient(135deg, rgba(58, 134, 255, 0.2), rgba(131, 56, 236, 0.2));
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(58, 134, 255, 0.2);
+        }
+
+        .choice-btn.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .choice-btn.correct {
+            border-color: #00ff64;
+            background: rgba(0, 255, 100, 0.1);
+            color: #00ff64;
+        }
+
+        .choice-btn.incorrect {
+            border-color: #ff0040;
+            background: rgba(255, 0, 64, 0.1);
+            color: #ff6b9b;
+        }
+
+        .context {
+            background: rgba(20, 20, 40, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 5px solid #3a86ff;
+            display: none;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .context.show {
+            display: block;
+        }
+
+        .next-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: none;
+            text-transform: uppercase;
+        }
+
+        .next-btn.show {
+            display: block;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(255, 0, 110, 0.4);
+        }
+
+        .results-screen {
+            display: none;
+            text-align: center;
+            animation: slideIn 0.5s ease;
+        }
+
+        .results-screen.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .final-score {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff006e, #3a86ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 30px 0;
+        }
+
+        .percentage {
+            font-size: 1.5em;
+            color: #b0b0b0;
+            margin: 20px 0;
+        }
+
+        .stars {
+            font-size: 3em;
+            margin: 30px 0;
+            letter-spacing: 10px;
+        }
+
+        .star-full { color: #ffd700; }
+        .star-empty { color: #444; }
+
+        .result-code {
+            background: rgba(20, 20, 40, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            font-family: monospace;
+            font-size: 0.85em;
+            word-break: break-all;
+            border: 1px solid #3a86ff;
+        }
+
+        .replay-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+        .replay-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255, 0, 110, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2em;
+            }
+
+            .event-name {
+                font-size: 1.3em;
+            }
+
+            .choice-btn {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/index.html" class="back-link">← Retour</a>
+
+        <header>
+            <div class="title">📅 FRISE CHRONOLOGIQUE</div>
+            <div class="subtitle">Place les événements historiques au bon moment</div>
+        </header>
+
+        <div id="startScreen" class="start-screen">
+            <p style="font-size: 1.1em; color: #b0b0b0; margin-bottom: 20px;">
+                Trois périodes clés du XXe siècle t'attendent:<br>
+                La Première Guerre mondiale, la Seconde Guerre mondiale, et le monde après 1945.<br>
+                20 événements à placer sur la frise!
+            </p>
+            <button class="start-btn" onclick="startGame()">Commencer</button>
+        </div>
+
+        <div id="gameContainer" class="game-container">
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+
+            <div class="question-section">
+                <div class="question-num">Question <span id="questionNum">1</span>/20</div>
+                <div class="event-display">
+                    <div class="event-name" id="eventName"></div>
+                    <div class="event-description" id="eventDescription"></div>
+                </div>
+            </div>
+
+            <div class="choices" id="choicesContainer"></div>
+
+            <div id="context" class="context">
+                <strong>Contexte:</strong> <span id="contextText"></span>
+            </div>
+
+            <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Suivant →</button>
+        </div>
+
+        <div id="resultsScreen" class="results-screen">
+            <h2 style="font-size: 2em; margin-bottom: 20px;">Session terminée!</h2>
+            <div class="final-score" id="finalScore">20/20</div>
+            <div class="percentage" id="percentDisplay">100%</div>
+            <div class="stars" id="starsDisplay">⭐⭐⭐</div>
+            <div class="result-code" id="resultCode"></div>
+            <button class="replay-btn" onclick="location.reload()">Rejouer</button>
+        </div>
+    </div>
+
+    <script>
+        const EVENTS_DATA = [
+            // WWI (1914-1918)
+            {
+                name: 'Attentat de Sarajevo',
+                description: 'Assassinat de l\'Archiduc François-Ferdinand d\'Autriche-Hongrie',
+                year: 1914,
+                period: 'WWI',
+                context: 'Cet attentat déclenche le mécanisme des alliances et provoque le début de la Première Guerre mondiale.'
+            },
+            {
+                name: 'Bataille de Verdun',
+                description: 'L\'une des batailles les plus meurtrières, opposant la France et l\'Allemagne',
+                year: 1916,
+                period: 'WWI',
+                context: 'Cette bataille dure 10 mois et fait environ 700 000 morts. Elle symbolise la guerre de tranchées.'
+            },
+            {
+                name: 'Révolution russe',
+                description: 'Renversement du tsar Nicolas II et prise du pouvoir par Lénine',
+                year: 1917,
+                period: 'WWI',
+                context: 'La Russie se retire de la Première Guerre mondiale et devient l\'Union soviétique communiste.'
+            },
+            {
+                name: 'Entrée des États-Unis en 1917',
+                description: 'Les États-Unis rejoignent les Alliés contre l\'Allemagne',
+                year: 1917,
+                period: 'WWI',
+                context: 'L\'entrée américaine renforce considérablement le camp allié et change le cours de la guerre.'
+            },
+            {
+                name: 'Armistice du 11 novembre 1918',
+                description: 'Fin de la Première Guerre mondiale',
+                year: 1918,
+                period: 'WWI',
+                context: 'L\'Allemagne accepte les conditions d\'armistice. La Grande Guerre prend fin après 4 années.'
+            },
+            {
+                name: 'Traité de Versailles',
+                description: 'Traité de paix imposé à l\'Allemagne après la Première Guerre mondiale',
+                year: 1919,
+                period: 'Interwar',
+                context: 'Le traité impose des réparations énormes à l\'Allemagne, créant du ressentiment qui alimentera la montée du nazisme.'
+            },
+            // Interwar period
+            {
+                name: 'Krach boursier de 1929',
+                description: 'Effondrement du marché boursier américain',
+                year: 1929,
+                period: 'Interwar',
+                context: 'Ce krach provoque la Grande Dépression, une crise économique mondiale majeure.'
+            },
+            {
+                name: 'Montée d\'Hitler au pouvoir',
+                description: 'Adolf Hitler devient chancelier du Reich allemand',
+                year: 1933,
+                period: 'Interwar',
+                context: 'Hitler et le Parti nazi prennent le contrôle de l\'Allemagne, marquant le début du régime nazi.'
+            },
+            {
+                name: 'Front populaire en France',
+                description: 'Victoire électorale de la gauche française',
+                year: 1936,
+                period: 'Interwar',
+                context: 'Léon Blum devient Premier ministre. Le Front populaire met en place des réformes sociales.'
+            },
+            // WWII
+            {
+                name: 'Invasion de la Pologne',
+                description: 'L\'Allemagne envahit la Pologne, marquant le début de la Seconde Guerre mondiale',
+                year: 1939,
+                period: 'WWII',
+                context: 'Cet acte provoque la déclaration de guerre de la France et du Royaume-Uni à l\'Allemagne.'
+            },
+            {
+                name: 'Armistice avec l\'Allemagne',
+                description: 'La France capitule et signe un armistice avec l\'Allemagne',
+                year: 1940,
+                period: 'WWII',
+                context: 'Après la bataille de France, la capitulation divise le pays. Débuts de l\'occupation allemande.'
+            },
+            {
+                name: 'Appel du 18 juin 1940',
+                description: 'Discours du Général de Gaulle depuis Londres, appelant à la Résistance',
+                year: 1940,
+                period: 'WWII',
+                context: 'Malgré l\'armistice, de Gaulle appelle les Français à continuer le combat. Fondation de la France Libre.'
+            },
+            {
+                name: 'Bataille de Stalingrad',
+                description: 'Bataille décisive entre l\'Allemagne et l\'URSS',
+                year: 1942,
+                period: 'WWII',
+                context: 'Cette bataille dure 6 mois avec des combats acharnés. L\'Allemagne subit sa première défaite majeure.'
+            },
+            {
+                name: 'Rafle du Vel d\'Hiv',
+                description: 'Arrestation massive de Juifs parisiens par la police française',
+                year: 1942,
+                period: 'WWII',
+                context: 'Plus de 13 000 Juifs sont arrêtés et déportés. Symbole du Holocauste en France.'
+            },
+            {
+                name: 'Débarquement de Normandie',
+                description: 'Les Alliés débarquent en Normandie pour libérer l\'Europe',
+                year: 1944,
+                period: 'WWII',
+                context: 'Le D-Day lance l\'opération Overlord. C\'est le début de la libération de l\'Europe occidentale.'
+            },
+            {
+                name: 'Fin de la Seconde Guerre mondiale',
+                description: 'Capitulation de l\'Allemagne et fin officielle de la WWII en Europe',
+                year: 1945,
+                period: 'WWII',
+                context: 'L\'Allemagne capitule le 8 mai 1945. La Seconde Guerre mondiale en Europe prend fin.'
+            },
+            // After 1945
+            {
+                name: 'Création de l\'ONU',
+                description: 'Fondation de l\'Organisation des Nations unies',
+                year: 1945,
+                period: 'After1945',
+                context: 'L\'ONU est créée pour maintenir la paix mondiale et éviter une nouvelle guerre mondiale.'
+            },
+            {
+                name: 'Plan Marshall',
+                description: 'Programme américain d\'aide économique à l\'Europe ravagée',
+                year: 1947,
+                period: 'After1945',
+                context: 'Le Plan Marshall aide à la reconstruction économique de l\'Europe de l\'Ouest et renforce l\'anticommunisme.'
+            },
+            {
+                name: 'Déclaration Universelle des Droits de l\'Homme',
+                description: 'Adoption de la Déclaration universelle des droits de l\'homme par l\'ONU',
+                year: 1948,
+                period: 'After1945',
+                context: 'Ce texte fondateur établit les droits inaliénables de tous les êtres humains.'
+            },
+            {
+                name: 'Traité de Rome',
+                description: 'Création de la Communauté économique européenne (CEE)',
+                year: 1957,
+                period: 'After1945',
+                context: 'Six pays européens créent la CEE, ancêtre de l\'Union européenne. C\'est un pas vers l\'intégration européenne.'
+            },
+            {
+                name: 'Établissement de la Ve République',
+                description: 'Nouvelle constitution en France, de Gaulle devient président',
+                year: 1958,
+                period: 'After1945',
+                context: 'La Ve République renforce le pouvoir exécutif avec un président élu au suffrage universel depuis 1962.'
+            },
+            {
+                name: 'Fin de la guerre d\'Algérie',
+                description: 'Indépendance de l\'Algérie après 8 ans de guerre',
+                year: 1962,
+                period: 'After1945',
+                context: 'L\'Algérie devient indépendante. La décolonisation française s\'accélère après cette guerre.'
+            },
+            {
+                name: 'Événements de mai 1968',
+                description: 'Mouvements de protestation et grèves en France',
+                year: 1968,
+                period: 'After1945',
+                context: 'Étudiants et ouvriers se soulèvent. Un mouvement de contestation secoue la société française.'
+            },
+            {
+                name: 'Chute du mur de Berlin',
+                description: 'Destruction du mur de Berlin, symbole de la Guerre froide',
+                year: 1989,
+                period: 'After1945',
+                context: 'La chute du mur marque le début de la fin de la Guerre froide et de la division de l\'Europe.'
+            },
+            {
+                name: 'Traité de Maastricht',
+                description: 'Traité créant l\'Union européenne',
+                year: 1992,
+                period: 'After1945',
+                context: 'La CEE se transforme en Union européenne. C\'est l\'étape vers une intégration plus profonde.'
+            },
+            {
+                name: 'Adoption de l\'euro',
+                description: 'Mise en circulation de la monnaie unique européenne',
+                year: 2002,
+                period: 'After1945',
+                context: 'L\'euro remplace les monnaies nationales dans 12 pays européens. Un symbole de l\'unité européenne.'
+            }
+        ];
+
+        let gameState = {
+            currentQuestion: 0,
+            score: 0,
+            questions: [],
+            currentQuestionData: null,
+            answered: false
+        };
+
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function startGame() {
+            gameState.currentQuestion = 0;
+            gameState.score = 0;
+            gameState.answered = false;
+            gameState.questions = shuffleArray([...EVENTS_DATA]).slice(0, 20);
+
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameContainer').classList.add('active');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (gameState.currentQuestion >= 20) {
+                endGame();
+                return;
+            }
+
+            gameState.answered = false;
+            gameState.currentQuestionData = gameState.questions[gameState.currentQuestion];
+            const data = gameState.currentQuestionData;
+
+            const progress = ((gameState.currentQuestion) / 20) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('questionNum').textContent = gameState.currentQuestion + 1;
+            document.getElementById('eventName').textContent = data.name;
+            document.getElementById('eventDescription').textContent = data.description;
+            document.getElementById('contextText').textContent = data.context;
+
+            const allYears = [...new Set(EVENTS_DATA.map(e => e.year))].sort((a, b) => a - b);
+            const correctYear = data.year;
+            const wrongYears = allYears.filter(y => y !== correctYear);
+            const choices = [
+                correctYear,
+                wrongYears[Math.floor(Math.random() * wrongYears.length)],
+                wrongYears[Math.floor(Math.random() * wrongYears.length)],
+                wrongYears[Math.floor(Math.random() * wrongYears.length)]
+            ];
+            const shuffledChoices = shuffleArray(choices);
+
+            const choicesContainer = document.getElementById('choicesContainer');
+            choicesContainer.innerHTML = '';
+            shuffledChoices.forEach((year, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.textContent = year;
+                btn.onclick = () => selectAnswer(year, btn);
+                choicesContainer.appendChild(btn);
+            });
+
+            document.getElementById('context').classList.remove('show');
+            document.getElementById('nextBtn').classList.remove('show');
+        }
+
+        function selectAnswer(year, btn) {
+            if (gameState.answered) return;
+
+            gameState.answered = true;
+            const isCorrect = year === gameState.currentQuestionData.year;
+
+            if (isCorrect) {
+                gameState.score++;
+                btn.classList.add('correct');
+            } else {
+                btn.classList.add('incorrect');
+                const buttons = document.querySelectorAll('.choice-btn');
+                buttons.forEach(b => {
+                    if (parseInt(b.textContent) === gameState.currentQuestionData.year) {
+                        b.classList.add('correct');
+                    }
+                    b.disabled = true;
+                    b.classList.add('disabled');
+                });
+            }
+
+            document.getElementById('context').classList.add('show');
+            document.getElementById('nextBtn').classList.add('show');
+        }
+
+        function nextQuestion() {
+            gameState.currentQuestion++;
+            loadQuestion();
+        }
+
+        function endGame() {
+            document.getElementById('gameContainer').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('show');
+
+            const percentage = Math.round((gameState.score / 20) * 100);
+            const stars = Math.round((gameState.score / 20) * 3);
+
+            document.getElementById('finalScore').textContent = `${gameState.score}/20`;
+            document.getElementById('percentDisplay').textContent = `${percentage}%`;
+
+            let starDisplay = '';
+            for (let i = 0; i < 3; i++) {
+                starDisplay += i < stars ? '<span class="star-full">⭐</span>' : '<span class="star-empty">☆</span>';
+            }
+            document.getElementById('starsDisplay').innerHTML = starDisplay;
+
+            const now = new Date().toISOString().split('T')[0];
+            const resultCode = btoa(JSON.stringify({
+                v: 'c_frise',
+                dt: now,
+                period: 'all',
+                score: `${gameState.score}/20`,
+                pct: percentage,
+                stars: stars
+            }));
+
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+    </script>
+</body>
+</html>

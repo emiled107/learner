@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repères du Brevet - Histoire/Géo/EMC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            color: #e0e0e0;
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: linear-gradient(135deg, #1a1b2e 0%, #16213e 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(107, 207, 127, 0.3);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6bcf7f 0%, #4dffac 50%, #ffd93d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-link {
+            color: #6bcf7f;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 8px 15px;
+            border: 1px solid #6bcf7f;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #6bcf7f;
+            color: #08090f;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6bcf7f 0%, #ffd93d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .mode-selection {
+            display: none;
+        }
+
+        .mode-selection.active {
+            display: block;
+        }
+
+        .selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .selection-btn {
+            background: linear-gradient(135deg, #6bcf7f 0%, #4dffac 100%);
+            color: #08090f;
+            border: none;
+            padding: 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .selection-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(107, 207, 127, 0.4);
+        }
+
+        .selection-btn.alt {
+            background: linear-gradient(135deg, #ffd93d 0%, #ffed4e 100%);
+        }
+
+        .selection-btn.mix {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8a80 100%);
+            color: white;
+        }
+
+        .quiz-section {
+            display: none;
+        }
+
+        .quiz-section.active {
+            display: block;
+        }
+
+        .progress-container {
+            margin-bottom: 25px;
+        }
+
+        .question-counter {
+            font-size: 12px;
+            color: #a0a0a0;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6bcf7f 0%, #ffd93d 50%, #ff6b6b 100%);
+            transition: width 0.4s ease;
+        }
+
+        .category-display {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #6bcf7f;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .question-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(107, 207, 127, 0.2);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            color: #e0e0e0;
+            font-weight: 600;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            color: #e0e0e0;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: left;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            border-color: rgba(107, 207, 127, 0.5);
+            background: rgba(107, 207, 127, 0.1);
+            transform: translateX(5px);
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(135deg, #6bcf7f 0%, #4dffac 100%);
+            border-color: #6bcf7f;
+            color: #08090f;
+        }
+
+        .option-btn.correct {
+            background: linear-gradient(135deg, #6bcf7f 0%, #4dffac 100%);
+            border-color: #6bcf7f;
+            color: #08090f;
+        }
+
+        .option-btn.incorrect {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8a80 100%);
+            border-color: #ff6b6b;
+            color: white;
+        }
+
+        .option-btn.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .hint {
+            background: rgba(107, 207, 127, 0.1);
+            border-left: 4px solid #6bcf7f;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #c0e0c0;
+            display: none;
+        }
+
+        .hint.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #6bcf7f 0%, #ffd93d 100%);
+            color: #08090f;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            display: none;
+            font-family: 'Nunito', sans-serif;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .next-btn.show {
+            display: block;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(107, 207, 127, 0.3);
+        }
+
+        .results-section {
+            display: none;
+            text-align: center;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .results-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #6bcf7f 0%, #ffd93d 50%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stars-display {
+            font-size: 60px;
+            margin: 20px 0;
+            letter-spacing: 10px;
+        }
+
+        .score-display {
+            font-size: 24px;
+            margin: 20px 0;
+            color: #6bcf7f;
+            font-weight: 700;
+        }
+
+        .percentage {
+            font-size: 18px;
+            color: #a0a0a0;
+            margin-bottom: 20px;
+        }
+
+        .category-scores {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(107, 207, 127, 0.2);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+        }
+
+        .cat-score {
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .cat-histoire { color: #ff6b6b; }
+        .cat-geo { color: #6bcf7f; }
+        .cat-emc { color: #ffd93d; }
+
+        .result-code {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(107, 207, 127, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            word-break: break-all;
+            color: #6bcf7f;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            font-family: 'Nunito', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6bcf7f 0%, #4dffac 100%);
+            color: #08090f;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(107, 207, 127, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8a80 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
+            .selection-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-title {
+                font-size: 28px;
+            }
+
+            .stars-display {
+                font-size: 48px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">📚 Repères du Brevet</div>
+            <a href="/index.html" class="back-link">← Back</a>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-label">Questions</div>
+                <div class="stat-value" id="statQuestions">0/25</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Correct</div>
+                <div class="stat-value" id="statCorrect">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Mode</div>
+                <div class="stat-value" id="statMode">-</div>
+            </div>
+        </div>
+
+        <!-- Mode Selection -->
+        <div class="mode-selection active">
+            <h2 style="margin-bottom: 20px; text-align: center; font-size: 20px;">Choose a Quiz Mode</h2>
+            <div class="selection-grid">
+                <button class="selection-btn" onclick="startQuiz('date2event')">📅 Date → Événement</button>
+                <button class="selection-btn alt" onclick="startQuiz('event2date')">📖 Événement → Date</button>
+                <button class="selection-btn mix" onclick="startQuiz('mix')" style="grid-column: 1 / -1;">🎲 Mix Mode (25 Qs)</button>
+            </div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div class="quiz-section">
+            <div class="progress-container">
+                <div class="question-counter" id="questionCounter">Question 1/25</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <div class="category-display" id="categoryDisplay">Histoire</div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-text" id="questionText"></div>
+                <div class="options-grid" id="optionsGrid"></div>
+                <div class="hint" id="hint"></div>
+                <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question</button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section">
+            <div class="results-title">Quiz Complete!</div>
+            <div class="stars-display" id="starsDisplay">⭐</div>
+            <div class="score-display" id="scoreDisplay">0/25</div>
+            <div class="percentage" id="percentageDisplay">0%</div>
+            <div class="category-scores" id="categoryScores"></div>
+            <div class="result-code" id="resultCode"></div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="resetQuiz()">Try Another Mode</button>
+                <button class="btn btn-secondary" onclick="window.location.href='/index.html'">Back to Home</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const flashcards = [
+            // HISTOIRE
+            { date: '1914', event: 'Début de la Première Guerre Mondiale', cat: 'histoire' },
+            { date: '1916', event: 'Bataille de Verdun', cat: 'histoire' },
+            { date: '1917', event: 'Révolution Russe', cat: 'histoire' },
+            { date: '1918', event: 'Armistice de la Première Guerre Mondiale', cat: 'histoire' },
+            { date: '1933', event: 'Hitler prend le pouvoir en Allemagne', cat: 'histoire' },
+            { date: '1936', event: 'Front Populaire en France', cat: 'histoire' },
+            { date: '1939', event: 'Début de la Deuxième Guerre Mondiale', cat: 'histoire' },
+            { date: '1940', event: 'Appel du 18 Juin de De Gaulle', cat: 'histoire' },
+            { date: '1944', event: 'Débarquement de Normandie (D-Day)', cat: 'histoire' },
+            { date: '1945', event: 'Fin de la Deuxième Guerre Mondiale (mai)', cat: 'histoire' },
+            { date: '1945', event: 'Création de l\'ONU', cat: 'histoire' },
+            { date: '1947', event: 'Plan Marshall (aide américaine)', cat: 'histoire' },
+            { date: '1948', event: 'Déclaration Universelle des Droits de l\'Homme', cat: 'histoire' },
+            { date: '1957', event: 'Traité de Rome (création CEE)', cat: 'histoire' },
+            { date: '1958', event: 'Fondation de la Ve République', cat: 'histoire' },
+            { date: '1961', event: 'Construction du Mur de Berlin', cat: 'histoire' },
+            { date: '1962', event: 'Indépendance de l\'Algérie', cat: 'histoire' },
+            { date: '1989', event: 'Chute du Mur de Berlin', cat: 'histoire' },
+            { date: '1992', event: 'Traité de Maastricht (Union Européenne)', cat: 'histoire' },
+            { date: '2002', event: 'Lancement de l\'Euro', cat: 'histoire' },
+
+            // GÉOGRAPHIE - Repères spatiaux
+            { date: 'Océan', event: 'Pacifique (le plus grand)', cat: 'geo' },
+            { date: 'Océan', event: 'Atlantique', cat: 'geo' },
+            { date: 'Océan', event: 'Indien', cat: 'geo' },
+            { date: 'Continent', event: 'Afrique', cat: 'geo' },
+            { date: 'Continent', event: 'Asie (le plus grand)', cat: 'geo' },
+            { date: 'Continent', event: 'Europe', cat: 'geo' },
+            { date: 'Continent', event: 'Amérique du Nord', cat: 'geo' },
+            { date: 'Continent', event: 'Amérique du Sud', cat: 'geo' },
+            { date: 'Ligne', event: 'Équateur', cat: 'geo' },
+            { date: 'Ligne', event: 'Méridien de Greenwich', cat: 'geo' },
+            { date: 'Tropique', event: 'Cancer', cat: 'geo' },
+            { date: 'Tropique', event: 'Capricorne', cat: 'geo' },
+            { date: 'Métropole', event: 'Tokyo (Japon)', cat: 'geo' },
+            { date: 'Métropole', event: 'New York (USA)', cat: 'geo' },
+            { date: 'Métropole', event: 'Los Angeles (USA)', cat: 'geo' },
+            { date: 'Métropole', event: 'Londres (Royaume-Uni)', cat: 'geo' },
+            { date: 'Métropole', event: 'Paris (France)', cat: 'geo' },
+            { date: 'Métropole', event: 'Shanghai (Chine)', cat: 'geo' },
+            { date: 'Métropole', event: 'Détroit de Malacca', cat: 'geo' },
+            { date: 'UE Fondateur', event: 'France', cat: 'geo' },
+            { date: 'UE Fondateur', event: 'Allemagne', cat: 'geo' },
+            { date: 'UE Fondateur', event: 'Italie', cat: 'geo' },
+            { date: 'UE Fondateur', event: 'Pays-Bas', cat: 'geo' },
+            { date: 'DROM', event: 'Guadeloupe', cat: 'geo' },
+            { date: 'DROM', event: 'Martinique', cat: 'geo' },
+            { date: 'DROM', event: 'La Réunion', cat: 'geo' },
+            { date: 'Région France', event: 'Île-de-France (capitale)', cat: 'geo' },
+            { date: 'Région France', event: 'Auvergne-Rhône-Alpes', cat: 'geo' },
+            { date: 'Région France', event: 'Nouvelle-Aquitaine', cat: 'geo' },
+            { date: 'Région France', event: 'Occitanie', cat: 'geo' },
+
+            // EMC (Éducation Morale et Civique)
+            { date: '1789', event: 'Déclaration des Droits de l\'Homme et du Citoyen', cat: 'emc' },
+            { date: '1882', event: 'Lois Jules Ferry (école gratuite et obligatoire)', cat: 'emc' },
+            { date: '1905', event: 'Loi de séparation de l\'Église et de l\'État', cat: 'emc' },
+            { date: '1944', event: 'Droit de vote des femmes en France', cat: 'emc' },
+            { date: '1958', event: 'Constitution de la Ve République', cat: 'emc' },
+            { date: 'Valeur', event: 'Égalité (tous les citoyens ont les mêmes droits)', cat: 'emc' },
+            { date: 'Valeur', event: 'Liberté (droit d\'expression, religion, etc.)', cat: 'emc' },
+            { date: 'Valeur', event: 'Fraternité (solidarité entre citoyens)', cat: 'emc' },
+            { date: 'Valeur', event: 'Laïcité (neutralité de l\'État)', cat: 'emc' },
+            { date: 'Valeur', event: 'Citoyenneté (droits et devoirs)', cat: 'emc' },
+            { date: 'Droit', event: 'Droit à l\'éducation', cat: 'emc' },
+            { date: 'Droit', event: 'Droit à la santé', cat: 'emc' },
+            { date: 'Droit', event: 'Protection de l\'enfance', cat: 'emc' },
+            { date: 'Devoir', event: 'Respecter les lois', cat: 'emc' },
+            { date: 'Devoir', event: 'Participer au bien commun', cat: 'emc' }
+        ];
+
+        let currentMode = '';
+        let currentQuestionIndex = 0;
+        let currentQuestions = [];
+        let score = 0;
+        let categoryScores = { histoire: 0, geo: 0, emc: 0 };
+        let categoryAttempts = { histoire: 0, geo: 0, emc: 0 };
+        let selectedAnswer = null;
+        let answered = false;
+
+        function startQuiz(mode) {
+            currentMode = mode;
+            currentQuestionIndex = 0;
+            score = 0;
+            categoryScores = { histoire: 0, geo: 0, emc: 0 };
+            categoryAttempts = { histoire: 0, geo: 0, emc: 0 };
+            selectedAnswer = null;
+            answered = false;
+
+            currentQuestions = [];
+
+            if (mode === 'mix') {
+                currentQuestions = flashcards.sort(() => Math.random() - 0.5).slice(0, 25);
+                currentQuestions = currentQuestions.map(q => {
+                    if (Math.random() < 0.5) {
+                        return { type: 'date2event', ...q };
+                    } else {
+                        return { type: 'event2date', ...q };
+                    }
+                });
+            } else {
+                currentQuestions = flashcards.sort(() => Math.random() - 0.5).slice(0, 25);
+                currentQuestions = currentQuestions.map(q => ({ type: mode, ...q }));
+            }
+
+            document.querySelector('.mode-selection').classList.remove('active');
+            document.querySelector('.quiz-section').classList.add('active');
+            document.getElementById('statMode').textContent = mode === 'date2event' ? 'Date→Event' : mode === 'event2date' ? 'Event→Date' : 'Mix';
+
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = currentQuestions[currentQuestionIndex];
+            const question = q.type === 'date2event' ? `What event happened in ${q.date}?` : `When did this happen: "${q.event}"?`;
+
+            document.getElementById('questionText').textContent = question;
+            document.getElementById('questionCounter').textContent = `Question ${currentQuestionIndex + 1}/25`;
+            document.getElementById('progressFill').style.width = `${(currentQuestionIndex / 25) * 100}%`;
+            document.getElementById('statQuestions').textContent = `${currentQuestionIndex}/25`;
+            document.getElementById('statCorrect').textContent = score;
+
+            const catDisplay = q.cat.charAt(0).toUpperCase() + q.cat.slice(1);
+            document.getElementById('categoryDisplay').textContent = catDisplay;
+
+            const optionsGrid = document.getElementById('optionsGrid');
+            optionsGrid.innerHTML = '';
+
+            let options = [];
+            if (q.type === 'date2event') {
+                options = flashcards.filter(x => x.cat === q.cat).map(x => x.event);
+            } else {
+                options = flashcards.filter(x => x.cat === q.cat).map(x => x.date);
+            }
+
+            const correctAnswer = q.type === 'date2event' ? q.event : q.date;
+            options = options.filter(o => o !== correctAnswer);
+            options = options.sort(() => Math.random() - 0.5).slice(0, 3);
+            options.push(correctAnswer);
+            options.sort(() => Math.random() - 0.5);
+
+            const correctIdx = options.indexOf(correctAnswer);
+
+            options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.dataset.correct = idx === correctIdx ? 'true' : 'false';
+                btn.onclick = () => selectAnswer(idx, correctIdx);
+                optionsGrid.appendChild(btn);
+            });
+
+            document.getElementById('hint').classList.remove('show');
+            document.getElementById('nextBtn').classList.remove('show');
+            selectedAnswer = null;
+            answered = false;
+        }
+
+        function selectAnswer(idx, correctIdx) {
+            if (answered) return;
+
+            const q = currentQuestions[currentQuestionIndex];
+            answered = true;
+            selectedAnswer = idx;
+
+            const options = document.querySelectorAll('.option-btn');
+            options.forEach((btn, i) => {
+                btn.classList.add('disabled');
+                if (i === correctIdx) {
+                    btn.classList.add('correct');
+                } else if (i === idx && idx !== correctIdx) {
+                    btn.classList.add('incorrect');
+                }
+            });
+
+            categoryAttempts[q.cat]++;
+
+            if (idx === correctIdx) {
+                score++;
+                categoryScores[q.cat]++;
+                const correctAnswer = q.type === 'date2event' ? q.event : q.date;
+                const correctText = q.type === 'date2event' ? `Correct: ${q.date} → ${q.event}` : `Correct: ${q.date} → ${q.event}`;
+                document.getElementById('hint').textContent = correctText;
+            } else {
+                const correctAnswer = q.type === 'date2event' ? q.event : q.date;
+                const correctText = q.type === 'date2event' ? `Correct: ${q.date} → ${q.event}` : `Correct: ${q.date} → ${q.event}`;
+                document.getElementById('hint').textContent = correctText;
+            }
+
+            document.getElementById('hint').classList.add('show');
+            document.getElementById('nextBtn').classList.add('show');
+            document.getElementById('statCorrect').textContent = score;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < 25) {
+                showQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function endQuiz() {
+            const percentage = Math.round((score / 25) * 100);
+            const stars = percentage >= 90 ? '⭐⭐⭐' : percentage >= 75 ? '⭐⭐' : '⭐';
+
+            document.querySelector('.quiz-section').classList.remove('active');
+            document.querySelector('.results-section').classList.add('active');
+
+            document.getElementById('starsDisplay').textContent = stars;
+            document.getElementById('scoreDisplay').textContent = `${score}/25`;
+            document.getElementById('percentageDisplay').textContent = `${percentage}%`;
+
+            const histoireScore = categoryAttempts.histoire > 0 ? Math.round((categoryScores.histoire / categoryAttempts.histoire) * 100) : 0;
+            const geoScore = categoryAttempts.geo > 0 ? Math.round((categoryScores.geo / categoryAttempts.geo) * 100) : 0;
+            const emcScore = categoryAttempts.emc > 0 ? Math.round((categoryScores.emc / categoryAttempts.emc) * 100) : 0;
+
+            document.getElementById('categoryScores').innerHTML = `
+                <div class="cat-score cat-histoire">Histoire: ${categoryScores.histoire}/${categoryAttempts.histoire} (${histoireScore}%)</div>
+                <div class="cat-score cat-geo">Géographie: ${categoryScores.geo}/${categoryAttempts.geo} (${geoScore}%)</div>
+                <div class="cat-score cat-emc">EMC: ${categoryScores.emc}/${categoryAttempts.emc} (${emcScore}%)</div>
+            `;
+
+            const resultCode = `v:'c_reperes'|dt:'${new Date().toISOString().split('T')[0]}'|mode:'${currentMode}'|score:'${score}/25'|pct:${percentage}|stars:${stars.length}|cat_scores:{histoire:${histoireScore},geo:${geoScore},emc:${emcScore}}`;
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        function resetQuiz() {
+            document.querySelector('.results-section').classList.remove('active');
+            document.querySelector('.mode-selection').classList.add('active');
+            currentQuestionIndex = 0;
+            score = 0;
+            categoryScores = { histoire: 0, geo: 0, emc: 0 };
+            categoryAttempts = { histoire: 0, geo: 0, emc: 0 };
+        }
+    </script>
+</body>
+</html>

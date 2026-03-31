@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atomes et Molécules - 4ème Sciences</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #08090f;
+            color: #fff;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #a29bfe 0%, #fd79a8 100%);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #a29bfe 0%, #fd79a8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #1a1d2e;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #a29bfe 0%, #fd79a8 100%);
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        .score-display {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .score-card {
+            background: rgba(162, 155, 254, 0.1);
+            border: 2px solid #a29bfe;
+            padding: 15px 25px;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .score-card.correct {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .score-card.incorrect {
+            border-color: #ff3366;
+            background: rgba(255, 51, 102, 0.1);
+        }
+
+        .score-number {
+            font-size: 2em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #a29bfe 0%, #fd79a8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-label {
+            font-size: 0.9em;
+            color: #aaa;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .question-container {
+            background: rgba(26, 29, 46, 0.8);
+            border: 2px solid #a29bfe;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .question-number {
+            color: #a29bfe;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .diagram {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid #a29bfe;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            color: #ddd;
+            line-height: 1.7;
+            font-size: 0.95em;
+            font-family: monospace;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .option {
+            padding: 15px;
+            background: rgba(162, 155, 254, 0.1);
+            border: 2px solid #a29bfe;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .option:hover {
+            background: rgba(162, 155, 254, 0.3);
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: #a29bfe;
+            border-color: #a29bfe;
+            color: #fff;
+        }
+
+        .option.correct {
+            background: #00ff88;
+            color: #000;
+            border-color: #00ff88;
+        }
+
+        .option.incorrect {
+            background: #ff3366;
+            border-color: #ff3366;
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 255, 136, 0.1);
+            border-left: 4px solid #00ff88;
+            border-radius: 5px;
+            color: #ddd;
+            line-height: 1.6;
+            display: none;
+            font-size: 0.95em;
+        }
+
+        .explanation.show {
+            display: block;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #a29bfe 0%, #fd79a8 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(162, 155, 254, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #1a1d2e;
+            color: #a29bfe;
+            border: 2px solid #a29bfe;
+        }
+
+        .btn-secondary:hover {
+            background: #a29bfe;
+            color: white;
+        }
+
+        .result-screen {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .result-screen.show {
+            display: block;
+        }
+
+        .stars {
+            font-size: 4em;
+            margin: 20px 0;
+            letter-spacing: 10px;
+        }
+
+        .stars.one { color: #a29bfe; }
+        .stars.two { color: #fd79a8; }
+        .stars.three { color: #00ff88; }
+
+        .final-score {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #a29bfe 0%, #fd79a8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+
+        .result-message {
+            font-size: 1.3em;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            .question-container { padding: 20px; }
+            .question-text { font-size: 1.1em; }
+            .option { font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/index.html" class="back-link">← Retour</a>
+
+        <header>
+            <h1>Atomes et Molécules</h1>
+            <p class="subtitle">Comprendre la structure de la matière</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="score-display">
+            <div class="score-card correct">
+                <div class="score-number" id="correctCount">0</div>
+                <div class="score-label">Correctes</div>
+            </div>
+            <div class="score-card incorrect">
+                <div class="score-number" id="incorrectCount">0</div>
+                <div class="score-label">Incorrectes</div>
+            </div>
+            <div class="score-card">
+                <div class="score-number" id="percentDisplay">0%</div>
+                <div class="score-label">Réussite</div>
+            </div>
+        </div>
+
+        <div id="quizContainer">
+            <div class="question-container">
+                <div class="question-number" id="questionNumber"></div>
+                <div class="question-text" id="questionText"></div>
+                <div class="diagram" id="diagram"></div>
+                <div class="options" id="optionsContainer"></div>
+                <div class="explanation" id="explanation"></div>
+                <div class="button-group">
+                    <button class="btn btn-primary" id="submitBtn" onclick="submitAnswer()">Valider</button>
+                    <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()" style="display:none;">Suivant</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-screen" id="resultScreen">
+            <h2 style="font-size: 2em; margin-bottom: 20px;">Résultats</h2>
+            <div class="stars" id="starsDisplay"></div>
+            <div class="final-score" id="finalScore"></div>
+            <div class="result-message" id="resultMessage"></div>
+            <button class="btn btn-primary" onclick="location.reload()">Recommencer</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                text: 'Quel est le centre de l\'atome ?',
+                diagram: 'Structure d\'un atome : noyau (protons + neutrons) au centre, électrons en orbite',
+                options: ['Les électrons', 'Le noyau contenant les protons et neutrons', 'Le vide', 'L\'orbite'],
+                correct: 1,
+                explanation: 'Le noyau est au centre de l\'atome et contient les protons (positifs) et les neutrons (neutres). Les électrons (négatifs) tournent autour du noyau.'
+            },
+            {
+                text: 'Quel est le nombre d\'électrons de l\'oxygène (O) selon le tableau périodique ?',
+                diagram: 'Oxygène : numéro atomique 8',
+                options: ['4 électrons', '6 électrons', '8 électrons', '10 électrons'],
+                correct: 2,
+                explanation: 'L\'oxygène a un numéro atomique de 8, ce qui signifie qu\'il a 8 protons et 8 électrons (dans un atome neutre).'
+            },
+            {
+                text: 'Quelle est la formule chimique de l\'eau ?',
+                diagram: 'Molécule d\'eau : composée d\'hydrogène et d\'oxygène',
+                options: ['H₂O', 'HO', 'H₂O₂', 'OH'],
+                correct: 0,
+                explanation: 'L\'eau a la formule H₂O : deux atomes d\'hydrogène et un atome d\'oxygène liés chimiquement pour former une molécule.'
+            },
+            {
+                text: 'Combien d\'atomes y a-t-il dans une molécule de dioxyde de carbone (CO₂) ?',
+                diagram: 'CO₂ : 1 carbone + 2 oxygènes',
+                options: ['2 atomes', '3 atomes', '4 atomes', '5 atomes'],
+                correct: 1,
+                explanation: 'Le dioxyde de carbone (CO₂) contient 1 atome de carbone et 2 atomes d\'oxygène, soit 3 atomes au total.'
+            },
+            {
+                text: 'Quel gaz compose environ 21% de l\'air que nous respirons ?',
+                diagram: 'Molécule de dioxygène : O₂',
+                options: ['Azote (N₂)', 'Dioxyde de carbone (CO₂)', 'Dioxygène (O₂)', 'Argon'],
+                correct: 2,
+                explanation: 'L\'oxygène (O₂) compose environ 21% de l\'atmosphère terrestre. C\'est essentiel à la respiration des organismes aérobies.'
+            },
+            {
+                text: 'Quel est le symbole chimique du sodium ?',
+                diagram: 'Sodium : numéro atomique 11',
+                options: ['So', 'Na', 'Sd', 'Nm'],
+                correct: 1,
+                explanation: 'Le sodium a le symbole chimique Na (du latin "natrium"). C\'est un élément du groupe 1 du tableau périodique.'
+            },
+            {
+                text: 'Quelle molécule est le sel de cuisine ?',
+                diagram: 'Chlorure de sodium : Na + Cl',
+                options: ['Chlorure de sodium (NaCl)', 'Chlorure de potassium (KCl)', 'Iodure de sodium (NaI)', 'Fluorure de sodium (NaF)'],
+                correct: 0,
+                explanation: 'Le sel de cuisine est le chlorure de sodium (NaCl), composé d\'un ion sodium (Na⁺) et d\'un ion chlorure (Cl⁻).'
+            },
+            {
+                text: 'Quel type de lien unit les atomes dans la molécule d\'oxygène (O₂) ?',
+                diagram: 'O₂ : deux atomes d\'oxygène identiques liés',
+                options: ['Une liaison ionique', 'Une liaison covalente', 'Une liaison métallique', 'Pas de lien'],
+                correct: 1,
+                explanation: 'Dans O₂, les deux atomes d\'oxygène sont liés par une liaison covalente, où ils partagent une paire d\'électrons.'
+            },
+            {
+                text: 'Quel gaz est le plus abondant dans l\'atmosphère ?',
+                diagram: 'Molécule d\'azote : N₂',
+                options: ['Dioxyde de carbone (CO₂)', 'Azote (N₂)', 'Dioxygène (O₂)', 'Argon'],
+                correct: 1,
+                explanation: 'L\'azote (N₂) compose environ 78% de l\'atmosphère. C\'est le gaz le plus abondant dans l\'air que nous respirons.'
+            },
+            {
+                text: 'Combien de protons l\'hydrogène possède-t-il ?',
+                diagram: 'Hydrogène : numéro atomique 1',
+                options: ['0 protons', '1 proton', '2 protons', '8 protons'],
+                correct: 1,
+                explanation: 'L\'hydrogène est l\'élément le plus simple avec un seul proton. Son numéro atomique est 1.'
+            },
+            {
+                text: 'Quel atome compose le gaz naturel (méthane CH₄) en plus du carbone et l\'hydrogène ?',
+                diagram: 'Méthane : CH₄ = 1 C + 4 H',
+                options: ['L\'oxygène', 'L\'azote', 'L\'hydrogène', 'Le chlore'],
+                correct: 2,
+                explanation: 'Le méthane (CH₄) est composé d\'un atome de carbone et de quatre atomes d\'hydrogène. C\'est le composant principal du gaz naturel.'
+            },
+            {
+                text: 'Quel est le numéro atomique du carbone ?',
+                diagram: 'Carbone : le quatrième élément du tableau périodique',
+                options: ['4', '6', '8', '12'],
+                correct: 1,
+                explanation: 'Le carbone a un numéro atomique de 6, ce qui signifie qu\'il a 6 protons et (dans un atome neutre) 6 électrons.'
+            },
+            {
+                text: 'À quel groupe du tableau périodique appartient le chlore (Cl) ?',
+                diagram: 'Chlore : élément non-métallique réactif',
+                options: ['Groupe 1 (métaux alcalins)', 'Groupe 2 (métaux alcalino-terreux)', 'Groupe 17 (halogènes)', 'Groupe 18 (gaz nobles)'],
+                correct: 2,
+                explanation: 'Le chlore appartient au groupe 17 (halogènes). C\'est un élément très réactif qui existe généralement sous forme de molécule Cl₂.'
+            },
+            {
+                text: 'Comment appelle-t-on une substance avec pH < 7 ?',
+                diagram: 'Échelle de pH : 0-7 acide, 7 neutre, 7-14 basique',
+                options: ['Neutre', 'Acide', 'Basique', 'Salée'],
+                correct: 1,
+                explanation: 'Une substance avec un pH inférieur à 7 est acide. Le vinaigre, le jus de citron et l\'acide chlorhydrique sont des exemples.'
+            },
+            {
+                text: 'Quel est le pH de l\'eau pure à température ambiante ?',
+                diagram: 'H₂O : molécule neutre',
+                options: ['pH 5', 'pH 7', 'pH 9', 'pH 11'],
+                correct: 1,
+                explanation: 'L\'eau pure a un pH de 7, ce qui la rend neutre (ni acide ni basique). C\'est le point de référence de l\'échelle de pH.'
+            },
+            {
+                text: 'Combien de neutrons un atome de carbone-12 possède-t-il ?',
+                diagram: 'Carbone-12 : numéro atomique 6, nombre de masse 12',
+                options: ['6 neutrons', '12 neutrons', '8 neutrons', '18 neutrons'],
+                correct: 0,
+                explanation: 'Le carbone-12 a un nombre de masse de 12 et 6 protons (numéro atomique). Donc : 12 - 6 = 6 neutrons.'
+            },
+            {
+                text: 'Quel élément constitue la majorité de la croûte terrestre ?',
+                diagram: 'Oxygène et silicium : éléments terrestres majeurs',
+                options: ['Hydrogène', 'Carbone', 'Oxygène', 'Azote'],
+                correct: 2,
+                explanation: 'L\'oxygène est l\'élément le plus abondant dans la croûte terrestre, représentant environ 46% en masse. Il se trouve principalement dans les roches et les minéraux.'
+            },
+            {
+                text: 'Quel type de transformation chimique ne change pas les types d\'atomes ?',
+                diagram: 'Changements physiques vs chimiques',
+                options: ['Une réaction chimique', 'Une transformation physique', 'Une dissolution', 'Une réaction nucléaire'],
+                correct: 1,
+                explanation: 'Les transformations physiques (fusion, ébullition, dissolution) ne changent pas la composition chimique. Les atomes restent les mêmes, seule leur organisation change.'
+            },
+            {
+                text: 'Quel principe énonce que la masse est conservée dans une réaction chimique ?',
+                diagram: 'Loi de la conservation de la masse',
+                options: ['Loi de Boyle', 'Loi de Lavoisier', 'Loi de Charles', 'Loi d\'Avogadro'],
+                correct: 1,
+                explanation: 'La loi de conservation de la masse (Lavoisier) stipule que la masse totale des réactifs équivaut à la masse totale des produits dans une réaction chimique.'
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+        const totalQuestions = 20;
+
+        function initQuiz() {
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1}/${totalQuestions}`;
+            document.getElementById('questionText').textContent = q.text;
+            document.getElementById('diagram').textContent = q.diagram;
+
+            const optionsHtml = q.options.map((opt, idx) =>
+                `<div class="option" data-index="${idx}" onclick="selectOption(${idx})">${opt}</div>`
+            ).join('');
+            document.getElementById('optionsContainer').innerHTML = optionsHtml;
+
+            document.getElementById('explanation').textContent = '';
+            document.getElementById('explanation').classList.remove('show');
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'none';
+            answered = false;
+
+            updateProgressBar();
+        }
+
+        function selectOption(index) {
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelector(`[data-index="${index}"]`).classList.add('selected');
+        }
+
+        function submitAnswer() {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestion];
+            const selected = document.querySelector('.option.selected');
+
+            if (!selected) return;
+
+            const selectedIndex = parseInt(selected.dataset.index);
+            const isCorrect = selectedIndex === q.correct;
+
+            if (isCorrect) {
+                score++;
+                selected.classList.add('correct');
+            } else {
+                selected.classList.add('incorrect');
+                document.querySelector(`[data-index="${q.correct}"]`).classList.add('correct');
+            }
+
+            document.getElementById('explanation').textContent = q.explanation;
+            document.getElementById('explanation').classList.add('show');
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'block';
+
+            updateScore();
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= totalQuestions) {
+                showResults();
+            } else {
+                showQuestion();
+            }
+        }
+
+        function updateScore() {
+            const correct = score;
+            const incorrect = currentQuestion + 1 - score;
+            const percent = Math.round((score / (currentQuestion + 1)) * 100);
+
+            document.getElementById('correctCount').textContent = correct;
+            document.getElementById('incorrectCount').textContent = incorrect;
+            document.getElementById('percentDisplay').textContent = percent + '%';
+        }
+
+        function updateProgressBar() {
+            const percent = ((currentQuestion + 1) / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = percent + '%';
+        }
+
+        function showResults() {
+            const percent = Math.round((score / totalQuestions) * 100);
+            let stars = '⭐';
+            if (percent >= 80) stars = '⭐⭐⭐';
+            else if (percent >= 60) stars = '⭐⭐';
+
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('resultScreen').classList.add('show');
+            document.getElementById('starsDisplay').textContent = stars;
+            document.getElementById('finalScore').textContent = `${score}/${totalQuestions}`;
+            document.getElementById('resultMessage').textContent = `Réussite : ${percent}%`;
+
+            const resultData = {
+                v: '4_atome',
+                dt: new Date().toISOString(),
+                score: `${score}/20`,
+                pct: percent,
+                stars: stars.length
+            };
+            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+            console.log('RESULT CODE:', encoded);
+        }
+
+        initQuiz();
+    </script>
+</body>
+</html>

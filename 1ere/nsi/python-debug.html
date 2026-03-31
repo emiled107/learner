@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Debugger - 1ère NSI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            color: #fff;
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 950px;
+            background: linear-gradient(135deg, #1a1d2e 0%, #16111f 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(107, 207, 127, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #6bcf7f, #ff6b6b, #4d96ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .header p {
+            color: #aaa;
+            font-size: 0.95em;
+        }
+
+        .start-btn {
+            width: 100%;
+            max-width: 300px;
+            margin: 20px auto;
+            display: block;
+            padding: 15px;
+            background: linear-gradient(135deg, #6bcf7f, #4d96ff);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(107, 207, 127, 0.4);
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .quiz-screen {
+            animation: fadeIn 0.5s ease;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6bcf7f, #ff6b6b);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        .question-header {
+            background: rgba(107, 207, 127, 0.1);
+            padding: 12px;
+            border-left: 4px solid #6bcf7f;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            font-weight: 600;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(107, 207, 127, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+        }
+
+        .line-num {
+            color: #666;
+            margin-right: 12px;
+            min-width: 30px;
+            text-align: right;
+            user-select: none;
+        }
+
+        .keyword {
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+
+        .string {
+            color: #6bcf7f;
+        }
+
+        .comment {
+            color: #888;
+        }
+
+        .function {
+            color: #ffd93d;
+        }
+
+        .output-section {
+            background: rgba(107, 207, 127, 0.08);
+            border: 1px solid rgba(107, 207, 127, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 12px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .output-label {
+            color: #ffd93d;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .output-text {
+            color: #6bcf7f;
+        }
+
+        .error-text {
+            color: #ff6b6b;
+        }
+
+        .question-text {
+            font-size: 1.15em;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            line-height: 1.4;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .option.selected {
+            border-color: #6bcf7f;
+            background: rgba(107, 207, 127, 0.2);
+        }
+
+        .option.correct {
+            border-color: #6bcf7f;
+            background: rgba(107, 207, 127, 0.2);
+            animation: pulse 0.5s ease;
+        }
+
+        .option.incorrect {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.2);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #6bcf7f, #4d96ff);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(107, 207, 127, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .explanation {
+            background: rgba(107, 207, 127, 0.08);
+            border-left: 4px solid #6bcf7f;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.95em;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .explanation.show {
+            display: block;
+        }
+
+        .bug-description {
+            color: #ff6b6b;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .results-screen {
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6bcf7f, #4d96ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+
+        .percentage {
+            font-size: 1.5em;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        .stars {
+            font-size: 3em;
+            margin: 20px 0;
+            letter-spacing: 10px;
+        }
+
+        .result-code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 0.85em;
+            word-break: break-all;
+            color: #6bcf7f;
+            font-family: monospace;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #6bcf7f;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #ff6b6b;
+            transform: translateX(-3px);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .code-block {
+                font-size: 0.85em;
+                padding: 12px;
+            }
+
+            .question-text {
+                font-size: 1em;
+            }
+
+            .score-display {
+                font-size: 2.2em;
+            }
+
+            .stars {
+                font-size: 2em;
+                letter-spacing: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Start Screen -->
+        <div class="screen active" id="startScreen">
+            <div class="header">
+                <h1>🐛 Python Debugger</h1>
+                <p>Trouve le bug et corrige le code - 15 questions par session</p>
+            </div>
+            <button class="start-btn" onclick="startQuiz()">Commencer le Quiz</button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div class="screen" id="quizScreen">
+            <div class="question-info">
+                <span id="questionNumber"></span>
+                <span style="color: #6bcf7f; font-weight: 600;">NSI 1ère</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-header">
+                Identifiez et corrigez le bug
+            </div>
+            <div class="code-block" id="codeBlock"></div>
+            <div class="output-section">
+                <div class="output-label">Résultat attendu:</div>
+                <div class="output-text" id="expectedOutput"></div>
+            </div>
+            <div class="output-section">
+                <div class="output-label">Résultat actuel (bug):</div>
+                <div class="error-text" id="actualOutput"></div>
+            </div>
+            <div class="question-text">Quelle est la correction?</div>
+            <div class="options" id="optionsContainer"></div>
+            <div class="explanation" id="explanation"></div>
+            <button class="btn" id="nextBtn">Vérifier</button>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="screen results-screen" id="resultsScreen">
+            <h2>Quiz Terminé!</h2>
+            <div class="score-display" id="scoreDisplay"></div>
+            <div class="percentage" id="percentageDisplay"></div>
+            <div class="stars" id="starsDisplay"></div>
+            <div class="result-code">
+                <strong>Code de résultat:</strong><br>
+                <span id="resultCode"></span>
+            </div>
+            <button class="btn" onclick="location.reload()">Rejouer</button>
+            <a href="/index.html" class="back-link">← Retour à l'accueil</a>
+        </div>
+    </div>
+
+    <script>
+        const debugQuestions = [
+            {
+                code: `def sum_numbers(numbers):
+    total = 0
+    for num in numbers:
+        total = num
+    return total`,
+                expected: 'Pour [1, 2, 3]: retourne 6',
+                actual: 'Pour [1, 2, 3]: retourne 3',
+                fixes: [
+                    'Ligne 4: remplacer "total = num" par "total += num"',
+                    'Ligne 4: remplacer "total = num" par "total = total + num"',
+                    'Ligne 2: initialiser total à 1 au lieu de 0',
+                    'Ajouter un return après la boucle'
+                ],
+                correct: 0,
+                explanation: 'Le bug est à la ligne 4: "total = num" réinitialise total à chaque itération au lieu d\'ajouter. Solution: "total += num"'
+            },
+            {
+                code: `def find_max(numbers):
+    max_val = 0
+    for num in numbers:
+        if num > max_val:
+            max_val = num
+    return max_val`,
+                expected: 'Pour [-5, -2, -10]: retourne -2',
+                actual: 'Pour [-5, -2, -10]: retourne 0',
+                fixes: [
+                    'Ligne 2: initialiser max_val à float("-inf") ou au premier nombre',
+                    'Ligne 2: initialiser max_val à None',
+                    'Ajouter une condition pour nombres vides',
+                    'Utiliser la fonction max() intégrée'
+                ],
+                correct: 0,
+                explanation: 'Le bug: max_val = 0 ne fonctionne pas quand tous les nombres sont négatifs. Solution: initialiser à float("-inf") ou numbers[0]'
+            },
+            {
+                code: `def count_vowels(text):
+    vowels = "aeiouAEIOU"
+    count = 0
+    for char in text:
+        if char in vowels
+            count += 1
+    return count`,
+                expected: 'Pour "hello": retourne 2',
+                actual: 'SyntaxError',
+                fixes: [
+                    'Ligne 5: ajouter ":" à la fin de la ligne "if char in vowels"',
+                    'Ligne 4: ajouter une condition elif',
+                    'Ligne 3: initialiser count à 1',
+                    'Utiliser count() directement'
+                ],
+                correct: 0,
+                explanation: 'Erreur de syntaxe ligne 5: manque ":" après la condition if. Les structures de contrôle en Python requièrent ":"'
+            },
+            {
+                code: `def reverse_list(lst):
+    new_list = []
+    for i in range(len(lst)):
+        new_list.append(lst[i])
+    return new_list`,
+                expected: 'Pour [1, 2, 3]: retourne [3, 2, 1]',
+                actual: 'Pour [1, 2, 3]: retourne [1, 2, 3]',
+                fixes: [
+                    'Ligne 4: remplacer "lst[i]" par "lst[-(i+1)]" ou "lst[len(lst)-1-i]"',
+                    'Ligne 3: parcourir en sens inverse avec "range(len(lst)-1, -1, -1)"',
+                    'Utiliser lst.reverse() ou lst[::-1]',
+                    'Ajouter une boucle while'
+                ],
+                correct: 1,
+                explanation: 'Le bug: le code copie la liste au lieu de la retourner inversée. Solution: parcourir en sens inverse ou utiliser lst[-(i+1)]'
+            },
+            {
+                code: `def fibonacci(n):
+    if n <= 0:
+        return 0
+    if n == 1:
+        return 1
+    return fibonacci(n-1) + fibonacci(n-2)`,
+                expected: 'fibonacci(5) = 5',
+                actual: 'StackOverflowError ou très lent',
+                fixes: [
+                    'Ajouter un paramètre memo pour la mémoïsation',
+                    'Utiliser une boucle itérative à la place de la récursion',
+                    'Augmenter la limite de profondeur de récursion',
+                    'Ajouter une condition n == 2'
+                ],
+                correct: 1,
+                explanation: 'Pas techniquement un "bug", mais la fonction est très inefficace en O(2^n). Solution: mémoïsation ou approche itérative'
+            },
+            {
+                code: `def check_even(number):
+    if number % 2 = 0:
+        return True
+    else:
+        return False`,
+                expected: 'check_even(4) = True, check_even(5) = False',
+                actual: 'SyntaxError',
+                fixes: [
+                    'Ligne 2: remplacer "=" par "==" pour la comparaison',
+                    'Ligne 2: utiliser "is" au lieu de "="',
+                    'Ligne 2: utiliser "!=" au lieu de "="',
+                    'Remplacer if/else par "return number % 2 == 0"'
+                ],
+                correct: 0,
+                explanation: 'Erreur ligne 2: "=" est l\'opérateur d\'assignation, "==" est pour la comparaison. En Python, cela cause une SyntaxError'
+            },
+            {
+                code: `def find_index(lst, target):
+    for i in range(len(lst)):
+        if lst[i] == target:
+            return i
+    return -1
+
+print(find_index([1, 2, 3], 2))`,
+                expected: 'Affiche: 1',
+                actual: 'Affiche: 1 (pas de bug!)',
+                fixes: [
+                    'Aucun bug détecté - le code est correct',
+                    'Changer le -1 final en 0',
+                    'Ajouter une condition elif',
+                    'Utiliser list.index()'
+                ],
+                correct: 0,
+                explanation: 'Piège: ce code est correct! Il retourne l\'index 1 du deuxième élément correctement.'
+            },
+            {
+                code: `def concat_strings(list1, list2):
+    result = []
+    for i in range(len(list1)):
+        result.append(list1[i])
+    for i in range(len(list2)):
+        result.append(list2[i])
+    return result`,
+                expected: 'Pour [\'a\', \'b\'] et [\'c\', \'d\']: retourne [\'a\', \'b\', \'c\', \'d\']',
+                actual: 'Pour [\'a\', \'b\'] et [\'c\', \'d\']: retourne [\'a\', \'b\', \'c\', \'d\'] (correct)',
+                fixes: [
+                    'Pas de bug - utiliser result = list1 + list2 pour simplifier',
+                    'Ajouter une vérification de longueur',
+                    'Initialiser result avec list1[:]',
+                    'Ajouter une boucle while'
+                ],
+                correct: 0,
+                explanation: 'Code correct, mais pas optimal. Simplification: "result = list1 + list2" ou "result.extend()"'
+            },
+            {
+                code: `def process_dict(data):
+    result = {}
+    for key, value in data.items():
+        result[key] = value * 2
+    return result`,
+                expected: 'Pour {\'a\': 1, \'b\': 2}: retourne {\'a\': 2, \'b\': 4}',
+                actual: 'TypeError: can\'t multiply by int',
+                fixes: [
+                    'Ajouter une vérification "if isinstance(value, int)"',
+                    'Utiliser "result[key] = value * 2 if isinstance(value, int) else value"',
+                    'Convertir value en int avant',
+                    'Filtrer les valeurs non numériques'
+                ],
+                correct: 1,
+                explanation: 'Le bug survient si value n\'est pas numérique. Solution: vérifier le type avec isinstance() avant multiplication'
+            },
+            {
+                code: `def remove_duplicates(lst):
+    new_list = []
+    for item in lst:
+        if item not in new_list:
+            new_list.append(item)
+    return new_list`,
+                expected: 'Pour [1, 2, 2, 3, 1]: retourne [1, 2, 3]',
+                actual: 'Retourne correctement [1, 2, 3] mais lentement',
+                fixes: [
+                    'Utiliser set(): return list(set(lst))',
+                    'Ajouter un dict pour tracker les éléments vus',
+                    'Trier et comparer aux éléments précédents',
+                    'Ajouter une limite de temps'
+                ],
+                correct: 0,
+                explanation: 'Le code fonctionne mais est inefficace O(n²). Mieux: list(set(lst)) pour O(n) ou dict.fromkeys()'
+            },
+            {
+                code: `def factorial(n):
+    if n == 0 or n == 1:
+        return 1
+    result = 1
+    for i in range(1, n):
+        result *= i
+    return result`,
+                expected: 'factorial(5) = 120',
+                actual: 'factorial(5) = 24',
+                fixes: [
+                    'Ligne 5: remplacer "range(1, n)" par "range(1, n+1)"',
+                    'Ligne 5: remplacer "range(1, n)" par "range(2, n+1)"',
+                    'Initialiser result à 0',
+                    'Ajouter n à la boucle'
+                ],
+                correct: 0,
+                explanation: 'Le bug ligne 5: range(1, n) s\'arrête à n-1. Solution: range(1, n+1) ou range(2, n+1)'
+            },
+            {
+                code: `def merge_lists(list1, list2):
+    merged = list1
+    for item in list2:
+        merged.append(item)
+    return merged`,
+                expected: 'list1 = [1, 2], list2 = [3, 4] → retourne [1, 2, 3, 4]; list1 reste [1, 2]',
+                actual: 'list1 devient [1, 2, 3, 4] (effet de bord)',
+                fixes: [
+                    'Ligne 2: remplacer "merged = list1" par "merged = list1[:]" ou "merged = list1.copy()"',
+                    'Ligne 2: utiliser "merged = list1 + list2"',
+                    'Ligne 2: initialiser "merged = []" puis "merged.extend(list1)" et "merged.extend(list2)"',
+                    'Utiliser "list(list1)"'
+                ],
+                correct: 0,
+                explanation: 'Le bug: "merged = list1" crée une référence, pas une copie. Modification: list1[:], list1.copy() ou list(list1)'
+            },
+            {
+                code: `def is_palindrome(text):
+    text = text.lower()
+    left = 0
+    right = len(text) - 1
+    while left < right:
+        if text[left] != text[right]:
+            return False
+        left += 1
+        right -= 1
+    return True
+
+print(is_palindrome("A man, a plan, a canal: Panama"))`,
+                expected: 'Affiche: True',
+                actual: 'Affiche: False (les espaces et ponctuation posent problème)',
+                fixes: [
+                    'Ajouter "text = text.replace(\' \', \'\').replace(\',\', \'\').replace(\':\', \'\')" ou utiliser regex',
+                    'Filtrer avec "text = \'\'.join(c for c in text if c.isalnum())"',
+                    'Ignorer les caractères non alphanumériques dans la comparaison',
+                    'Utiliser "text[::-1] == text" après nettoyage'
+                ],
+                correct: 1,
+                explanation: 'Le bug: les espaces et ponctuation ne sont pas ignorés. Solution: nettoyer le texte avec .replace() ou filtre'
+            },
+            {
+                code: `def count_occurrences(lst, target):
+    count = 0
+    for item in lst:
+        if item = target:
+            count += 1
+    return count`,
+                expected: 'Pour [1, 2, 2, 3, 2]: count_occurrences(..., 2) retourne 3',
+                actual: 'SyntaxError',
+                fixes: [
+                    'Ligne 4: remplacer "=" par "==" pour la comparaison',
+                    'Ligne 4: remplacer "=" par "is"',
+                    'Ligne 4: remplacer "=" par "in"',
+                    'Utiliser "lst.count(target)" directement'
+                ],
+                correct: 0,
+                explanation: 'Erreur ligne 4: "=" est assignation, "==" est comparaison. En conditions, il faut toujours "=="'
+            },
+            {
+                code: `def double_values(lst):
+    for i in range(len(lst)):
+        lst[i] * 2
+    return lst`,
+                expected: 'Pour [1, 2, 3]: retourne [2, 4, 6]',
+                actual: 'Pour [1, 2, 3]: retourne [1, 2, 3] (inchangé)',
+                fixes: [
+                    'Ligne 3: remplacer "lst[i] * 2" par "lst[i] = lst[i] * 2"',
+                    'Ligne 3: utiliser "lst[i] *= 2"',
+                    'Utiliser "return [x * 2 for x in lst]"',
+                    'Utiliser "list(map(lambda x: x*2, lst))"'
+                ],
+                correct: 0,
+                explanation: 'Le bug ligne 3: "lst[i] * 2" calcule mais ne stocke pas le résultat. Solution: "lst[i] *= 2" ou "lst[i] = lst[i] * 2"'
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let quizQuestions = [];
+
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function startQuiz() {
+            quizQuestions = shuffle([...debugQuestions]).slice(0, 15);
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('startScreen').classList.remove('active');
+            document.getElementById('quizScreen').classList.add('active');
+            showQuestion();
+        }
+
+        function formatCode(codeStr) {
+            const lines = codeStr.split('\n');
+            const keywords = ['def', 'if', 'else', 'elif', 'for', 'while', 'return', 'in', 'range', 'True', 'False', 'None', 'and', 'or', 'not', 'is'];
+
+            return lines.map((line, idx) => {
+                let formatted = line;
+                keywords.forEach(kw => {
+                    const regex = new RegExp(`\\b${kw}\\b`, 'g');
+                    formatted = formatted.replace(regex, `<span class="keyword">${kw}</span>`);
+                });
+                formatted = formatted.replace(/"[^"]*"/g, match => `<span class="string">${match}</span>`);
+                formatted = formatted.replace(/'[^']*'/g, match => `<span class="string">${match}</span>`);
+
+                return `<div class="code-line"><span class="line-num">${idx + 1}</span><span>${formatted}</span></div>`;
+            }).join('');
+        }
+
+        function showQuestion() {
+            const q = quizQuestions[currentQuestionIndex];
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestionIndex + 1}/15`;
+            document.getElementById('codeBlock').innerHTML = formatCode(q.code);
+            document.getElementById('expectedOutput').textContent = q.expected;
+            document.getElementById('actualOutput').textContent = q.actual;
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            q.fixes.forEach((fix, index) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = fix;
+                div.onclick = () => selectOption(index);
+                optionsContainer.appendChild(div);
+            });
+
+            document.getElementById('explanation').classList.remove('show');
+            document.getElementById('nextBtn').textContent = 'Vérifier';
+            document.getElementById('nextBtn').disabled = false;
+
+            updateProgress();
+        }
+
+        function selectOption(index) {
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                opt.classList.remove('selected');
+                if (i === index) opt.classList.add('selected');
+            });
+        }
+
+        function nextQuestion() {
+            const selectedIdx = Array.from(document.querySelectorAll('.option')).findIndex(o => o.classList.contains('selected'));
+
+            if (selectedIdx === -1) return;
+
+            const q = quizQuestions[currentQuestionIndex];
+            const isCorrect = selectedIdx === q.correct;
+
+            if (isCorrect) score++;
+
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                opt.style.pointerEvents = 'none';
+                if (i === q.correct) opt.classList.add('correct');
+                else if (i === selectedIdx && !isCorrect) opt.classList.add('incorrect');
+            });
+
+            document.getElementById('explanation').innerHTML = `
+                <div class="bug-description">Explication du bug:</div>
+                ${q.explanation}
+            `;
+            document.getElementById('explanation').classList.add('show');
+            document.getElementById('nextBtn').textContent = currentQuestionIndex < 14 ? 'Question suivante' : 'Résultats';
+
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < 15) {
+                setTimeout(() => showQuestion(), 2500);
+            } else {
+                document.getElementById('nextBtn').onclick = () => showResults();
+            }
+        }
+
+        document.getElementById('nextBtn').onclick = nextQuestion;
+
+        function updateProgress() {
+            const percentage = ((currentQuestionIndex) / 15) * 100;
+            document.getElementById('progressFill').style.width = percentage + '%';
+        }
+
+        function showResults() {
+            document.getElementById('quizScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+
+            const percentage = Math.round((score / 15) * 100);
+            let stars = '☆☆☆';
+            if (percentage >= 80) stars = '★★★';
+            else if (percentage >= 60) stars = '★★☆';
+            else if (percentage >= 40) stars = '★☆☆';
+
+            document.getElementById('scoreDisplay').textContent = score + '/15';
+            document.getElementById('percentageDisplay').textContent = percentage + '%';
+            document.getElementById('starsDisplay').textContent = stars;
+
+            const now = new Date();
+            const dt = now.toISOString().split('T')[0];
+            const resultCode = btoa(JSON.stringify({
+                v: 'l_python',
+                dt: dt,
+                score: score + '/15',
+                pct: percentage,
+                stars: stars.includes('★') ? stars.match(/★/g).length : 0
+            }));
+
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+    </script>
+</body>
+</html>

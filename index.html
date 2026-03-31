@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Outils d'Apprentissage</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2.5rem 1rem 1rem;
+            color: white;
+        }
+        .header h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 0.3rem;
+        }
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 1.5rem 1rem 0;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 0.6rem 1.4rem;
+            border: none;
+            border-radius: 2rem;
+            font-family: 'Nunito', sans-serif;
+            font-size: .95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            backdrop-filter: blur(4px);
+        }
+        .tab:hover {
+            background: rgba(255,255,255,0.35);
+            transform: translateY(-2px);
+        }
+        .tab.active {
+            background: white;
+            color: #764ba2;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            max-width: 1100px;
+            margin: 1.5rem auto 1rem;
+            padding: 0 1rem;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Level subtitle */
+        .level-subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            font-size: .9rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* Subject cards grid */
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1rem;
+        }
+
+        .subject-card {
+            background: white;
+            border-radius: 1.2rem;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .subject-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+        }
+        .subject-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+        .subject-card .icon { font-size: 2.2rem; margin-bottom: 0.6rem; display: block; }
+        .subject-card h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 0.3rem; }
+        .subject-card p { font-size: 0.85rem; color: #777; line-height: 1.4; }
+        .subject-card .badge {
+            display: inline-block;
+            padding: 0.15rem 0.6rem;
+            border-radius: 1rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            margin-top: 0.6rem;
+            color: white;
+        }
+
+        /* Subject colors */
+        .card-anglais::before { background: linear-gradient(90deg, #f093fb, #f5576c); }
+        .card-anglais .badge { background: linear-gradient(90deg, #f093fb, #f5576c); }
+        .card-maths::before { background: linear-gradient(90deg, #4facfe, #00f2fe); }
+        .card-maths .badge { background: linear-gradient(90deg, #4facfe, #00f2fe); }
+        .card-francais::before { background: linear-gradient(90deg, #43e97b, #38f9d7); }
+        .card-francais .badge { background: linear-gradient(90deg, #43e97b, #38f9d7); }
+        .card-histoire::before { background: linear-gradient(90deg, #fa709a, #fee140); }
+        .card-histoire .badge { background: linear-gradient(90deg, #fa709a, #fee140); }
+        .card-sciences::before { background: linear-gradient(90deg, #a18cd1, #fbc2eb); }
+        .card-sciences .badge { background: linear-gradient(90deg, #a18cd1, #fbc2eb); }
+        .card-philo::before { background: linear-gradient(90deg, #ffecd2, #fcb69f); }
+        .card-philo .badge { background: linear-gradient(90deg, #f6d365, #fda085); }
+        .card-nsi::before { background: linear-gradient(90deg, #667eea, #764ba2); }
+        .card-nsi .badge { background: linear-gradient(90deg, #667eea, #764ba2); }
+        .card-exam::before { background: linear-gradient(90deg, #7c6af7, #e84393); }
+        .card-exam .badge { background: linear-gradient(90deg, #7c6af7, #e84393); }
+
+        /* Activity list inside card */
+        .activity-list {
+            display: none;
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 2px dashed #eee;
+        }
+        .activity-list.open { display: block; animation: fadeIn 0.3s ease; }
+        .activity-list a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.7rem;
+            margin-bottom: 0.3rem;
+            border-radius: 0.6rem;
+            text-decoration: none;
+            color: #555;
+            font-weight: 600;
+            font-size: 0.88rem;
+            transition: background 0.2s;
+        }
+        .activity-list a:hover { background: #f0f0f0; }
+        .activity-list .empty-msg {
+            color: #aaa;
+            font-style: italic;
+            font-size: 0.82rem;
+            padding: 0.4rem;
+        }
+
+        /* Nav pills */
+        .nav-pills {
+            text-align: center;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.7rem;
+            flex-wrap: wrap;
+        }
+        .nav-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(4px);
+            color: white;
+            text-decoration: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 2rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .nav-pill:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+        .nav-pill-accent {
+            background: rgba(255,255,255,0.25);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1.5rem 1rem;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.7rem; }
+            .subjects-grid { grid-template-columns: 1fr; }
+            .tab { padding: 0.5rem 1rem; font-size: 0.85rem; }
+            .nav-pill { padding: 0.5rem 1rem; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Mes Outils d'Apprentissage</h1>
+        <p>Clique sur une matiere pour voir les exercices</p>
+    </div>
+
+    <div class="tabs">
+        <button class="tab" data-tab="primaire">Primaire</button>
+        <button class="tab" data-tab="6eme">6eme</button>
+        <button class="tab" data-tab="5eme">5eme</button>
+        <button class="tab" data-tab="4eme">4eme</button>
+        <button class="tab active" data-tab="3eme">3eme</button>
+        <button class="tab" data-tab="2nde">2nde</button>
+        <button class="tab" data-tab="1ere">1ere</button>
+        <button class="tab" data-tab="terminale">Terminale</button>
+    </div>
+
+    <div class="content">
+
+        <!-- ═══ PRIMAIRE ═══ -->
+        <div class="tab-content" id="tab-primaire">
+            <div class="level-subtitle">CP → CM2</div>
+            <div class="subjects-grid">
+                <div class="subject-card card-maths" onclick="toggle(this)">
+                    <span class="icon">🧮</span><h3>Maths</h3><p>Tables, calcul mental</p>
+                    <div class="activity-list" data-folder="primaire/maths"></div>
+                </div>
+                <div class="subject-card card-francais" onclick="toggle(this)">
+                    <span class="icon">📖</span><h3>Francais</h3><p>Homophones, conjugaison</p>
+                    <div class="activity-list" data-folder="primaire/francais"></div>
+                </div>
+                <div class="subject-card card-anglais" onclick="toggle(this)">
+                    <span class="icon">🇬🇧</span><h3>Anglais</h3><p>Vocabulaire de base</p>
+                    <div class="activity-list" data-folder="primaire/anglais"></div>
+                </div>
+                <div class="subject-card card-sciences" onclick="toggle(this)">
+                    <span class="icon">🔬</span><h3>Sciences</h3><p>Le corps humain</p>
+                    <div class="activity-list" data-folder="primaire/sciences"></div>
+                </div>
+                <div class="subject-card card-histoire" onclick="toggle(this)">
+                    <span class="icon">🏛️</span><h3>Histoire-Geo</h3><p>Geographie de France</p>
+                    <div class="activity-list" data-folder="primaire/histoire-geo"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ 6EME ═══ -->
+        <div class="tab-content" id="tab-6eme">
+            <div class="level-subtitle">Sixieme</div>
+            <div class="subjects-grid">
+                <div class="subject-card card-maths" onclick="toggle(this)">
+                    <span class="icon">🧮</span><h3>Maths</h3><p>Nombres et decimaux</p>
+                    <div class="activity-list" data-folder="6eme/maths"></div>
+                </div>
+                <div class="subject-card card-francais" onclick="toggle(this)">
+                    <span class="icon">📖</span><h3>Francais</h3><p>Nature des mots</p>
+                    <div class="activity-list" data-folder="6eme/francais"></div>
+                </div>
+                <div class="subject-card card-anglais" onclick="toggle(this)">
+                    <span class="icon">🇬🇧</span><h3>Anglais</h3><p>English basics</p>
+                    <div class="activity-list" data-folder="6eme/anglais"></div>
+                </div>
+                <div class="subject-card card-histoire" onclick="toggle(this)">
+                    <span class="icon">🏛️</span><h3>Histoire-Geo</h3><p>Civilisations antiques</p>
+                    <div class="activity-list" data-folder="6eme/histoire-geo"></div>
+                </div>
+                <div class="subject-card card-sciences" onclick="toggle(this)">
+                    <span class="icon">🔬</span><h3>Sciences</h3><p>La matiere</p>
+                    <div class="activity-list" data-folder="6eme/sciences"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ 5EME ═══ -->
+        <div class="tab-content" id="tab-5eme">
+            <div class="level-subtitle">Cinquieme</div>
+            <div class="subjects-grid">
+                <div class="subject-card card-maths" onclick="toggle(this)">
+                    <span class="icon">🧮</span><h3>Maths</h3><p>Fractions</p>
+                    <div class="activity-list" data-folder="5eme/maths"></div>
+                </div>
+                <div class="subject-card card-francais" onclick="toggle(this)">
+                    <span class="icon">📖</span><h3>Francais</h3><p>Orthographe</p>
+                    <div class="activity-list" data-folder="5eme/francais"></div>
+                </div>
+                <div class="subject-card card-anglais" onclick="toggle(this)">
+                    <span class="icon">🇬🇧</span><h3>Anglais</h3><p>English tenses</p>
+                    <div class="activity-list" data-folder="5eme/anglais"></div>
+                </div>
+                <div class="subject-card card-histoire" onclick="toggle(this)">
+                    <span class="icon">🏛️</span><h3>Histoire-Geo</h3><p>Le Moyen Age</p>
+                    <div class="activity-list" data-folder="5eme/histoire-geo"></div>
+                </div>
+                <div class="subject-card card-sciences" onclick="toggle(this)">
+                    <span class="icon">🔬</span><h3>Sciences</h3><p>Circuits electriques</p>
+                    <div class="activity-list" data-folder="5eme/sciences"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ 4EME ═══ -->
+        <div class="tab-content" id="tab-4eme">
+            <div class="level-subtitle">Quatrieme</div>
+            <div class="subjects-grid">
+                <div class="subject-card card-maths" onclick="toggle(this)">
+                    <span class="icon">🧮</span><h3>Maths</h3><p>Theoreme de Pythagore</p>
+                    <div class="activity-list" data-folder="4eme/maths"></div>
+                </div>
+                <div class="subject-card card-francais" onclick="toggle(this)">
+                    <span class="icon">📖</span><h3>Francais</h3><p>Argumentation</p>
+                    <div class="activity-list" data-folder="4eme/francais"></div>
+                </div>
+                <div class="subject-card card-anglais" onclick="toggle(this)">
+                    <span class="icon">🇬🇧</span><h3>Anglais</h3><p>Present Perfect</p>
+                    <div class="activity-list" data-folder="4eme/anglais"></div>
+                </div>
+                <div class="subject-card card-histoire" onclick="toggle(this)">
+                    <span class="icon">🏛️</span><h3>Histoire-Geo</h3><p>Les Revolutions</p>
+                    <div class="activity-list" data-folder="4eme/histoire-geo"></div>
+                </div>
+                <div class="subject-card card-sciences" onclick="toggle(this)">
+                    <span class="icon">🔬</span><h3>Sciences</h3><p>Atomes et molecules</p>
+                    <div class="activity-list" data-folder="4eme/sciences"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ 3EME ═══ -->
+        <div class="tab-content active" id="tab-3eme">
+            <div class="level-subtitle">Preparation au Brevet</div>
+            <div class="subjects-grid">
+                <div class="subject-card card-exam" onclick="window.location='3eme/brevet-examen-500.html'">
+                    <span class="icon">🏆</span>
+                    <h3>Examen Brevet</h3>
+                    <p>500 QCM toutes matieres, chronometre</p>
+                    <span class="badge">Examen blanc</span>
+                </div>
+                <div class="subject-card card-maths" onclick="toggle(this)">
+                    <span class="icon">🧮</span>
+                    <h3>Maths</h3>
+                    <p>Calcul mental, equations, fonctions, geometrie</p>
+                    <span class="badge">Brevet</span>
+                    <div class="activity-list" data-folder="3eme/maths"></div>
+                </div>
+                <div class="subject-card card-francais" onclick="toggle(this)">
+                    <span class="icon">📖</span>
+                    <h3>Francais</h3>
+                    <p>Conjugaison, figures de style, grammaire</p>
+                    <span class="badge">Brevet</span>
+                    <div class="activity-list" data-folder="3eme/francais"></div>
+                </div>
+                <div class="subject-card card-anglais" onclick="toggle(this)">
+                    <span class="icon">🇬🇧</span>
+                    <h3>Anglais</h3>
+                    <p>Verbes irreguliers, grammaire, comprehension</p>
+                    <span class="badge">Brevet</span>
+                    <div class="activity-list" data-folder="3eme/anglais"></div>
+                </div>
+                <div class="subject-card card-histoire" onclick="toggle(this)">
+                    <span class="icon">🏛️</span>
+                    <h3>Histoire-Geo</h3>
+                    <p>Frise chrono, reperes, cartes, EMC</p>
+                    <span class="badge">Brevet</span>
+                    <div class="activity-list" data-folder="3eme/histoire-geo"></div>
+                </div>
+                <div class="subject-card card-sciences" onclick="toggle(this)">
+                    <span class="icon">🔬</span>
+                    <h3>Sciences</h3>
+                    <p>SVT, Physique-Chimie, Technologie</p>
+                    <span class="badge">Brevet</span>
+                    <div class="activity-list" data-folder="3eme/sciences"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ 2NDE ═══ -->
+        <div class="tab-content" id="tab-2nde">
+            <div class="level-subtitle">Seconde generale</div>
+            <div class="subjects-grid">
+                <div class="subject-card card-maths" onclick="toggle(this)">
+                    <span class="icon">🧮</span><h3>Maths</h3><p>Automatismes</p>
+                    <div class="activity-list" data-folder="2nde/maths"></div>
+                </div>
+                <div class="subject-card card-francais" onclick="toggle(this)">
+                    <span class="icon">📖</span><h3>Francais</h3><p>Analyse de texte</p>
+                    <div class="activity-list" data-folder="2nde/francais"></div>
+                </div>
+                <div class="subject-card card-anglais" onclick="toggle(this)">
+                    <span class="icon">🇬🇧</span><h3>Anglais</h3><p>Advanced vocabulary</p>
+                    <div class="activity-list" data-folder="2nde/anglais"></div>
+                </div>
+                <div class="subject-card card-histoire" onclick="toggle(this)">
+                    <span class="icon">🏛️</span><h3>Histoire-Geo</h3><p>QCM programme</p>
+                    <div class="activity-list" data-folder="2nde/histoire-geo"></div>
+                </div>
+                <div class="subject-card card-sciences" onclick="toggle(this)">
+                    <span class="icon">🔬</span><h3>Sciences</h3><p>Physique-Chimie</p>
+                    <div class="activity-list" data-folder="2nde/sciences"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ 1ERE ═══ -->
+        <div class="tab-content" id="tab-1ere">
+            <div class="level-subtitle">Premiere generale</div>
+            <div class="subjects-grid">
+                <div class="subject-card card-maths" onclick="toggle(this)">
+                    <span class="icon">🧮</span><h3>Maths</h3><p>Derivees</p>
+                    <div class="activity-list" data-folder="1ere/maths"></div>
+                </div>
+                <div class="subject-card card-francais" onclick="toggle(this)">
+                    <span class="icon">📖</span><h3>Francais</h3><p>Commentaire litteraire</p>
+                    <div class="activity-list" data-folder="1ere/francais"></div>
+                </div>
+                <div class="subject-card card-anglais" onclick="toggle(this)">
+                    <span class="icon">🇬🇧</span><h3>Anglais</h3><p>Written expression</p>
+                    <div class="activity-list" data-folder="1ere/anglais"></div>
+                </div>
+                <div class="subject-card card-histoire" onclick="toggle(this)">
+                    <span class="icon">🏛️</span><h3>Histoire-Geo</h3><p>QCM programme</p>
+                    <div class="activity-list" data-folder="1ere/histoire-geo"></div>
+                </div>
+                <div class="subject-card card-sciences" onclick="toggle(this)">
+                    <span class="icon">🔬</span><h3>Sciences</h3><p>Enseignement scientifique</p>
+                    <div class="activity-list" data-folder="1ere/sciences"></div>
+                </div>
+                <div class="subject-card card-nsi" onclick="toggle(this)">
+                    <span class="icon">💻</span><h3>NSI</h3><p>Python debugger</p>
+                    <div class="activity-list" data-folder="1ere/nsi"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ TERMINALE ═══ -->
+        <div class="tab-content" id="tab-terminale">
+            <div class="level-subtitle">Terminale — Preparation au Bac</div>
+            <div class="subjects-grid">
+                <div class="subject-card card-maths" onclick="toggle(this)">
+                    <span class="icon">🧮</span><h3>Maths</h3><p>Suites numeriques</p>
+                    <span class="badge">Bac</span>
+                    <div class="activity-list" data-folder="terminale/maths"></div>
+                </div>
+                <div class="subject-card card-philo" onclick="toggle(this)">
+                    <span class="icon">🤔</span><h3>Philosophie</h3><p>Concepts cles, auteurs, citations</p>
+                    <span class="badge">Bac</span>
+                    <div class="activity-list" data-folder="terminale/philosophie"></div>
+                </div>
+                <div class="subject-card card-anglais" onclick="toggle(this)">
+                    <span class="icon">🇬🇧</span><h3>Anglais</h3><p>Bac English</p>
+                    <span class="badge">Bac</span>
+                    <div class="activity-list" data-folder="terminale/anglais"></div>
+                </div>
+                <div class="subject-card card-histoire" onclick="toggle(this)">
+                    <span class="icon">🏛️</span><h3>Histoire-Geo</h3><p>QCM programme</p>
+                    <span class="badge">Bac</span>
+                    <div class="activity-list" data-folder="terminale/histoire-geo"></div>
+                </div>
+                <div class="subject-card card-sciences" onclick="toggle(this)">
+                    <span class="icon">🔬</span><h3>Sciences</h3><p>Enseignement scientifique</p>
+                    <span class="badge">Bac</span>
+                    <div class="activity-list" data-folder="terminale/sciences"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="nav-pills">
+        <a href="notes.html" class="nav-pill">📝 Mes Notes</a>
+        <a href="resultats.html" class="nav-pill nav-pill-accent">📊 Bilan de progression</a>
+    </div>
+
+    <div class="footer">
+        Outils d'apprentissage &mdash; Deploye sur GitHub Pages
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Toggle activity list
+        function toggle(card) {
+            // Don't toggle if card has no activity-list (like exam card)
+            const list = card.querySelector('.activity-list');
+            if (!list) return;
+            const wasOpen = list.classList.contains('open');
+            document.querySelectorAll('.activity-list').forEach(l => l.classList.remove('open'));
+            if (!wasOpen) list.classList.add('open');
+        }
+
+        // Load manifests
+        async function loadAll() {
+            const lists = document.querySelectorAll('.activity-list[data-folder]');
+            for (const el of lists) {
+                const folder = el.dataset.folder;
+                try {
+                    const resp = await fetch(`${folder}/manifest.json`);
+                    if (!resp.ok) throw new Error();
+                    const items = await resp.json();
+                    if (items.length === 0) throw new Error();
+                    el.innerHTML = items.map(a =>
+                        `<a href="${folder}/${a.file}">▶ ${a.title}</a>`
+                    ).join('');
+                } catch {
+                    el.innerHTML = '<div class="empty-msg">Bientot disponible</div>';
+                }
+            }
+        }
+        loadAll();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Argumentation - 4ème</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #08090f;
+            color: #fff;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #1a1d2e;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff006e 0%, #8338ec 100%);
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        .score-display {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .score-card {
+            background: rgba(255, 0, 110, 0.1);
+            border: 2px solid #ff006e;
+            padding: 15px 25px;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .score-card.correct {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .score-card.incorrect {
+            border-color: #ff3366;
+            background: rgba(255, 51, 102, 0.1);
+        }
+
+        .score-number {
+            font-size: 2em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-label {
+            font-size: 0.9em;
+            color: #aaa;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .question-container {
+            background: rgba(26, 29, 46, 0.8);
+            border: 2px solid #ff006e;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .question-number {
+            color: #ff006e;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .text-excerpt {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid #ff006e;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            color: #ddd;
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .option {
+            padding: 15px;
+            background: rgba(255, 0, 110, 0.1);
+            border: 2px solid #ff006e;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .option:hover {
+            background: rgba(255, 0, 110, 0.3);
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: #ff006e;
+            border-color: #ff006e;
+            color: white;
+        }
+
+        .option.correct {
+            background: #00ff88;
+            color: #000;
+            border-color: #00ff88;
+        }
+
+        .option.incorrect {
+            background: #ff3366;
+            border-color: #ff3366;
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 255, 136, 0.1);
+            border-left: 4px solid #00ff88;
+            border-radius: 5px;
+            color: #ddd;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .explanation.show {
+            display: block;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 0, 110, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #1a1d2e;
+            color: #ff006e;
+            border: 2px solid #ff006e;
+        }
+
+        .btn-secondary:hover {
+            background: #ff006e;
+            color: white;
+        }
+
+        .result-screen {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .result-screen.show {
+            display: block;
+        }
+
+        .stars {
+            font-size: 4em;
+            margin: 20px 0;
+            letter-spacing: 10px;
+        }
+
+        .stars.one { color: #ff006e; }
+        .stars.two { color: #8338ec; }
+        .stars.three { color: #00ff88; }
+
+        .final-score {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+
+        .result-message {
+            font-size: 1.3em;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            .question-container { padding: 20px; }
+            .question-text { font-size: 1.1em; }
+            .option { font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/index.html" class="back-link">← Retour</a>
+
+        <header>
+            <h1>Argumentation</h1>
+            <p class="subtitle">Maîtrise les techniques argumentatives</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="score-display">
+            <div class="score-card correct">
+                <div class="score-number" id="correctCount">0</div>
+                <div class="score-label">Correctes</div>
+            </div>
+            <div class="score-card incorrect">
+                <div class="score-number" id="incorrectCount">0</div>
+                <div class="score-label">Incorrectes</div>
+            </div>
+            <div class="score-card">
+                <div class="score-number" id="percentDisplay">0%</div>
+                <div class="score-label">Réussite</div>
+            </div>
+        </div>
+
+        <div id="quizContainer">
+            <div class="question-container">
+                <div class="question-number" id="questionNumber"></div>
+                <div class="question-text" id="questionText"></div>
+                <div class="text-excerpt" id="textExcerpt"></div>
+                <div class="options" id="optionsContainer"></div>
+                <div class="explanation" id="explanation"></div>
+                <div class="button-group">
+                    <button class="btn btn-primary" id="submitBtn" onclick="submitAnswer()">Valider</button>
+                    <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()" style="display:none;">Suivant</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-screen" id="resultScreen">
+            <h2 style="font-size: 2em; margin-bottom: 20px;">Résultats</h2>
+            <div class="stars" id="starsDisplay"></div>
+            <div class="final-score" id="finalScore"></div>
+            <div class="result-message" id="resultMessage"></div>
+            <button class="btn btn-primary" onclick="location.reload()">Recommencer</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                type: 'these',
+                text: 'Identifie la thèse (l\'idée principale) dans ce texte :',
+                excerpt: 'Les réseaux sociaux sont nocifs pour la santé mentale des adolescents. En effet, ils provoquent de l\'anxiété et de la dépression. De plus, ils réduisent le temps consacré aux activités physiques.',
+                options: ['Les réseaux sociaux sont nocifs pour la santé mentale', 'Les réseaux sociaux provoquent de l\'anxiété', 'Les réseaux sociaux réduisent l\'activité physique', 'L\'anxiété est un problème grave'],
+                correct: 0,
+                explanation: 'La thèse est l\'idée principale énoncée au début. Les autres phrases sont des arguments qui soutiennent cette thèse.'
+            },
+            {
+                type: 'connecteur',
+                text: 'Complète avec le bon connecteur logique :\n"L\'écologie est importante, ____ nous devons réduire la pollution."',
+                excerpt: '',
+                options: ['cependant', 'donc', 'en effet', 'or'],
+                correct: 1,
+                explanation: 'Le connecteur "donc" introduit une conséquence logique. Il relie une affirmation à sa conclusion.'
+            },
+            {
+                type: 'argument',
+                text: 'Quel est l\'argument dans ce passage ?',
+                excerpt: 'La lecture développe l\'imagination. Les enfants qui lisent régulièrement réussissent mieux à l\'école.',
+                options: ['La lecture existe', 'Les enfants qui lisent réussissent mieux à l\'école', 'La lecture est un loisir', 'L\'école est importante'],
+                correct: 1,
+                explanation: 'L\'argument est le fait ou la raison qui soutient une thèse. Ici, c\'est que les enfants lecteurs réussissent mieux.'
+            },
+            {
+                type: 'these',
+                text: 'Identifie la thèse :',
+                excerpt: 'L\'école devrait utiliser plus les technologies numériques. D\'abord, cela prépare les élèves au monde moderne. Ensuite, c\'est plus motivant pour les étudiants.',
+                options: ['Le monde est moderne', 'L\'école doit utiliser plus les technologies numériques', 'Les étudiants sont motivés', 'L\'informatique est importante'],
+                correct: 1,
+                explanation: 'La thèse principale est énoncée dès la première phrase. Les phrases suivantes apportent des arguments.'
+            },
+            {
+                type: 'connecteur',
+                text: 'Complète : "Les voitures électriques polluent moins, ____ elles sont une bonne solution."',
+                excerpt: '',
+                options: ['cependant', 'donc', 'néanmoins', 'or'],
+                correct: 1,
+                explanation: '"Donc" établit une relation de causalité/conséquence directe entre les deux propositions.'
+            },
+            {
+                type: 'fallace',
+                text: 'Quel argument est fallacieux (faux) ?',
+                excerpt: 'A) "Les fruits frais contiennent plus de vitamines que les fruits congelés." B) "Mon ami dit que les vacances à la mer sont meilleures, donc c\'est vrai." C) "L\'exercice renforce les muscles."',
+                options: ['L\'argument A', 'L\'argument B', 'L\'argument C', 'Aucun'],
+                correct: 1,
+                explanation: 'L\'argument B est fallacieux : c\'est un appel à l\'autorité sans preuve. Le fait qu\'un ami le dise ne le rend pas vrai.'
+            },
+            {
+                type: 'connecteur',
+                text: 'Remplis le vide : "Le prix est élevé, ____ la qualité est excellente."',
+                excerpt: '',
+                options: ['et', 'cependant', 'donc', 'car'],
+                correct: 1,
+                explanation: '"Cependant" introduit une opposition/contraste. Malgré le prix élevé, la qualité compense.'
+            },
+            {
+                type: 'argument',
+                text: 'Identifie l\'exemple dans ce texte :',
+                excerpt: 'La francophonie enrichit la culture mondiale. Par exemple, le français permet de lire les œuvres de Molière et de Balzac. C\'est un avantage important pour les apprenants.',
+                options: ['La francophonie enrichit la culture', 'Le français permet de lire Molière et Balzac', 'Les apprenants ont des avantages', 'Molière est un grand auteur'],
+                correct: 1,
+                explanation: 'L\'exemple est introduit par "par exemple". Il illustre la thèse avec des cas concrets.'
+            },
+            {
+                type: 'these',
+                text: 'Quelle est la thèse ?',
+                excerpt: 'Les jeux vidéo ne sont pas mauvais pour les enfants. Premièrement, ils développent la réflexion stratégique. Deuxièmement, ils favorisent la coordination.',
+                options: ['Les jeux vidéo développent la réflexion', 'Les jeux vidéo sont mauvais', 'Les jeux vidéo ne sont pas mauvais pour les enfants', 'La coordination est importante'],
+                correct: 2,
+                explanation: 'La thèse est l\'affirmation principale : "Les jeux vidéo ne sont pas mauvais pour les enfants."'
+            },
+            {
+                type: 'connecteur',
+                text: 'Complète : "Le climat change rapidement, ____ nous devons agir maintenant."',
+                excerpt: '',
+                options: ['mais', 'donc', 'néanmoins', 'en effet'],
+                correct: 1,
+                explanation: '"Donc" relie la cause (le changement climatique) à la conséquence (agir).'
+            },
+            {
+                type: 'ordre',
+                text: 'Ordonne ces phrases pour former un paragraphe argumenté :\nA) Par exemple, une heure de sport par jour réduit le stress.\nB) L\'activité physique est bénéfique pour la santé mentale.\nC) De plus, elle améliore la concentration à l\'école.\nD) En conclusion, tout le monde devrait faire du sport.',
+                excerpt: '',
+                options: ['B-A-C-D', 'A-B-C-D', 'B-C-A-D', 'D-A-B-C'],
+                correct: 0,
+                explanation: 'L\'ordre logique est : thèse (B), exemple (A), autre argument (C), conclusion (D).'
+            },
+            {
+                type: 'fallace',
+                text: 'Quel est l\'argument fallacieux ?',
+                excerpt: 'A) "Les études montrent que lire améliore la compréhension." B) "Tous les enfants aiment les sucreries, donc mon enfant aussi." C) "L\'exercice est bon pour la santé."',
+                options: ['L\'argument A', 'L\'argument B', 'L\'argument C', 'Tous sont valides'],
+                correct: 1,
+                explanation: 'L\'argument B est une généralisation abusive (tous ≠ chaque individu).'
+            },
+            {
+                type: 'connecteur',
+                text: 'Remplis : "La plupart des gens travaillent, ____ peu ont un emploi idéal."',
+                excerpt: '',
+                options: ['alors', 'donc', 'cependant', 'car'],
+                correct: 2,
+                explanation: '"Cependant" marque une opposition : malgré le travail généralisé, peu ont un emploi idéal.'
+            },
+            {
+                type: 'these',
+                text: 'Quelle est la thèse principale ?',
+                excerpt: 'Le transport en commun est plus écologique que la voiture individuelle. Cela réduit les émissions de CO₂. De plus, cela résout les problèmes d\'embouteillage.',
+                options: ['Le transport en commun réduit les émissions', 'Les voitures polluent', 'Le transport en commun est plus écologique que la voiture', 'Les embouteillages existent'],
+                correct: 2,
+                explanation: 'La thèse est l\'affirmation principale. Les autres phrases sont des arguments qui la soutiennent.'
+            },
+            {
+                type: 'argument',
+                text: 'Identifie l\'argument principal :',
+                excerpt: 'Les musées sont importants pour la société. Ils préservent notre patrimoine culturel et éduquent les nouvelles générations.',
+                options: ['Les musées existent', 'Ils préservent le patrimoine et éduquent les générations', 'La culture est importante', 'Les générations changent'],
+                correct: 1,
+                explanation: 'L\'argument énonce les raisons pour lesquelles les musées sont importants.'
+            },
+            {
+                type: 'connecteur',
+                text: 'Complète : "Les jeunes aiment les réseaux sociaux, ____ il existe des risques réels."',
+                excerpt: '',
+                options: ['donc', 'et', 'en effet', 'or'],
+                correct: 3,
+                explanation: '"Or" introduit une opposition/contraste avec ce qui précède.'
+            },
+            {
+                type: 'fallace',
+                text: 'Quel argument contient une généralisation abusive ?',
+                excerpt: 'A) "La majorité des étudiants aiment apprendre." B) "Tous les adolescents sont paresseux." C) "L\'eau est essentielle à la vie."',
+                options: ['L\'argument A', 'L\'argument B', 'L\'argument C', 'Aucun'],
+                correct: 1,
+                explanation: 'L\'argument B est une généralisation abusive : "tous" est une affirmation extrême non fondée.'
+            },
+            {
+                type: 'ordre',
+                text: 'Ordonne pour former un texte argumenté :\nA) Enfin, l\'éducation financière prépare aux responsabilités adultes.\nB) L\'éducation devrait inclure des cours d\'économie.\nC) Par exemple, apprendre à gérer un budget est crucial.\nD) Cela permet aux jeunes de comprendre l\'argent.',
+                excerpt: '',
+                options: ['B-D-C-A', 'B-C-D-A', 'B-C-A-D', 'C-B-D-A'],
+                correct: 1,
+                explanation: 'Thèse (B), argument avec exemple (C), argument supplémentaire (D), conclusion (A).'
+            },
+            {
+                type: 'connecteur',
+                text: 'Remplis : "Les légumes sont sains, ____ beaucoup de gens ne les mangent pas assez."',
+                excerpt: '',
+                options: ['donc', 'cependant', 'alors', 'en effet'],
+                correct: 1,
+                explanation: '"Cependant" marque une opposition : bien que les légumes soient sains, les gens ne les consomment pas assez.'
+            },
+            {
+                type: 'these',
+                text: 'Identifie la thèse :',
+                excerpt: 'L\'énergie solaire devrait être davantage utilisée. Premièrement, c\'est une source renouvelable. Deuxièmement, elle réduit la pollution. Troisièmement, elle économise l\'argent à long terme.',
+                options: ['L\'énergie solaire réduit la pollution', 'L\'énergie est importante', 'L\'énergie solaire devrait être davantage utilisée', 'L\'argent est important'],
+                correct: 2,
+                explanation: 'La thèse est énoncée dès le début. Tout le reste sont des arguments qui la soutiennent.'
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+        const totalQuestions = 20;
+
+        function initQuiz() {
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1}/${totalQuestions}`;
+            document.getElementById('questionText').textContent = q.text;
+            document.getElementById('textExcerpt').textContent = q.excerpt;
+            document.getElementById('textExcerpt').style.display = q.excerpt ? 'block' : 'none';
+
+            const optionsHtml = q.options.map((opt, idx) =>
+                `<div class="option" data-index="${idx}" onclick="selectOption(${idx})">${opt}</div>`
+            ).join('');
+            document.getElementById('optionsContainer').innerHTML = optionsHtml;
+
+            document.getElementById('explanation').textContent = '';
+            document.getElementById('explanation').classList.remove('show');
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'none';
+            answered = false;
+
+            updateProgressBar();
+        }
+
+        function selectOption(index) {
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelector(`[data-index="${index}"]`).classList.add('selected');
+        }
+
+        function submitAnswer() {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestion];
+            const selected = document.querySelector('.option.selected');
+
+            if (!selected) return;
+
+            const selectedIndex = parseInt(selected.dataset.index);
+            const isCorrect = selectedIndex === q.correct;
+
+            if (isCorrect) {
+                score++;
+                selected.classList.add('correct');
+            } else {
+                selected.classList.add('incorrect');
+                document.querySelector(`[data-index="${q.correct}"]`).classList.add('correct');
+            }
+
+            document.getElementById('explanation').textContent = q.explanation;
+            document.getElementById('explanation').classList.add('show');
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'block';
+
+            updateScore();
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= totalQuestions) {
+                showResults();
+            } else {
+                showQuestion();
+            }
+        }
+
+        function updateScore() {
+            const correct = score;
+            const incorrect = currentQuestion + 1 - score;
+            const percent = Math.round((score / (currentQuestion + 1)) * 100);
+
+            document.getElementById('correctCount').textContent = correct;
+            document.getElementById('incorrectCount').textContent = incorrect;
+            document.getElementById('percentDisplay').textContent = percent + '%';
+        }
+
+        function updateProgressBar() {
+            const percent = ((currentQuestion + 1) / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = percent + '%';
+        }
+
+        function showResults() {
+            const percent = Math.round((score / totalQuestions) * 100);
+            let stars = '⭐';
+            if (percent >= 80) stars = '⭐⭐⭐';
+            else if (percent >= 60) stars = '⭐⭐';
+
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('resultScreen').classList.add('show');
+            document.getElementById('starsDisplay').textContent = stars;
+            document.getElementById('finalScore').textContent = `${score}/${totalQuestions}`;
+            document.getElementById('resultMessage').textContent = `Réussite : ${percent}%`;
+
+            const resultData = {
+                v: '4_argu',
+                dt: new Date().toISOString(),
+                score: `${score}/20`,
+                pct: percent,
+                stars: stars.length
+            };
+            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+            console.log('RESULT CODE:', encoded);
+        }
+
+        initQuiz();
+    </script>
+</body>
+</html>

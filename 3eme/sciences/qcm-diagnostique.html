@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QCM Diagnostique Sciences</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            font-family: 'Nunito', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .back-link {
+            color: #64dfdf;
+            text-decoration: none;
+            font-weight: 700;
+            padding: 8px 16px;
+            border: 2px solid #64dfdf;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: #64dfdf;
+            color: #08090f;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.4s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .start-container {
+            text-align: center;
+            margin: 50px 0;
+        }
+
+        .start-text {
+            font-size: 18px;
+            margin: 20px 0;
+            color: #ccc;
+        }
+
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff006e, #8338ec);
+            transition: width 0.3s;
+        }
+
+        .question-num {
+            font-size: 12px;
+            color: #64dfdf;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .section-tag.svt {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .section-tag.pc {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .section-tag.tech {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: #08090f;
+        }
+
+        .question-text {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 20px 0;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .option-btn {
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-family: 'Nunito', sans-serif;
+            font-size: 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #ff006e;
+            background: rgba(255, 0, 110, 0.1);
+        }
+
+        .option-btn.correct {
+            background: linear-gradient(135deg, #00d084, #00f2fe);
+            border-color: #00d084;
+            color: #08090f;
+        }
+
+        .option-btn.incorrect {
+            background: linear-gradient(135deg, #ff006e, #f5576c);
+            border-color: #ff006e;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .explanation {
+            background: rgba(100, 223, 223, 0.1);
+            border: 2px solid #64dfdf;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #64dfdf;
+            font-size: 14px;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .explanation.show {
+            display: block;
+        }
+
+        .explanation strong {
+            color: #fff;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .stat-box {
+            text-align: center;
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #64dfdf;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .results {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .score-display {
+            font-size: 60px;
+            font-weight: 800;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stars {
+            font-size: 36px;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+
+        .percentage {
+            font-size: 22px;
+            color: #64dfdf;
+            margin: 15px 0;
+        }
+
+        .radar-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .radar-title {
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #64dfdf;
+        }
+
+        .radar-item {
+            margin: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .radar-label {
+            flex: 0 0 150px;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .radar-bar {
+            flex: 1;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .radar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff006e, #8338ec);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .radar-pct {
+            flex: 0 0 60px;
+            text-align: right;
+            font-weight: 700;
+            color: #ff006e;
+        }
+
+        .result-code {
+            background: rgba(100, 223, 223, 0.1);
+            border: 2px solid #64dfdf;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            color: #64dfdf;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            color: white;
+            margin: 10px 5px;
+            display: inline-block;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 0, 110, 0.4);
+        }
+
+        .button.secondary {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: #08090f;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .question-text {
+                font-size: 18px;
+            }
+
+            .radar-label {
+                flex: 0 0 100px;
+                font-size: 14px;
+            }
+
+            .radar-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .radar-bar {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 QCM Diagnostique Sciences</h1>
+            <a href="/index.html" class="back-link">← Retour</a>
+        </div>
+
+        <!-- START SCREEN -->
+        <div id="startScreen" class="screen active">
+            <div class="quiz-container start-container">
+                <h2>Brevet Blanc Sciences</h2>
+                <p class="start-text">45 questions couvrant les 3 domaines du Brevet</p>
+                <p class="start-text">📚 SVT • ⚛️ Physique-Chimie • 💻 Technologie</p>
+                <button class="button" style="padding: 20px 40px; font-size: 18px; margin-top: 30px;" onclick="startQuiz()">
+                    Commencer
+                </button>
+            </div>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="screen">
+            <div class="quiz-container">
+                <div class="question-num" id="questionNum"></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-label">Total</div>
+                        <div class="stat-value" id="correct">0/45</div>
+                    </div>
+                </div>
+
+                <div class="section-tag" id="sectionTag"></div>
+
+                <div class="question-text" id="questionText"></div>
+
+                <div class="options" id="options"></div>
+
+                <div class="explanation" id="explanation"></div>
+            </div>
+        </div>
+
+        <!-- RESULTS SCREEN -->
+        <div id="resultsScreen" class="screen">
+            <div class="quiz-container results">
+                <h2>Résultats du Diagnostique</h2>
+                <div class="score-display" id="finalScore"></div>
+                <div class="percentage" id="finalPercentage"></div>
+                <div class="stars" id="finalStars"></div>
+
+                <div class="radar-container">
+                    <div class="radar-title">Résultats par domaine</div>
+                    <div class="radar-item">
+                        <div class="radar-label">SVT</div>
+                        <div class="radar-bar">
+                            <div class="radar-fill" id="svtFill">
+                                <span id="svtLabel"></span>
+                            </div>
+                        </div>
+                        <div class="radar-pct" id="svtPct"></div>
+                    </div>
+                    <div class="radar-item">
+                        <div class="radar-label">Physique-Chimie</div>
+                        <div class="radar-bar">
+                            <div class="radar-fill" id="pcFill">
+                                <span id="pcLabel"></span>
+                            </div>
+                        </div>
+                        <div class="radar-pct" id="pcPct"></div>
+                    </div>
+                    <div class="radar-item">
+                        <div class="radar-label">Technologie</div>
+                        <div class="radar-bar">
+                            <div class="radar-fill" id="techFill">
+                                <span id="techLabel"></span>
+                            </div>
+                        </div>
+                        <div class="radar-pct" id="techPct"></div>
+                    </div>
+                </div>
+
+                <div class="result-code" id="resultCode"></div>
+
+                <button class="button" onclick="location.reload()">Rejouer</button>
+                <button class="button secondary" onclick="showStart()">Retour accueil</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const QUESTIONS = [
+            // SVT (15 questions)
+            {
+                section: 'SVT',
+                q: "Quel est le rôle principal de l'ADN dans une cellule ?",
+                opts: ["Fournir de l'énergie", "Stocker l'information génétique", "Fabriquer les protéines", "Réguler la température"],
+                ans: 1,
+                exp: "L'ADN (acide désoxyribonucléique) est la molécule qui contient l'information génétique d'un organisme. Elle est responsable de la transmission des caractères héréditaires."
+            },
+            {
+                section: 'SVT',
+                q: "Quel processus décrit l'évolution des espèces selon Darwin ?",
+                opts: ["La mutation génétique", "La sélection naturelle", "La photosynthèse", "La mitose"],
+                ans: 1,
+                exp: "La sélection naturelle est le mécanisme principal de l'évolution. Les individus les plus adaptés à leur environnement survivent et se reproduisent."
+            },
+            {
+                section: 'SVT',
+                q: "Qu'est-ce que l'immunité innée ?",
+                opts: ["Défense acquise après une maladie", "Défense naturelle présente à la naissance", "Défense obtenue par vaccination", "Défense transmise par les antibiotiques"],
+                ans: 1,
+                exp: "L'immunité innée est la première ligne de défense contre les pathogènes. Elle comprend la peau, les muqueuses et les globules blancs présents dès la naissance."
+            },
+            {
+                section: 'SVT',
+                q: "Quel est l'ordre de la chaîne alimentaire : plante - herbivore - carnivore - ?",
+                opts: ["Décomposeur", "Omnivore", "Producteur", "Niveau trophique"],
+                ans: 0,
+                exp: "La chaîne alimentaire se termine par les décomposeurs (bactéries, champignons) qui dégradent la matière morte et restituent les nutriments au sol."
+            },
+            {
+                section: 'SVT',
+                q: "Combien de chromosomes possède un humain ?",
+                opts: ["23", "46", "92", "48"],
+                ans: 1,
+                exp: "Les humains possèdent 46 chromosomes (23 paires), dont une paire détermine le sexe (XX pour les femmes, XY pour les hommes)."
+            },
+            {
+                section: 'SVT',
+                q: "Quel organisme asexué de reproduction existe chez les plantes ?",
+                opts: ["Pollinisation", "Reproduction végétative", "Fécondation", "Sporulation"],
+                ans: 1,
+                exp: "La reproduction végétative (ou asexuée) chez les plantes se fait par stolons, tubercules ou boutures sans intervention de gamètes."
+            },
+            {
+                section: 'SVT',
+                q: "Quel est le rôle principal des mitochondries ?",
+                opts: ["Synthèse de protéines", "Stockage de l'énergie", "Production d'énergie", "Digestion cellulaire"],
+                ans: 2,
+                exp: "Les mitochondries produisent de l'énergie sous forme d'ATP grâce à la respiration cellulaire, en utilisant le glucose et l'oxygène."
+            },
+            {
+                section: 'SVT',
+                q: "Quel est le principal gaz à effet de serre responsable du changement climatique ?",
+                opts: ["L'azote", "Le dioxyde de carbone (CO₂)", "L'oxygène", "L'hélium"],
+                ans: 1,
+                exp: "Le CO₂ est le principal gaz à effet de serre anthropogénique. Il absorbe la chaleur et maintient une température élevée dans l'atmosphère."
+            },
+            {
+                section: 'SVT',
+                q: "Quel est le stade de développement d'un insecte qui subit une métamorphose complète ?",
+                opts: ["Œuf - nymphe - adulte", "Œuf - larve - nymphe - adulte", "Œuf - nymphe", "Adulte directement"],
+                ans: 1,
+                exp: "Les insectes à métamorphose complète (comme les papillons) passent par 4 stades : œuf, larve, nymphe et adulte."
+            },
+            {
+                section: 'SVT',
+                q: "Quel nutriment est essentiel pour la formation des os ?",
+                opts: ["Le fer", "Le calcium", "Le zinc", "Le magnésium"],
+                ans: 1,
+                exp: "Le calcium est le principal minéral des os. Un apport suffisant en calcium (produits laitiers, végétaux verts) est crucial pour la santé osseuse."
+            },
+            {
+                section: 'SVT',
+                q: "Quel est le nom du processus par lequel les plantes fabriquent leur propre nourriture ?",
+                opts: ["Respiration", "Photosynthèse", "Fermentation", "Digestion"],
+                ans: 1,
+                exp: "La photosynthèse utilise l'énergie lumineuse pour convertir le CO₂ et l'eau en glucose et oxygène. C'est le processus vital des plantes."
+            },
+            {
+                section: 'SVT',
+                q: "Quel est le rôle des anticorps dans le système immunitaire ?",
+                opts: ["Donner de la couleur au sang", "Reconnaître et neutraliser les pathogènes", "Transporter l'oxygène", "Fabriquer de la salive"],
+                ans: 1,
+                exp: "Les anticorps (immunoglobulines) sont des protéines produites par les lymphocytes B. Elles se fixent aux pathogènes pour les neutraliser ou les éliminer."
+            },
+            {
+                section: 'SVT',
+                q: "Quel organe assure la fécondation chez la femme ?",
+                opts: ["L'ovaire", "L'utérus", "La trompe de Fallope", "Le vagin"],
+                ans: 2,
+                exp: "La fécondation se produit généralement dans la trompe de Fallope (tube utérin), où le spermatozoïde rencontre l'ovule."
+            },
+            {
+                section: 'SVT',
+                q: "Quel est le pH normal du sang humain ?",
+                opts: ["7.0", "7.4", "8.0", "6.5"],
+                ans: 1,
+                exp: "Le pH normal du sang est d'environ 7.4, légèrement alcalin. Le maintien de ce pH est crucial pour les fonctions biologiques."
+            },
+            {
+                section: 'SVT',
+                q: "Quel est le rôle des herbivores dans un écosystème ?",
+                opts: ["Décomposer la matière", "Consommer les plantes et transformer l'énergie", "Polliniser les fleurs", "Fixer l'azote du sol"],
+                ans: 1,
+                exp: "Les herbivores consomment les plantes (producteurs) et convertissent l'énergie végétale en biomasse accessible aux carnivores au niveau trophique suivant."
+            },
+
+            // Physique-Chimie (15 questions)
+            {
+                section: 'Physique-Chimie',
+                q: "Selon la loi d'Ohm, quelle est la relation entre U, I et R ?",
+                opts: ["U = I × R", "I = U / R", "R = U × I", "U = I / R"],
+                ans: 0,
+                exp: "La loi d'Ohm établit que la tension U (en volts) = intensité I (en ampères) × résistance R (en ohms). U = I × R"
+            },
+            {
+                section: 'Physique-Chimie',
+                q: "Qu'est-ce que l'énergie cinétique ?",
+                opts: ["Énergie du mouvement", "Énergie potentielle", "Énergie thermique", "Énergie chimique"],
+                ans: 0,
+                exp: "L'énergie cinétique est l'énergie liée au mouvement d'un objet. Elle dépend de sa masse et de sa vitesse : Ec = ½ × m × v²"
+            },
+            {
+                section: 'Physique-Chimie',
+                q: "Quel est l'état de la matière des gaz ?",
+                opts: ["Particules très rapprochées et ordonnées", "Particules proches mais libres", "Particules très éloignées et désordonnées", "Particules fixes dans un réseau"],
+                ans: 2,
+                exp: "Dans un gaz, les particules sont très éloignées les unes des autres et se déplacent librement et désordonnément. Le gaz occupe tout l'espace disponible."
+            },
+            {
+                section: 'Physique-Chimie',
+                q: "Quelle est la formule chimique du dioxyde de carbone ?",
+                opts: ["CO", "CO₂", "C₂O", "C₂O₂"],
+                ans: 1,
+                exp: "Le dioxyde de carbone (dioxyde de carbone) a pour formule CO₂ : 1 atome de carbone et 2 atomes d'oxygène."
+            },
+            {
+                section: 'Physique-Chimie',
+                q: "Quel type de réaction chimique libère de la chaleur ?",
+                opts: ["Réaction endothermique", "Réaction exothermique", "Réaction équilibrée", "Réaction de combustion lente"],
+                ans: 1,
+                exp: "Une réaction exothermique libère de l'énergie sous forme de chaleur et/ou de lumière. Exemple : la combustion d'une allumette."
+            },
+            {
+                section: 'Physique-Chimie',
+                q: "Quel gaz est nécessaire pour la combustion ?",
+                opts: ["Le dioxyde de carbone", "L'azote", "L'oxygène", "L'hydrogène"],
+                ans: 2,
+                exp: "La combustion nécessite un triangle du feu : un comburant (O₂), un combustible et une source de chaleur (ignition)."
+            },
+            {
+                section: 'Physique-Chimie',
+                q: "Quelle est la vitesse de la lumière dans le vide ?",
+                opts: ["300 000 km/s", "30 000 km/s", "3 000 km/s", "3 000 000 km/s"],
+                ans: 0,
+                exp: "La vitesse de la lumière dans le vide est d'environ 300 000 km/s (ou 3 × 10⁸ m/s), notée c."
+            },
+            {
+                section: 'Physique-Chimie',
+                q: "Que signifie un pH de 7 ?",
+                opts: ["Très acide", "Neutre", "Très basique", "Faiblement acide"],
+                ans: 1,
+                exp: "Un pH de 7 indique une solution neutre (exemple : eau pure). pH < 7 = acide, pH > 7 = basique."
+            },
+            {
+                section: 'Physique-Chimie',
+                q: "Quelle est l'unité de mesure de l'intensité du courant électrique ?",
+                opts: ["Le volt (V)", "L'ampère (A)", "L'ohm (Ω)", "Le watt (W)"],
+                ans: 1,
+                exp: "L'ampère (A) est l'unité d'intensité du courant électrique. L'intensité mesure la quantité de charge électrique passant par un point par unité de temps."
+            },
+            {
+                section: 'Physique-Chimie',
+                q: "Quel est le nombre d'atomes d'oxygène dans la molécule H₂SO₄ ?",
+                opts: ["1", "2", "4", "8"],
+                ans: 2,
+                exp: "L'acide sulfurique H₂SO₄ contient : 2 atomes de H, 1 atome de S et 4 atomes d'O (au total 7 atomes)."
+            },
+            {
+                section: 'Physique-Chimie',
+                q: "Quel type d'onde est responsable du spectre visible ?",
+                opts: ["Onde sonore", "Onde radio", "Onde électromagnétique (lumière visible)", "Onde sismique"],
+                ans: 2,
+                exp: "La lumière visible est une onde électromagnétique avec des longueurs d'onde entre ~400 nm (violet) et ~700 nm (rouge)."
+            },
+            {
+                section: 'Physique-Chimie',
+                q: "Quel est le poids d'une masse de 10 kg sur Terre (g ≈ 10 N/kg) ?",
+                opts: ["10 N", "100 N", "1 N", "1000 N"],
+                ans: 1,
+                exp: "Le poids P = m × g. Avec m = 10 kg et g ≈ 10 N/kg, on obtient P = 100 N."
+            },
+            {
+                section: 'Physique-Chimie',
+                q: "Quel est le produit d'une réaction acide-base ?",
+                opts: ["Un gaz", "Un sel et de l'eau", "Un acide plus fort", "Rien (pas de réaction)"],
+                ans: 1,
+                exp: "Une réaction acide-base produit un sel et de l'eau. Exemple : HCl + NaOH → NaCl + H₂O"
+            },
+            {
+                section: 'Physique-Chimie',
+                q: "Quel est le rôle d'un catalyseur dans une réaction chimique ?",
+                opts: ["Augmenter l'énergie d'activation", "Accélérer la réaction sans être consommé", "Ralentir la réaction", "Changer le produit final"],
+                ans: 1,
+                exp: "Un catalyseur diminue l'énergie d'activation et accélère une réaction chimique sans être consommé lui-même. Il est régénéré à la fin."
+            },
+
+            // Technologie (15 questions)
+            {
+                section: 'Technologie',
+                q: "Qu'est-ce qu'un algorithme ?",
+                opts: ["Un appareil électronique", "Une suite d'instructions pour résoudre un problème", "Un type de logiciel", "Un langage de programmation"],
+                ans: 1,
+                exp: "Un algorithme est une procédure étape par étape pour résoudre un problème. Les algorithmes sont à la base de la programmation informatique."
+            },
+            {
+                section: 'Technologie',
+                q: "Quel est le rôle d'un serveur dans un réseau informatique ?",
+                opts: ["Protéger les données", "Fournir des services et des ressources aux clients", "Détruire les virus", "Augmenter la vitesse d'Internet"],
+                ans: 1,
+                exp: "Un serveur est un ordinateur qui fournit des services (stockage, traitement de données) à d'autres ordinateurs (clients) du réseau."
+            },
+            {
+                section: 'Technologie',
+                q: "Quel est l'objectif principal d'un système de gestion de contenu (CMS) ?",
+                opts: ["Bloquer les virus", "Faciliter la création et la gestion de sites web", "Coder en HTML", "Vendre des produits"],
+                ans: 1,
+                exp: "Un CMS (exemple : WordPress) permet aux utilisateurs sans compétences de programmation de créer et gérer du contenu web facilement."
+            },
+            {
+                section: 'Technologie',
+                q: "Quel est le nom du protocole utilisé pour la navigation sur Internet ?",
+                opts: ["TCP", "HTTP/HTTPS", "FTP", "DNS"],
+                ans: 1,
+                exp: "HTTP (HyperText Transfer Protocol) et HTTPS (version sécurisée) sont les protocoles utilisés pour transférer des pages web sur Internet."
+            },
+            {
+                section: 'Technologie',
+                q: "Qu'est-ce que l'Internet des Objets (IoT) ?",
+                opts: ["Un type de virus", "Des objets connectés à Internet", "Un jeu vidéo", "Un protocole de sécurité"],
+                ans: 1,
+                exp: "L'IoT désigne les appareils physiques (capteurs, montres, réfrigérateurs) connectés à Internet pouvant communiquer et partager des données."
+            },
+            {
+                section: 'Technologie',
+                q: "Quel est le rôle d'une batterie de secours (UPS) dans un système informatique ?",
+                opts: ["Recharger les appareils", "Maintenir l'alimentation en cas de coupure de courant", "Augmenter les performances", "Refroidir les composants"],
+                ans: 1,
+                exp: "Une UPS (Uninterruptible Power Supply) fournit une alimentation électrique temporaire lors d'une coupure de courant, évitant la perte de données."
+            },
+            {
+                section: 'Technologie',
+                q: "Quel est le langage de programmation le plus utilisé pour les sites web dynamiques ?",
+                opts: ["C++", "Python", "PHP", "JavaScript côté serveur"],
+                ans: 2,
+                exp: "PHP est le langage côté serveur le plus populaire pour créer des sites web dynamiques. Node.js (JavaScript) est aussi très utilisé."
+            },
+            {
+                section: 'Technologie',
+                q: "Qu'est-ce qu'une base de données ?",
+                opts: ["Un type de virus", "Un ensemble organisé de données stockées et accessibles", "Un logiciel de navigation", "Un protocole de sécurité"],
+                ans: 1,
+                exp: "Une base de données est une collection structurée d'informations stockées numériquement, organisées de manière à permettre des recherches et des modifications efficaces."
+            },
+            {
+                section: 'Technologie',
+                q: "Quel est le rôle d'un pare-feu (firewall) ?",
+                opts: ["Accélérer la connexion Internet", "Contrôler et filtrer le trafic réseau", "Compresser les fichiers", "Augmenter la RAM"],
+                ans: 1,
+                exp: "Un pare-feu est un système de sécurité qui surveille et contrôle le trafic réseau entrant et sortant, bloquant les connexions non autorisées."
+            },
+            {
+                section: 'Technologie',
+                q: "Quel est l'objectif principal de la robotique ?",
+                opts: ["Créer des robots qui remplacent les humains", "Concevoir des machines automatisées pour accomplir des tâches", "Jouer à des jeux vidéo", "Étudier les insectes"],
+                ans: 1,
+                exp: "La robotique consiste à concevoir, construire et programmer des robots pour automatiser des tâches, améliorer l'efficacité et la sécurité."
+            },
+            {
+                section: 'Technologie',
+                q: "Qu'est-ce qu'une micropuce (circuit intégré) ?",
+                opts: ["Un type de biscuit", "Un mini circuit électronique contenant des milliers de transistors", "Un composant mécanique", "Un câble électrique"],
+                ans: 1,
+                exp: "Une micropuce est un circuit intégré miniaturisé contenant des transistors et d'autres composants électroniques, formant le cœur des appareils modernes."
+            },
+            {
+                section: 'Technologie',
+                q: "Quel est le format de compression de vidéo le plus courant sur Internet ?",
+                opts: ["BMP", "MP4", "TIFF", "GIF animé"],
+                ans: 1,
+                exp: "MP4 (MPEG-4) est le format vidéo standard pour le streaming Internet et les appareils mobiles, offrant une bonne qualité avec une compression efficace."
+            },
+            {
+                section: 'Technologie',
+                q: "Qu'est-ce que le cloud computing ?",
+                opts: ["Un logiciel de dessin", "Stocker et accéder à des données via Internet au lieu de localement", "Un réseau sans fil", "Un type de virus"],
+                ans: 1,
+                exp: "Le cloud computing permet d'accéder à des services et des données via Internet sans avoir besoin de les stocker localement (exemples : Google Drive, Microsoft OneDrive)."
+            },
+            {
+                section: 'Technologie',
+                q: "Quel est le rôle d'une adresse IP dans un réseau ?",
+                opts: ["Identifier de manière unique un appareil dans un réseau", "Crypter les données", "Accélérer Internet", "Filtrer les annonces"],
+                ans: 0,
+                exp: "Une adresse IP (Internet Protocol) est un identifiant unique assigné à chaque appareil sur un réseau, permettant la communication entre appareils."
+            },
+            {
+                section: 'Technologie',
+                q: "Qu'est-ce que la réalité augmentée (AR) ?",
+                opts: ["Un jeu vidéo", "Superposition d'éléments numériques sur le monde réel perçu par caméra", "Une simulation complètement virtuelle", "Un type de batterie"],
+                ans: 1,
+                exp: "La réalité augmentée intègre des éléments numériques (texte, images, 3D) dans la vision du monde réel, créant une expérience immersive (exemple : Pokémon GO)."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let scores = { total: 0, svt: 0, pc: 0, tech: 0 };
+        let maxScores = { svt: 0, pc: 0, tech: 0 };
+        let answered = false;
+
+        function startQuiz() {
+            // Shuffle questions
+            QUESTIONS.sort(() => Math.random() - 0.5);
+
+            // Count max scores per section
+            QUESTIONS.forEach(q => {
+                if (q.section === 'SVT') maxScores.svt++;
+                else if (q.section === 'Physique-Chimie') maxScores.pc++;
+                else if (q.section === 'Technologie') maxScores.tech++;
+            });
+
+            currentQuestion = 0;
+            scores = { total: 0, svt: 0, pc: 0, tech: 0 };
+            answered = false;
+
+            showScreen('quizScreen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestion >= 45) {
+                showResults();
+                return;
+            }
+
+            answered = false;
+            const q = QUESTIONS[currentQuestion];
+
+            const sectionEmoji = {
+                'SVT': '📚',
+                'Physique-Chimie': '⚛️',
+                'Technologie': '💻'
+            };
+
+            const sectionTag = document.getElementById('sectionTag');
+            sectionTag.textContent = sectionEmoji[q.section] + ' ' + q.section;
+            sectionTag.className = 'section-tag ' + {
+                'SVT': 'svt',
+                'Physique-Chimie': 'pc',
+                'Technologie': 'tech'
+            }[q.section];
+
+            document.getElementById('questionNum').textContent = `Question ${currentQuestion + 1} / 45`;
+            document.getElementById('questionText').textContent = q.q;
+            document.getElementById('progressFill').style.width = ((currentQuestion / 45) * 100) + '%';
+
+            const opts = document.getElementById('options');
+            opts.innerHTML = '';
+            q.opts.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(idx);
+                opts.appendChild(btn);
+            });
+
+            document.getElementById('explanation').className = 'explanation';
+            document.getElementById('explanation').textContent = '';
+        }
+
+        function checkAnswer(idx) {
+            if (answered) return;
+            answered = true;
+
+            const q = QUESTIONS[currentQuestion];
+            const buttons = document.querySelectorAll('.option-btn');
+
+            if (idx === q.ans) {
+                scores.total++;
+                if (q.section === 'SVT') scores.svt++;
+                else if (q.section === 'Physique-Chimie') scores.pc++;
+                else if (q.section === 'Technologie') scores.tech++;
+                buttons[idx].classList.add('correct');
+            } else {
+                buttons[idx].classList.add('incorrect');
+                buttons[q.ans].classList.add('correct');
+            }
+
+            buttons.forEach(btn => btn.disabled = true);
+            document.getElementById('correct').textContent = scores.total + '/45';
+
+            const exp = document.getElementById('explanation');
+            exp.innerHTML = '<strong>' + (idx === q.ans ? '✅ Correct !' : '❌ Incorrect') + '</strong><br>' + q.exp;
+            exp.classList.add('show');
+
+            setTimeout(nextQuestion, 3500);
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            loadQuestion();
+        }
+
+        function showResults() {
+            const pct = Math.round((scores.total / 45) * 100);
+            const svtPct = Math.round((scores.svt / maxScores.svt) * 100);
+            const pcPct = Math.round((scores.pc / maxScores.pc) * 100);
+            const techPct = Math.round((scores.tech / maxScores.tech) * 100);
+
+            let stars = '';
+            if (pct >= 90) stars = '⭐⭐⭐';
+            else if (pct >= 75) stars = '⭐⭐';
+            else if (pct >= 50) stars = '⭐';
+
+            const resultCode = btoa(JSON.stringify({
+                v: 'c_sciences',
+                dt: new Date().toISOString(),
+                score: scores.total + '/45',
+                pct: pct,
+                svt_pct: svtPct,
+                pc_pct: pcPct,
+                tech_pct: techPct,
+                stars: stars.length
+            }));
+
+            document.getElementById('finalScore').textContent = scores.total + '/45';
+            document.getElementById('finalPercentage').textContent = pct + '%';
+            document.getElementById('finalStars').textContent = stars || '❌';
+
+            // Radar fills
+            document.getElementById('svtFill').style.width = svtPct + '%';
+            document.getElementById('svtLabel').textContent = scores.svt + '/' + maxScores.svt;
+            document.getElementById('svtPct').textContent = svtPct + '%';
+
+            document.getElementById('pcFill').style.width = pcPct + '%';
+            document.getElementById('pcLabel').textContent = scores.pc + '/' + maxScores.pc;
+            document.getElementById('pcPct').textContent = pcPct + '%';
+
+            document.getElementById('techFill').style.width = techPct + '%';
+            document.getElementById('techLabel').textContent = scores.tech + '/' + maxScores.tech;
+            document.getElementById('techPct').textContent = techPct + '%';
+
+            document.getElementById('resultCode').textContent = resultCode;
+
+            showScreen('resultsScreen');
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function showStart() {
+            showScreen('startScreen');
+        }
+    </script>
+</body>
+</html>

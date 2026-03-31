@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🇬🇧 Verb Master — 10 Sessions</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#07080e;color:#e8eaf6;font-family:'Segoe UI',system-ui,sans-serif}
+body{display:flex;flex-direction:column;align-items:center;padding:16px 12px;min-height:100vh}
+.screen{display:none;width:100%;max-width:620px;flex-direction:column;align-items:center;gap:16px;padding-bottom:40px}
+.screen.on{display:flex}
+
+/* ── HOME / SESSION MAP ── */
+.hdr{text-align:center;padding:24px 0 8px}
+.hdr h1{font-size:2rem;font-weight:900;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hdr p{color:#646880;font-size:.88rem;margin-top:4px}
+.session-grid{display:flex;flex-direction:column;gap:10px;width:100%}
+.sess-card{border-radius:14px;padding:16px 18px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:transform .15s,opacity .15s;position:relative;overflow:hidden}
+.sess-card.locked{opacity:.4;cursor:not-allowed;background:#0d0f1a;border:1px solid #1e2035}
+.sess-card.open{background:#11131e;border:1px solid #1e2035}
+.sess-card.open:hover{transform:translateX(4px)}
+.sess-card.done{background:#0a1f10;border:1px solid #1e4020}
+.sess-card.done:hover{transform:translateX(4px)}
+.sess-num{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:900;flex-shrink:0}
+.sess-info h3{font-size:.95rem;font-weight:800;margin-bottom:2px}
+.sess-info p{font-size:.78rem;color:#646880}
+.sess-right{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.sess-stars{font-size:1rem;letter-spacing:2px}
+.sess-score{font-size:.75rem;color:#646880}
+.quiz-badge{background:#1e3a0a;color:#4ade80;font-size:.72rem;font-weight:700;border-radius:6px;padding:2px 8px}
+.quiz-badge.todo{background:#2a1e0a;color:#f59e0b}
+.global-bar{background:#11131e;border:1px solid #1e2035;border-radius:14px;padding:14px 18px;width:100%}
+.gb-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.gb-top span{font-size:.78rem;color:#646880}
+.gb-top strong{font-size:.95rem;color:#60a5fa}
+.prog-track{background:#1e2035;border-radius:6px;height:8px;overflow:hidden}
+.prog-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#2563eb,#7c3aed);transition:width .5s}
+
+/* ── TRAINER ── */
+.topbar{display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:16px}
+.tb-s{text-align:center}
+.tb-v{font-size:1.4rem;font-weight:900}
+.tb-l{font-size:.7rem;color:#646880;margin-top:1px}
+.prog-wrap{width:100%;margin-bottom:18px}
+.prog-label{display:flex;justify-content:space-between;font-size:.75rem;color:#646880;margin-top:4px}
+.card{background:#11131e;border:2px solid #1e2035;border-radius:18px;padding:24px 20px 20px;width:100%;transition:border-color .3s}
+.card.p0{border-color:#2563eb55}.card.p1{border-color:#7c3aed55}.card.p2{border-color:#db277755}
+.phase-pill{display:inline-flex;align-items:center;gap:6px;border-radius:20px;padding:4px 12px;font-size:.76rem;font-weight:700;margin-bottom:16px}
+.pp0{background:#1e2a3d;color:#60a5fa}.pp1{background:#28213d;color:#a78bfa}.pp2{background:#3d1e2a;color:#f472b6}
+.verb-row{display:flex;align-items:baseline;justify-content:center;gap:16px;margin-bottom:6px;flex-wrap:wrap}
+.v-inf{font-size:2.2rem;font-weight:900;font-family:monospace}
+.v-arr{font-size:1.4rem;color:#2e3152}
+.v-ans{font-size:2.2rem;font-weight:900;font-family:monospace;transition:all .3s;min-width:80px}
+.v-ans.show{color:#4ade80}.v-ans.partial{color:#fbbf24}.v-ans.hidden{color:#1e2035}
+.v-tr{text-align:center;color:#646880;font-size:.85rem;margin-bottom:18px}
+.instr{text-align:center;color:#646880;font-size:.82rem;margin-bottom:12px;min-height:18px}
+.verb-input{width:100%;background:#0d0f1a;border:2px solid #1e2035;border-radius:12px;padding:14px 18px;color:#e8eaf6;font-family:monospace;font-size:1.4rem;font-weight:700;outline:none;text-align:center;letter-spacing:.05em;transition:border-color .15s,background .15s}
+.verb-input:focus{border-color:#2563eb}
+.verb-input.ok{border-color:#4ade80;background:#0a1f10;animation:pok .3s ease}
+.verb-input.err{border-color:#f87171;background:#1f0a0a;animation:perr .3s ease}
+@keyframes pok{0%{transform:scale(1.02)}100%{transform:scale(1)}}
+@keyframes perr{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.slots{display:flex;justify-content:center;gap:5px;margin-top:10px;min-height:6px}
+.slot{width:22px;height:4px;border-radius:2px;background:#1e2035;transition:background .12s}
+.slot.filled{background:#60a5fa}.slot.correct{background:#4ade80}.slot.wrong{background:#f87171}
+.rep-info{text-align:center;font-size:.78rem;color:#646880;margin-top:8px;min-height:16px}
+.fb{text-align:center;font-size:.95rem;font-weight:700;min-height:24px;margin-top:6px}
+.sparkle{position:fixed;pointer-events:none;animation:sfx .8s ease forwards;font-size:1rem}
+@keyframes sfx{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(-60px) rotate(180deg)}}
+
+/* ── QUIZ ── */
+.quiz-header{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.quiz-header h2{font-size:1.1rem;font-weight:800}
+.qdots{display:flex;gap:5px;margin-bottom:16px}
+.qdot{width:10px;height:10px;border-radius:50%;background:#1e2035}
+.qdot.curr{background:#60a5fa}.qdot.ok{background:#4ade80}.qdot.ko{background:#f87171}
+.qcard{background:#11131e;border:2px solid #1e2035;border-radius:16px;padding:22px;width:100%}
+.qtype{font-size:.72rem;color:#646880;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.qtxt{font-size:1.15rem;font-weight:800;margin-bottom:20px;line-height:1.5;font-family:monospace}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{background:#0d0f1a;border:1px solid #1e2035;border-radius:10px;padding:12px 16px;cursor:pointer;font-size:.95rem;font-weight:700;font-family:monospace;transition:border-color .12s,background .12s;display:flex;align-items:center;gap:10px}
+.opt:hover:not(.dis){border-color:#60a5fa;background:#0f1525}
+.opt-l{width:24px;height:24px;border-radius:50%;background:#1e2035;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;flex-shrink:0;font-family:system-ui}
+.opt.ok2{border-color:#4ade80;background:#0a1f10}.opt.ok2 .opt-l{background:#4ade80;color:#000}
+.opt.ko2{border-color:#f87171;background:#1f0a0a}.opt.ko2 .opt-l{background:#f87171;color:#000}
+.opt.dis{cursor:default}
+.qexpl{background:#0d0f1a;border:1px solid #1e2035;border-radius:10px;padding:12px 14px;margin-top:12px;font-size:.88rem;color:#a0a3b8;line-height:1.6;animation:fi .25s ease}
+.qexpl strong{color:#93c5fd}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.nxt-wrap{display:flex;justify-content:flex-end;margin-top:14px}
+.btn{padding:11px 26px;border-radius:12px;border:none;cursor:pointer;font-weight:800;font-size:.92rem;transition:transform .12s,opacity .12s}
+.btn:hover{transform:translateY(-1px);opacity:.88}
+.btn-blue{background:#2563eb;color:#fff}
+.btn-gr{background:#0a1f10;color:#4ade80;border:1px solid #1e4020}
+.btn-gray{background:#181a28;color:#646880;border:1px solid #1e2035}
+
+/* ── RESULTS ── */
+.big-icon{font-size:3.5rem;text-align:center}
+.big-score{font-size:3.5rem;font-weight:900;text-align:center}
+.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%}
+.rg{background:#11131e;border:1px solid #1e2035;border-radius:12px;padding:14px;text-align:center}
+.rg-v{font-size:1.5rem;font-weight:900;margin-bottom:2px}
+.rg-l{font-size:.72rem;color:#646880}
+.code-box{background:#11131e;border:1px solid #1e2035;border-radius:14px;padding:16px;width:100%;text-align:center}
+.code-box h4{margin-bottom:8px;font-size:.92rem}
+.code-txt{font-family:monospace;font-size:.7rem;word-break:break-all;color:#93c5fd;background:#0d0f1a;border:1px solid #1e2035;border-radius:8px;padding:10px;user-select:all;max-height:70px;overflow:auto;text-align:left}
+.copy-btn{margin-top:8px;padding:7px 18px;border-radius:20px;border:none;background:#2563eb;color:#fff;font-weight:800;cursor:pointer;font-size:.82rem}
+.action-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="home" class="screen on">
+  <div class="hdr" style="width:100%">
+    <h1>🇬🇧 Verb Master</h1>
+    <p>10 sessions · 77 verbes irréguliers · Quiz de validation</p>
+  </div>
+  <div class="global-bar">
+    <div class="gb-top"><span>Progression globale</span><strong id="g-pct">0%</strong></div>
+    <div class="prog-track"><div class="prog-fill" id="g-bar" style="width:0%"></div></div>
+    <div style="font-size:.75rem;color:#646880;margin-top:5px" id="g-detail">0 sessions terminées · 0 quiz validés</div>
+  </div>
+  <div class="session-grid" id="sess-grid"></div>
+</div>
+
+<!-- TRAINER -->
+<div id="trainer" class="screen">
+  <div class="topbar" style="width:100%">
+    <div class="tb-s"><div class="tb-v" id="t-sess" style="color:#60a5fa">S1</div><div class="tb-l">Session</div></div>
+    <div class="tb-s"><div class="tb-v" id="t-phase-v">—</div><div class="tb-l" id="t-phase-l">Phase</div></div>
+    <div class="tb-s"><div class="tb-v" id="t-streak" style="color:#f59e0b">0🔥</div><div class="tb-l">Série</div></div>
+    <button onclick="goHome()" style="background:none;border:1px solid #1e2035;border-radius:8px;padding:6px 12px;color:#646880;cursor:pointer;font-size:.82rem">✕</button>
+  </div>
+  <div class="prog-wrap" style="width:100%">
+    <div class="prog-track"><div class="prog-fill" id="t-prog" style="width:0%"></div></div>
+    <div class="prog-label"><span id="t-prog-l">Verbe 1</span><span id="t-prog-r"></span></div>
+  </div>
+  <div class="card p0" id="t-card">
+    <div class="phase-pill pp0" id="t-pill">Phase 1 — Copie</div>
+    <div class="verb-row">
+      <div class="v-inf" id="t-inf">—</div>
+      <div class="v-arr">→</div>
+      <div class="v-ans show" id="t-ans">—</div>
+    </div>
+    <div class="v-tr" id="t-tr"></div>
+    <div class="instr" id="t-instr"></div>
+    <input class="verb-input" id="t-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" placeholder="Tape le prétérit…">
+    <div class="slots" id="t-slots"></div>
+    <div class="rep-info" id="t-repinfo"></div>
+    <div class="fb" id="t-fb"></div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="screen">
+  <div class="quiz-header" style="width:100%">
+    <h2 id="q-title">Quiz — Session 1</h2>
+    <button onclick="goHome()" style="background:none;border:1px solid #1e2035;border-radius:8px;padding:6px 12px;color:#646880;cursor:pointer;font-size:.82rem">✕</button>
+  </div>
+  <div class="prog-track" style="width:100%;height:6px;margin-bottom:4px"><div class="prog-fill" id="q-prog" style="width:0%"></div></div>
+  <div class="qdots" id="q-dots"></div>
+  <div class="qcard" id="q-card">
+    <div class="qtype" id="q-type"></div>
+    <div class="qtxt" id="q-txt"></div>
+    <div class="opts" id="q-opts"></div>
+    <div class="qexpl" id="q-expl" style="display:none"></div>
+  </div>
+  <div class="nxt-wrap" id="q-nxt" style="display:none">
+    <button class="btn btn-blue" id="q-nxt-btn">Suivante →</button>
+  </div>
+</div>
+
+<!-- SESSION RESULT -->
+<div id="sess-result" class="screen">
+  <div class="big-icon" id="sr-icon">🎉</div>
+  <div style="text-align:center">
+    <h2 id="sr-title" style="font-size:1.4rem">Session terminée !</h2>
+    <p style="color:#646880;margin-top:4px" id="sr-sub"></p>
+  </div>
+  <div class="result-grid">
+    <div class="rg"><div class="rg-v" style="color:#4ade80" id="sr-done">0</div><div class="rg-l">Maîtrisés</div></div>
+    <div class="rg"><div class="rg-v" style="color:#f59e0b" id="sr-streak">0</div><div class="rg-l">Meilleure série</div></div>
+    <div class="rg"><div class="rg-v" style="color:#60a5fa" id="sr-acc">0%</div><div class="rg-l">Précision</div></div>
+  </div>
+  <div class="action-row">
+    <button class="btn btn-blue" id="sr-quiz-btn">📝 Faire le quiz →</button>
+    <button class="btn btn-gray" onclick="goHome()">🏠 Menu</button>
+  </div>
+</div>
+
+<!-- QUIZ RESULT -->
+<div id="quiz-result" class="screen">
+  <div class="big-icon" id="qr-icon">🏆</div>
+  <div class="big-score" id="qr-score" style="color:#4ade80"></div>
+  <p style="color:#646880;text-align:center" id="qr-msg"></p>
+  <div class="result-grid">
+    <div class="rg"><div class="rg-v" id="qr-c" style="color:#4ade80"></div><div class="rg-l">Bonnes</div></div>
+    <div class="rg"><div class="rg-v" id="qr-w" style="color:#f87171"></div><div class="rg-l">Mauvaises</div></div>
+    <div class="rg"><div class="rg-v" id="qr-stars" style="font-size:1.2rem"></div><div class="rg-l">Note</div></div>
+  </div>
+  <div class="code-box">
+    <h4>📬 Code pour papa / maman</h4>
+    <div class="code-txt" id="qr-code"></div>
+    <button class="copy-btn" onclick="copyCode()">📋 Copier</button>
+  </div>
+  <div class="action-row">
+    <button class="btn btn-blue" onclick="goHome()">🏠 Retour au menu</button>
+    <button class="btn btn-gray" id="qr-retry">🔄 Refaire le quiz</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// DATA — 77 verbes en 10 sessions
+// ═══════════════════════════════════════════
+const SESSIONS_RAW = [
+  // S1 — Les fondamentaux (être, avoir, faire, aller, venir, voir, dire, faire)
+  [['be','was/were','être'],['have','had','avoir'],['do','did','faire'],['go','went','aller'],['come','came','venir'],['see','saw','voir'],['say','said','dire'],['get','got','obtenir']],
+  // S2 — Prendre, donner, trouver, penser, faire, mettre, savoir, parler
+  [['take','took','prendre'],['give','gave','donner'],['find','found','trouver'],['think','thought','penser'],['make','made','fabriquer'],['put','put','mettre'],['know','knew','savoir'],['speak','spoke','parler']],
+  // S3 — Acheter, apporter, enseigner, attraper, manger, boire, écrire, lire
+  [['buy','bought','acheter'],['bring','brought','apporter'],['teach','taught','enseigner'],['catch','caught','attraper'],['eat','ate','manger'],['drink','drank','boire'],['write','wrote','écrire'],['read','read','lire']],
+  // S4 — Casser, choisir, tomber, ressentir, oublier, grandir, entendre, garder
+  [['break','broke','casser'],['choose','chose','choisir'],['fall','fell','tomber'],['feel','felt','ressentir'],['forget','forgot','oublier'],['grow','grew','grandir'],['hear','heard','entendre'],['keep','kept','garder']],
+  // S5 — Partir, perdre, rencontrer, payer, courir, envoyer, montrer, chanter
+  [['leave','left','partir'],['lose','lost','perdre'],['meet','met','rencontrer'],['pay','paid','payer'],['run','ran','courir'],['send','sent','envoyer'],['show','showed','montrer'],['sing','sang','chanter']],
+  // S6 — S'asseoir, dormir, se lever, nager, lancer, comprendre, porter, gagner
+  [['sit','sat','s\'asseoir'],['sleep','slept','dormir'],['stand','stood','se lever'],['swim','swam','nager'],['throw','threw','lancer'],['understand','understood','comprendre'],['wear','wore','porter'],['win','won','gagner']],
+  // S7 — Couper, frapper, laisser, conduire, voler, commencer, mordre, souffler
+  [['cut','cut','couper'],['hit','hit','frapper'],['let','let','laisser'],['drive','drove','conduire'],['steal','stole','voler'],['begin','began','commencer'],['bite','bit','mordre'],['blow','blew','souffler']],
+  // S8 — Construire, brûler, coûter, dessiner, rêver, nourrir, se battre, geler
+  [['build','built','construire'],['burn','burnt','brûler'],['cost','cost','coûter'],['draw','drew','dessiner'],['dream','dreamt','rêver'],['feed','fed','nourrir'],['fight','fought','se battre'],['freeze','froze','geler']],
+  // S9 — Tenir, blesser, allumer, signifier, se lever(soleil), vendre, tirer, fermer
+  [['hold','held','tenir'],['hurt','hurt','blesser'],['light','lit','allumer'],['mean','meant','signifier'],['rise','rose','se lever'],['sell','sold','vendre'],['shoot','shot','tirer'],['shut','shut','fermer']],
+  // S10 — Dépenser, se réveiller, voler(avion), faire du vélo, raconter, rester, prier, rompre
+  [['spend','spent','dépenser'],['wake','woke','se réveiller'],['fly','flew','voler(avion)'],['ride','rode','faire du vélo'],['tell','told','raconter'],['ride','rode','faire du vélo'],['keep','kept','garder'],['fall','fell','tomber']],
+];
+// S10 cleanup — use unique verbs for last session
+SESSIONS_RAW[9]=[['spend','spent','dépenser'],['wake','woke','se réveiller'],['fly','flew','voler(avion)'],['ride','rode','faire du vélo'],['tell','told','raconter'],['let','let','laisser/permettre'],['lay','laid','poser'],['hide','hid','se cacher']];
+
+const SESSION_NAMES=['Les fondamentaux','Prendre & savoir','Acheter & manger','Casser & sentir','Partir & courir','S\'asseoir & nager','Couper & conduire','Construire & rêver','Tenir & vendre','Révision finale'];
+
+// ═══════════════════════════════════════════
+// PERSISTENCE
+// ═══════════════════════════════════════════
+const KEY='vbm_v2';
+function loadSave(){
+  try{return JSON.parse(localStorage.getItem(KEY)||'null');}catch{return null;}
+}
+function freshSave(){
+  return {
+    sessions:Array.from({length:10},(_,i)=>({
+      trained:false,quizDone:false,quizScore:0,quizStars:0,
+      trainScore:0,trainStreak:0,trainAcc:0
+    }))
+  };
+}
+let save=loadSave()||freshSave();
+function persist(){localStorage.setItem(KEY,JSON.stringify(save));}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=0|Math.random()*(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo(0,0);}
+function goHome(){show('home');renderHome();}
+function stars(n){return '⭐'.repeat(n)+'☆'.repeat(3-n);}
+
+// ═══════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════
+function renderHome(){
+  const doneSess=save.sessions.filter(s=>s.trained).length;
+  const doneQuiz=save.sessions.filter(s=>s.quizDone).length;
+  const pct=Math.round((doneSess*0.6+doneQuiz*0.4)/10*100);
+  document.getElementById('g-pct').textContent=pct+'%';
+  document.getElementById('g-bar').style.width=pct+'%';
+  document.getElementById('g-detail').textContent=`${doneSess} session${doneSess!==1?'s':''} terminée${doneSess!==1?'s':''} · ${doneQuiz} quiz validé${doneQuiz!==1?'s':''}`;
+
+  const grid=document.getElementById('sess-grid');
+  grid.innerHTML=save.sessions.map((s,i)=>{
+    const unlocked=i===0||save.sessions[i-1].trained;
+    const color=unlocked?(s.trained?'#4ade80':'#60a5fa'):'#646880';
+    const bg=unlocked?(s.trained?'#1e4020':'#1e2a3d'):'#1e2035';
+    let cls='sess-card '+(unlocked?(s.trained?'done':'open'):'locked');
+    const verbs=SESSIONS_RAW[i].map(v=>v[0]).slice(0,4).join(', ')+'…';
+    const quizBadge=s.trained?(s.quizDone?
+      `<span class="quiz-badge">Quiz ✓ ${stars(s.quizStars)}</span>`:
+      `<span class="quiz-badge todo">Quiz à faire</span>`):'';
+    return `<div class="${cls}" onclick="${unlocked?`clickSession(${i})`:''}" style="--c:${color}">
+      <div class="sess-num" style="background:${bg};color:${color}">${s.trained?'✓':i+1}</div>
+      <div class="sess-info">
+        <h3>Session ${i+1} — ${SESSION_NAMES[i]}</h3>
+        <p>${verbs}</p>
+        ${quizBadge}
+      </div>
+      <div class="sess-right">
+        ${s.trained?`<div class="sess-stars">${stars(s.quizStars)}</div>`:''}
+        ${s.trained&&s.quizScore?`<div class="sess-score">${s.quizScore}pts</div>`:''}
+        ${unlocked&&!s.trained?'<span style="font-size:.78rem;color:#60a5fa;font-weight:700">Commencer →</span>':''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function clickSession(i){
+  const s=save.sessions[i];
+  if(s.trained){
+    // Propose replay or quiz
+    if(!s.quizDone) startQuiz(i);
+    else{
+      // Simple choice via confirm
+      if(confirm(`Session ${i+1} déjà faite.\n\nOK → Refaire le quiz\nAnnuler → Refaire la session`))
+        startQuiz(i);
+      else startTrainer(i);
+    }
+  } else {
+    startTrainer(i);
+  }
+}
+
+// ═══════════════════════════════════════════
+// TRAINER
+// ═══════════════════════════════════════════
+let T={};
+const PHASES=[
+  {name:'Phase 1 — Copie',pill:'pp0',card:'p0',reps:2,disp:'show',
+   instr:'La réponse est affichée. Recopie-la 2 fois pour la mémoriser.'},
+  {name:'Phase 2 — Indices',pill:'pp1',card:'p1',reps:2,disp:'partial',
+   instr:'Premières lettres visibles. Complète de mémoire.'},
+  {name:'Phase 3 — Mémoire',pill:'pp2',card:'p2',reps:1,disp:'hidden',
+   instr:'Aucun indice ! Tu t\'en souviens ?'},
+];
+
+function startTrainer(sessIdx){
+  const verbs=shuffle([...SESSIONS_RAW[sessIdx]]);
+  T={sessIdx,verbs,vIdx:0,phase:0,repsDone:0,attempts:0,
+     done:0,streak:0,bestStreak:0,totalTries:0,firstCorrect:0};
+  document.getElementById('t-sess').textContent='S'+(sessIdx+1);
+  show('trainer');
+  loadVerbCard();
+}
+
+function loadVerbCard(){
+  const v=T.verbs[T.vIdx];const ph=PHASES[T.phase];
+  // card
+  const card=document.getElementById('t-card');
+  card.className='card '+ph.card;
+  // pill
+  const pill=document.getElementById('t-pill');
+  pill.className='phase-pill '+ph.pill;pill.textContent=ph.name;
+  // verb
+  document.getElementById('t-inf').textContent=v[0];
+  // answer display
+  const ansEl=document.getElementById('t-ans');
+  if(ph.disp==='show'){ansEl.textContent=v[1];ansEl.className='v-ans show';}
+  else if(ph.disp==='partial'){
+    const n=Math.max(1,Math.ceil(v[1].length*0.4));
+    ansEl.textContent=v[1].substring(0,n)+'…';ansEl.className='v-ans partial';
+  } else {ansEl.textContent='? ? ?';ansEl.className='v-ans hidden';}
+  // tr
+  document.getElementById('t-tr').textContent=v[2];
+  // instr
+  document.getElementById('t-instr').textContent=ph.instr;
+  // reps
+  const rLeft=ph.reps-T.repsDone;
+  document.getElementById('t-repinfo').textContent=rLeft>1?`${rLeft} fois restantes`:'Dernière fois !';
+  // progress
+  const total=T.verbs.length;
+  const step=T.vIdx*3+T.phase;
+  const totalSteps=total*3;
+  document.getElementById('t-prog').style.width=(step/totalSteps*100).toFixed(1)+'%';
+  document.getElementById('t-prog-l').textContent=`Verbe ${T.vIdx+1}/${total}`;
+  document.getElementById('t-prog-r').textContent=PHASES[T.phase].name.split('—')[1].trim();
+  // phase top
+  document.getElementById('t-phase-v').textContent=T.phase+1+'/3';
+  document.getElementById('t-streak').textContent=T.streak+'🔥';
+  // input
+  const inp=document.getElementById('t-input');
+  inp.value='';inp.className='verb-input';inp.focus();
+  renderSlots('',v[1]);
+  document.getElementById('t-fb').textContent='';
+  document.getElementById('t-fb').style.color='';
+}
+
+function renderSlots(typed,target){
+  const s=document.getElementById('t-slots');
+  s.innerHTML=Array.from({length:target.length},(_,i)=>{
+    const c=typed[i];let cl='slot';
+    if(c!==undefined)cl+=c===target[i]?' correct':' wrong';
+    else if(typed.length>0)cl+=' filled';
+    return `<div class="${cl}"></div>`;
+  }).join('');
+}
+
+document.getElementById('t-input').addEventListener('keydown',e=>{if(e.key==='Enter')submitVerb();});
+document.getElementById('t-input').addEventListener('input',e=>{
+  if(T.verbs)renderSlots(e.target.value.toLowerCase(),T.verbs[T.vIdx][1].toLowerCase());
+});
+
+function submitVerb(){
+  const inp=document.getElementById('t-input');
+  const typed=inp.value.trim().toLowerCase();
+  if(!typed) return;
+  const v=T.verbs[T.vIdx];
+  const answers=v[1].toLowerCase().split('/').map(s=>s.trim());
+  const ok=answers.includes(typed);
+  T.totalTries++;
+
+  renderSlots(typed,v[1].toLowerCase());
+
+  if(ok){
+    if(T.attempts===0)T.firstCorrect++;
+    const pts=T.phase===2?30:T.phase===1?20:10;
+    T.streak++;T.bestStreak=Math.max(T.bestStreak,T.streak);
+    inp.className='verb-input ok';
+    setFb(T.attempts===0?'✅ Parfait !':'✅ Correct !','#4ade80');
+    if(T.attempts===0)doSparkle();
+    T.repsDone++;T.attempts=0;
+    const ph=PHASES[T.phase];
+    setTimeout(()=>{
+      if(T.repsDone>=ph.reps){
+        T.repsDone=0;
+        if(T.phase<2){T.phase++;loadVerbCard();}
+        else{
+          T.done++;T.vIdx++;T.phase=0;
+          if(T.vIdx>=T.verbs.length) finishTrainer();
+          else loadVerbCard();
+        }
+      } else {
+        inp.value='';inp.className='verb-input';
+        document.getElementById('t-fb').textContent='';
+        renderSlots('',v[1]);
+        const rLeft=ph.reps-T.repsDone;
+        document.getElementById('t-repinfo').textContent=rLeft>1?`${rLeft} fois restantes`:'Dernière fois !';
+        inp.focus();
+      }
+    },480);
+  } else {
+    T.attempts++;T.streak=0;
+    inp.className='verb-input err';
+    if(T.attempts===1){setFb('❌ Essaie encore…','#f87171');}
+    else if(T.attempts===2){
+      const hint=v[1].substring(0,Math.ceil(v[1].length/2))+'…';
+      setFb(`💡 Début : "${hint}"`, '#fbbf24');
+      // Show partial hint on card
+      const ansEl=document.getElementById('t-ans');
+      if(T.phase===2){ansEl.textContent=hint;ansEl.className='v-ans partial';}
+    } else {
+      setFb(`→ Réponse : "${v[1]}"`, '#fb923c');
+      document.getElementById('t-ans').textContent=v[1];
+      document.getElementById('t-ans').className='v-ans show';
+      T.attempts=0;
+    }
+    setTimeout(()=>{inp.value='';inp.className='verb-input';inp.focus();},420);
+  }
+  document.getElementById('t-streak').textContent=T.streak+'🔥';
+}
+
+function setFb(msg,color){const el=document.getElementById('t-fb');el.textContent=msg;el.style.color=color;}
+
+function doSparkle(){
+  ['✨','⭐','💫','🌟'].forEach((e,i)=>{
+    const el=document.createElement('div');el.className='sparkle';el.textContent=e;
+    el.style.left=(20+Math.random()*60)+'%';el.style.top=(30+Math.random()*30)+'%';
+    el.style.animationDelay=(i*80)+'ms';document.body.appendChild(el);
+    setTimeout(()=>el.remove(),900);
+  });
+}
+
+function finishTrainer(){
+  const acc=T.done?Math.round(T.firstCorrect/T.done*100):0;
+  // Save progress
+  save.sessions[T.sessIdx].trained=true;
+  save.sessions[T.sessIdx].trainScore=T.done*10+T.bestStreak*5;
+  save.sessions[T.sessIdx].trainStreak=T.bestStreak;
+  save.sessions[T.sessIdx].trainAcc=acc;
+  persist();
+  // Show session result
+  document.getElementById('sr-icon').textContent='🎉';
+  document.getElementById('sr-title').textContent=`Session ${T.sessIdx+1} maîtrisée !`;
+  document.getElementById('sr-sub').textContent=SESSION_NAMES[T.sessIdx];
+  document.getElementById('sr-done').textContent=T.done;
+  document.getElementById('sr-streak').textContent=T.bestStreak;
+  document.getElementById('sr-acc').textContent=acc+'%';
+  const qBtn=document.getElementById('sr-quiz-btn');
+  qBtn.onclick=()=>startQuiz(T.sessIdx);
+  show('sess-result');
+}
+
+// ═══════════════════════════════════════════
+// QUIZ — 12 questions par session
+// ═══════════════════════════════════════════
+let Q={};
+
+function buildQuiz(sessIdx){
+  const verbs=SESSIONS_RAW[sessIdx];
+  const allVerbs=SESSIONS_RAW.flat();
+  const qs=[];
+  const sv=shuffle([...verbs]);
+
+  sv.forEach((v,i)=>{
+    const type=(i%3);
+    if(type===0){
+      // QCM : infinitif → trouver le prétérit
+      const wrongs=shuffle(allVerbs.filter(w=>w[1]!==v[1])).slice(0,3).map(w=>w[1]);
+      const opts=shuffle([v[1],...wrongs]);
+      qs.push({type:'qcm',q:`Prétérit de "${v[0]}" (${v[2]}) ?`,opts,answer:opts.indexOf(v[1]),expl:`<strong>${v[0]}</strong> → <strong>${v[1]}</strong> (${v[2]})`});
+    } else if(type===1){
+      // QCM : prétérit → trouver l'infinitif
+      const wrongs=shuffle(allVerbs.filter(w=>w[0]!==v[0])).slice(0,3).map(w=>w[0]);
+      const opts=shuffle([v[0],...wrongs]);
+      qs.push({type:'qcm',q:`"${v[1]}" est le prétérit de… ?`,opts,answer:opts.indexOf(v[0]),expl:`<strong>${v[1]}</strong> → infinitif : <strong>${v[0]}</strong> (${v[2]})`});
+    } else {
+      // QCM : français → infinitif anglais
+      const wrongs=shuffle(allVerbs.filter(w=>w[0]!==v[0])).slice(0,3).map(w=>w[0]);
+      const opts=shuffle([v[0],...wrongs]);
+      qs.push({type:'qcm',q:`"${v[2]}" en anglais (prétérit) ?`,opts:shuffle([v[1],...shuffle(allVerbs.filter(w=>w[1]!==v[1])).slice(0,3).map(w=>w[1])]),answer:-1,expl:`${v[2]} = <strong>${v[0]}</strong> → prétérit : <strong>${v[1]}</strong>`});
+      // Fix answer
+      qs[qs.length-1].answer=qs[qs.length-1].opts.indexOf(v[1]);
+    }
+  });
+  // Add 4 extra harder questions
+  const extras=shuffle([...verbs]);
+  extras.slice(0,4).forEach(v=>{
+    const wrongs=shuffle(allVerbs.filter(w=>w[1]!==v[1]&&w[0]!==v[0])).slice(0,3);
+    const opts=shuffle([v[1],...wrongs.map(w=>w[1])]);
+    qs.push({type:'hard',q:`HARD: "${v[0]}" → prétérit + traduction ?`,opts,answer:opts.indexOf(v[1]),expl:`<strong>${v[0]} → ${v[1]}</strong> = ${v[2]}`});
+  });
+  return shuffle(qs).slice(0,12);
+}
+
+function startQuiz(sessIdx){
+  const questions=buildQuiz(sessIdx);
+  Q={sessIdx,questions,qIdx:0,correct:0,wrong:0,answered:false,selected:null};
+  document.getElementById('q-title').textContent=`Quiz — Session ${sessIdx+1}`;
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q=Q.questions[Q.qIdx];
+  const total=Q.questions.length;
+  document.getElementById('q-prog').style.width=((Q.qIdx/total)*100)+'%';
+  // Dots
+  document.getElementById('q-dots').innerHTML=Q.questions.map((_,i)=>{
+    let cl='qdot';
+    if(i<Q.qIdx)cl+=' ok';// simplified — we'd track results for precise coloring
+    if(i===Q.qIdx)cl+=' curr';
+    return `<div class="${cl}"></div>`;
+  }).join('');
+  // Type label
+  document.getElementById('q-type').textContent=
+    q.type==='hard'?'⚡ Question difficile':'📝 Question '+(Q.qIdx+1)+'/'+total;
+  // Question
+  document.getElementById('q-txt').textContent=q.q;
+  // Options
+  document.getElementById('q-opts').innerHTML=q.opts.map((o,i)=>{
+    return `<div class="opt" data-i="${i}" onclick="selectOpt(${i})">
+      <div class="opt-l">${['A','B','C','D'][i]}</div><span>${o}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('q-expl').style.display='none';
+  document.getElementById('q-nxt').style.display='none';
+  Q.answered=false;Q.selected=null;
+}
+
+function selectOpt(i){
+  if(Q.answered)return;
+  Q.answered=true;Q.selected=i;
+  const q=Q.questions[Q.qIdx];
+  const ok=i===q.answer;
+  if(ok)Q.correct++;else Q.wrong++;
+  // Color options
+  document.querySelectorAll('.opt').forEach((el,j)=>{
+    el.classList.add('dis');
+    if(j===q.answer)el.classList.add('ok2');
+    else if(j===i)el.classList.add('ko2');
+  });
+  // Explanation
+  const expl=document.getElementById('q-expl');
+  expl.innerHTML=(ok?'✅ Correct ! ':'❌ Incorrect. ')+q.expl;
+  expl.style.display='';
+  // Next btn
+  const nxt=document.getElementById('q-nxt');
+  nxt.style.display='flex';
+  const btn=document.getElementById('q-nxt-btn');
+  if(Q.qIdx<Q.questions.length-1){
+    btn.textContent='Suivante →';
+    btn.onclick=()=>{Q.qIdx++;renderQuestion();};
+  } else {
+    btn.textContent='Voir les résultats →';
+    btn.onclick=finishQuiz;
+  }
+}
+
+function finishQuiz(){
+  const total=Q.questions.length;
+  const pct=Math.round(Q.correct/total*100);
+  const st=pct>=90?3:pct>=70?2:pct>=50?1:0;
+  // Save
+  save.sessions[Q.sessIdx].quizDone=true;
+  save.sessions[Q.sessIdx].quizScore=Q.correct*10;
+  save.sessions[Q.sessIdx].quizStars=Math.max(save.sessions[Q.sessIdx].quizStars,st);
+  persist();
+  // Show result
+  const icon=pct>=90?'🏆':pct>=70?'🎉':pct>=50?'💪':'📚';
+  const msg=pct>=90?'Excellent ! Verbes parfaitement maîtrisés !':pct>=70?'Très bien ! Continue comme ça.':pct>=50?'Pas mal, mais refais la session pour consolider.':'Refais la session d\'entraînement, tu en as besoin !';
+  document.getElementById('qr-icon').textContent=icon;
+  document.getElementById('qr-score').textContent=pct+'%';
+  document.getElementById('qr-score').style.color=pct>=70?'#4ade80':pct>=50?'#fbbf24':'#f87171';
+  document.getElementById('qr-msg').textContent=msg;
+  document.getElementById('qr-c').textContent=Q.correct;
+  document.getElementById('qr-w').textContent=Q.wrong;
+  document.getElementById('qr-stars').textContent=stars(st);
+  document.getElementById('qr-code').textContent=genCode(pct,st);
+  document.getElementById('qr-retry').onclick=()=>startQuiz(Q.sessIdx);
+  show('quiz-result');
+}
+
+// ═══════════════════════════════════════════
+// CODE & COPY
+// ═══════════════════════════════════════════
+function genCode(pct,st){
+  const done=save.sessions.filter(s=>s.quizDone).length;
+  const d={v:'vm3',dt:new Date().toLocaleDateString('fr-FR'),sess:Q.sessIdx+1,
+    name:SESSION_NAMES[Q.sessIdx],score:pct+'%',stars:st,
+    total_done:done+'/10'};
+  return btoa(unescape(encodeURIComponent(JSON.stringify(d)))).replace(/(.{60})/g,'$1\n').trim();
+}
+function copyCode(){
+  navigator.clipboard.writeText(document.getElementById('qr-code').textContent).then(()=>{
+    const b=document.querySelector('.copy-btn');b.textContent='✅ Copié !';
+    setTimeout(()=>b.textContent='📋 Copier',2000);
+  });
+}
+function stars(n){return '⭐'.repeat(n)+'☆'.repeat(3-n);}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+renderHome();
+</script>
+</body>
+</html>

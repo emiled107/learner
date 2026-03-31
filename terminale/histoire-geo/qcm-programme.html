@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QCM Histoire-Géo Terminale</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #08090f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: linear-gradient(135deg, #1a1f3a 0%, #16213e 100%);
+            border: 2px solid transparent;
+            border-image: linear-gradient(135deg, #ffa500, #ff4500) 1;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 40px rgba(255, 165, 0, 0.2);
+        }
+        h1 {
+            background: linear-gradient(135deg, #ffa500, #ff4500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subject-label {
+            display: inline-block;
+            background: rgba(255, 165, 0, 0.2);
+            color: #ffa500;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .progress {
+            font-size: 14px;
+            color: #a0a0a0;
+            margin-bottom: 20px;
+        }
+        .question {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid #ffa500;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .question-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #ffa500;
+        }
+        .context {
+            background: rgba(255, 165, 0, 0.1);
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #ffbb88;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 2px solid #333;
+            border-radius: 6px;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .option:hover {
+            border-color: #ffa500;
+            background: rgba(255, 165, 0, 0.1);
+        }
+        .option.selected {
+            border-color: #ff4500;
+            background: rgba(255, 69, 0, 0.3);
+        }
+        .option.correct {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.15);
+        }
+        .option.incorrect {
+            border-color: #ff0000;
+            background: rgba(255, 0, 0, 0.15);
+        }
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none;
+        }
+        .feedback.show { display: block; }
+        .feedback.correct {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 4px solid #00ff00;
+            color: #90ff90;
+        }
+        .feedback.incorrect {
+            background: rgba(255, 100, 100, 0.1);
+            border-left: 4px solid #ff6464;
+            color: #ff9999;
+        }
+        .explanation {
+            margin-top: 10px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #c0c0c0;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #ffa500, #ff4500);
+            color: #fff;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 165, 0, 0.4);
+        }
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-next {
+            background: rgba(255, 165, 0, 0.2);
+            color: #ffa500;
+            border: 2px solid #ffa500;
+        }
+        .btn-next:hover {
+            background: rgba(255, 165, 0, 0.3);
+        }
+        .results {
+            display: none;
+            text-align: center;
+        }
+        .results.show { display: block; }
+        .score-display {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffa500, #ff4500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        .stars {
+            font-size: 40px;
+            margin: 20px 0;
+            letter-spacing: 10px;
+        }
+        .result-code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            margin-top: 20px;
+            word-break: break-all;
+            color: #ffa500;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #ffa500;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            color: #ff4500;
+            text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            h1 { font-size: 22px; }
+            .question { padding: 15px; }
+            .score-display { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 QCM Histoire-Géo Terminale</h1>
+        <div class="subject-label" id="subject">Sujet: Histoire</div>
+        <div class="progress"><span id="current">1</span> / 25</div>
+
+        <div id="quiz-content">
+            <div class="question">
+                <div class="question-text" id="question-text"></div>
+                <div class="context" id="context" style="display:none;"></div>
+                <div class="options" id="options"></div>
+                <div class="feedback" id="feedback"></div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-submit" id="submit-btn" onclick="submitAnswer()">Valider</button>
+                <button class="btn-next" id="next-btn" onclick="nextQuestion()" style="display:none;">Suivant</button>
+            </div>
+        </div>
+
+        <div id="results" class="results">
+            <h2>✨ Résultats Finaux</h2>
+            <div class="score-display" id="final-score"></div>
+            <div class="stars" id="stars"></div>
+            <p id="message"></p>
+            <div class="result-code" id="result-code"></div>
+            <a href="/index.html" class="back-link">← Retour à l'accueil</a>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                subject: 'Histoire',
+                text: "Quel régime totalitaire a dominé l'Allemagne de 1933 à 1945?",
+                context: "Période de la Seconde Guerre mondiale.",
+                options: ["Communisme soviétique", "Nazisme", "Fascisme italien", "Régime autoritaire espagnol"],
+                correct: 1,
+                explanation: "Le nazisme, dirigé par Adolf Hitler, a été le régime totalitaire en Allemagne."
+            },
+            {
+                subject: 'Histoire',
+                text: "Qui était le leader de l'URSS pendant la Seconde Guerre mondiale?",
+                options: ["Lénine", "Staline", "Khrouchtchev", "Gorbatchev"],
+                correct: 1,
+                explanation: "Joseph Staline a dirigé l'URSS de 1922 à 1953, incluant la Seconde Guerre mondiale."
+            },
+            {
+                subject: 'Histoire',
+                text: "En quelle année a commencé la Seconde Guerre mondiale?",
+                options: ["1937", "1938", "1939", "1940"],
+                correct: 2,
+                explanation: "La Seconde Guerre mondiale a commencé le 1er septembre 1939 avec l'invasion de la Pologne."
+            },
+            {
+                subject: 'Histoire',
+                text: "Quel événement a marqué la fin de la Seconde Guerre mondiale en Europe?",
+                options: ["Attaque de Pearl Harbor", "Capitulation allemande", "Bombe atomique", "Invasion de la Normandie"],
+                correct: 1,
+                explanation: "L'Allemagne a capitulé le 8 mai 1945, marquant la fin de la guerre en Europe."
+            },
+            {
+                subject: 'Histoire',
+                text: "La Guerre froide était un conflit entre quelles deux puissances?",
+                options: ["États-Unis et Allemagne", "États-Unis et URSS", "France et Russie", "Royaume-Uni et Japon"],
+                correct: 1,
+                explanation: "La Guerre froide (1947-1991) opposa les États-Unis et l'URSS, sans affrontement direct."
+            },
+            {
+                subject: 'Histoire',
+                text: "Quel mur a symbolisé la division entre l'Est et l'Ouest pendant la Guerre froide?",
+                options: ["Mur de la Grande Muraille", "Mur de Berlin", "Mur d'Hadrien", "Mur du Wailing"],
+                correct: 1,
+                explanation: "Le mur de Berlin (1961-1989) a divisé la ville et symbolisé la division de l'Europe."
+            },
+            {
+                subject: 'Histoire',
+                text: "En quelle année s'est terminée la Guerre froide?",
+                options: ["1985", "1989", "1991", "1995"],
+                correct: 2,
+                explanation: "La Guerre froide s'est achevée en 1991 avec la dissolution de l'URSS."
+            },
+            {
+                subject: 'Histoire',
+                text: "Quel traité a fondé l'Union européenne en 1993?",
+                options: ["Traité de Rome", "Traité de Maastricht", "Traité de Lisbonne", "Acte unique"],
+                correct: 1,
+                explanation: "Le Traité de Maastricht (1992, applicable en 1993) a créé l'Union européenne."
+            },
+            {
+                subject: 'Histoire',
+                text: "Quel événement majeur a marqué le monde en 1989?",
+                options: ["Chute du mur de Berlin", "Fin de l'apartheid", "Unification allemande", "Guerre du Golfe"],
+                correct: 0,
+                explanation: "La chute du mur de Berlin en novembre 1989 a symbolisé la fin de la Guerre froide."
+            },
+            {
+                subject: 'Histoire',
+                text: "L'effondrement des régimes communistes en Europe a eu lieu vers...",
+                options: ["1985-1988", "1989-1991", "1992-1995", "1996-1999"],
+                correct: 1,
+                explanation: "Les régimes communistes en Europe de l'Est se sont effondrés entre 1989 et 1991."
+            },
+            {
+                subject: 'Histoire',
+                text: "Qu'est-ce que la Shoah?",
+                context: "Événement majeur de la Seconde Guerre mondiale.",
+                options: ["Guerre en Afrique du Nord", "Holocauste des Juifs", "Bombe atomique", "Bataille navale"],
+                correct: 1,
+                explanation: "La Shoah est l'holocauste des Juifs perpétré par le régime nazi (6 millions de victimes)."
+            },
+            {
+                subject: 'Histoire',
+                text: "Quel pays a été le premier à utiliser la bombe atomique en 1945?",
+                options: ["Allemagne", "URSS", "États-Unis", "Japon"],
+                correct: 2,
+                explanation: "Les États-Unis ont lancé des bombes atomiques sur Hiroshima et Nagasaki en août 1945."
+            },
+            {
+                subject: 'Géographie',
+                text: "Quel est le plus grand océan du monde?",
+                options: ["Océan Atlantique", "Océan Indien", "Océan Pacifique", "Océan Arctique"],
+                correct: 2,
+                explanation: "L'océan Pacifique couvre environ 165 millions de km², plus grand que tous les autres."
+            },
+            {
+                subject: 'Géographie',
+                text: "La mondialisation économique se caractérise par...",
+                context: "Processus affectant mers et océans.",
+                options: ["Isolation des pays", "Augmentation des échanges commerciaux mondiaux", "Réduction des transports", "Arrêt du commerce"],
+                correct: 1,
+                explanation: "La mondialisation est l'intégration progressive des économies par le commerce et la technologie."
+            },
+            {
+                subject: 'Géographie',
+                text: "Quelle est la capitale la plus peuplée de France?",
+                options: ["Lyon", "Marseille", "Paris", "Toulouse"],
+                correct: 2,
+                explanation: "Paris est la capitale et la plus grande ville de France avec environ 2,2 millions d'habitants."
+            },
+            {
+                subject: 'Géographie',
+                text: "L'Union européenne compte combien d'États membres en 2024?",
+                options: ["25", "27", "30", "32"],
+                correct: 1,
+                explanation: "L'UE compte 27 États membres depuis le départ du Royaume-Uni en 2020."
+            },
+            {
+                subject: 'Géographie',
+                text: "Quel est le fleuve le plus long d'Europe?",
+                options: ["Le Danube", "La Volga", "Le Rhin", "La Loire"],
+                correct: 1,
+                explanation: "La Volga, en Russie, est le fleuve le plus long d'Europe avec 3 650 km."
+            },
+            {
+                subject: 'Géographie',
+                text: "La France métropolitaine borde combien de mers/océans?",
+                options: ["Une", "Deux", "Trois", "Quatre"],
+                correct: 2,
+                explanation: "La France métropolitaine borde la Manche, la mer du Nord, l'Atlantique et la Méditerranée."
+            },
+            {
+                subject: 'Géographie',
+                text: "Les ZEE (Zones Économiques Exclusives) permettent aux États de...",
+                context: "Droits maritimes et ressources.",
+                options: ["Déclarer la guerre", "Exploiter les ressources marines jusqu'à 200 miles", "Interdire tout commerce", "Coloniser d'autres continents"],
+                correct: 1,
+                explanation: "Les ZEE confèrent des droits d'exploitation des ressources jusqu'à 200 milles nautiques."
+            },
+            {
+                subject: 'Géographie',
+                text: "Quel continent ne borde pas l'océan Atlantique?",
+                options: ["Afrique", "Europe", "Asie", "Amérique du Nord"],
+                correct: 2,
+                explanation: "L'Asie borde l'océan Pacifique et l'océan Indien, mais pas directement l'Atlantique."
+            },
+            {
+                subject: 'Géographie',
+                text: "La densité de population la plus élevée de France se trouve...",
+                options: ["En Bretagne", "En Île-de-France", "En Provence", "En Aquitaine"],
+                correct: 1,
+                explanation: "L'Île-de-France autour de Paris a la densité de population la plus élevée (1 000 hab/km²)."
+            },
+            {
+                subject: 'Histoire',
+                text: "Quel empire totalitaire a dominé l'Italie de 1922 à 1943?",
+                options: ["Nazisme", "Fascisme de Mussolini", "Communisme", "Autoritarisme espagnol"],
+                correct: 1,
+                explanation: "Benito Mussolini a établi un régime fasciste en Italie à partir de 1922."
+            },
+            {
+                subject: 'Histoire',
+                text: "La construction européenne a commencé avec...",
+                options: ["L'OTAN", "La CECA (1951)", "Le Traité de Maastricht", "L'Union douanière"],
+                correct: 1,
+                explanation: "La CECA (Communauté Européenne du Charbon et de l'Acier) de 1951 a été le point de départ."
+            },
+            {
+                subject: 'Géographie',
+                text: "Quel processus transfère les industries polluantes vers les pays en développement?",
+                options: ["Délocalisation propre", "Externalisation des coûts écologiques", "Industrialisation durable", "Éco-responsabilité"],
+                correct: 1,
+                explanation: "Cette pratique permet aux pays riches d'externaliser la pollution vers le Sud."
+            },
+            {
+                subject: 'Histoire',
+                text: "Quel événement a marqué la chute du bloc soviétique?",
+                options: ["Crise des missiles cubains", "Invasion de l'Afghanistan", "Dissolution de l'URSS", "Embargo pétrolier"],
+                correct: 2,
+                explanation: "La dissolution officielle de l'URSS en décembre 1991 a marqué la fin du bloc soviétique."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedAnswer = null;
+        let currentSubject = 'Histoire';
+        const startTime = new Date();
+
+        function shuffleQuestions() {
+            for (let i = questions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [questions[i], questions[j]] = [questions[j], questions[i]];
+            }
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            currentSubject = q.subject;
+            document.getElementById('subject').textContent = `Sujet: ${q.subject}`;
+            document.getElementById('question-text').textContent = q.text;
+
+            if (q.context) {
+                document.getElementById('context').textContent = q.context;
+                document.getElementById('context').style.display = 'block';
+            } else {
+                document.getElementById('context').style.display = 'none';
+            }
+
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const label = document.createElement('div');
+                label.className = 'option';
+                label.textContent = opt;
+                label.onclick = () => selectOption(idx);
+                optionsDiv.appendChild(label);
+            });
+
+            document.getElementById('feedback').innerHTML = '';
+            document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
+            document.getElementById('submit-btn').style.display = 'block';
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('submit-btn').disabled = false;
+            selectedAnswer = null;
+        }
+
+        function selectOption(idx) {
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                opt.classList.toggle('selected', i === idx);
+            });
+            selectedAnswer = idx;
+        }
+
+        function submitAnswer() {
+            if (selectedAnswer === null) return;
+
+            const q = questions[currentQuestion];
+            const isCorrect = selectedAnswer === q.correct;
+            if (isCorrect) score++;
+
+            const options = document.querySelectorAll('.option');
+            options[q.correct].classList.add('correct');
+            if (!isCorrect) options[selectedAnswer].classList.add('incorrect');
+
+            const feedback = document.getElementById('feedback');
+            feedback.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+            feedback.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✗ Incorrect'}</strong><div class="explanation">${q.explanation}</div>`;
+
+            document.getElementById('submit-btn').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < 25) {
+                document.getElementById('current').textContent = currentQuestion + 1;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-content').style.display = 'none';
+            document.getElementById('results').classList.add('show');
+
+            const pct = Math.round((score / 25) * 100);
+            let stars = '';
+            if (pct >= 90) stars = '⭐⭐⭐⭐⭐';
+            else if (pct >= 80) stars = '⭐⭐⭐⭐';
+            else if (pct >= 70) stars = '⭐⭐⭐';
+            else if (pct >= 60) stars = '⭐⭐';
+            else stars = '⭐';
+
+            const endTime = new Date();
+            const timeSpent = Math.floor((endTime - startTime) / 1000);
+
+            const resultData = {
+                v: 't_histgeo',
+                dt: new Date().toISOString(),
+                score: `${score}/25`,
+                pct: pct,
+                stars: stars.length / 2,
+                time: timeSpent
+            };
+
+            const resultCode = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+
+            document.getElementById('final-score').textContent = `${score} / 25`;
+            document.getElementById('stars').textContent = stars;
+            document.getElementById('message').textContent =
+                pct >= 80 ? '🎉 Excellent travail!' :
+                pct >= 60 ? '👍 Bon effort!' :
+                '💪 Continue à réviser!';
+            document.getElementById('result-code').textContent = resultCode;
+        }
+
+        shuffleQuestions();
+        loadQuestion();
+    </script>
+</body>
+</html>

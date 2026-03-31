@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Figures de Style - 3ème</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            font-family: 'Nunito', sans-serif;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .title {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #b0b0b0;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 20px;
+            text-decoration: none;
+            color: white;
+            font-weight: 700;
+            transition: transform 0.3s;
+        }
+
+        .back-link:hover {
+            transform: scale(1.05);
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+
+        .start-btn {
+            padding: 20px 40px;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.3em;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            margin-top: 30px;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 0, 110, 0.3);
+        }
+
+        .game-container {
+            display: none;
+            background: linear-gradient(135deg, rgba(30, 30, 50, 0.8), rgba(20, 20, 40, 0.8));
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 0, 110, 0.2);
+        }
+
+        .game-container.active {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 0, 110, 0.1);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff);
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        .question-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .question-num {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .excerpt {
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.1), rgba(51, 56, 236, 0.1));
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #ff006e;
+        }
+
+        .excerpt-text {
+            font-size: 1.2em;
+            color: #e0e0e0;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .excerpt-author {
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        .choices {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .choice-btn {
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(58, 134, 255, 0.1), rgba(131, 56, 236, 0.1));
+            border: 2px solid #3a86ff;
+            border-radius: 10px;
+            color: #e0e0e0;
+            font-size: 1.05em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+        }
+
+        .choice-btn:hover {
+            background: linear-gradient(135deg, rgba(58, 134, 255, 0.2), rgba(131, 56, 236, 0.2));
+            transform: translateX(10px);
+            box-shadow: 0 5px 20px rgba(58, 134, 255, 0.2);
+        }
+
+        .choice-btn.selected {
+            border-color: #ff006e;
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.2), rgba(131, 56, 236, 0.2));
+        }
+
+        .choice-btn.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .choice-btn.correct {
+            border-color: #00ff64;
+            background: rgba(0, 255, 100, 0.1);
+            color: #00ff64;
+        }
+
+        .choice-btn.incorrect {
+            border-color: #ff0040;
+            background: rgba(255, 0, 64, 0.1);
+            color: #ff6b9b;
+        }
+
+        .explanation {
+            background: rgba(20, 20, 40, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 5px solid #3a86ff;
+            display: none;
+        }
+
+        .explanation.show {
+            display: block;
+        }
+
+        .explanation-title {
+            font-weight: 700;
+            color: #3a86ff;
+            margin-bottom: 10px;
+        }
+
+        .explanation-text {
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .definition {
+            background: rgba(131, 56, 236, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #8338ec;
+        }
+
+        .next-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: none;
+            text-transform: uppercase;
+        }
+
+        .next-btn.show {
+            display: block;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(255, 0, 110, 0.4);
+        }
+
+        .results-screen {
+            display: none;
+            text-align: center;
+            animation: slideIn 0.5s ease;
+        }
+
+        .results-screen.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .final-score {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff006e, #3a86ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 30px 0;
+        }
+
+        .percentage {
+            font-size: 1.5em;
+            color: #b0b0b0;
+            margin: 20px 0;
+        }
+
+        .stars {
+            font-size: 3em;
+            margin: 30px 0;
+            letter-spacing: 10px;
+        }
+
+        .star-full { color: #ffd700; }
+        .star-empty { color: #444; }
+
+        .result-code {
+            background: rgba(20, 20, 40, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            font-family: monospace;
+            font-size: 0.85em;
+            word-break: break-all;
+            border: 1px solid #3a86ff;
+        }
+
+        .replay-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+        .replay-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255, 0, 110, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2em;
+            }
+
+            .excerpt-text {
+                font-size: 1em;
+            }
+
+            .choice-btn {
+                font-size: 0.95em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/index.html" class="back-link">← Retour</a>
+
+        <header>
+            <div class="title">📖 FIGURES DE STYLE</div>
+            <div class="subtitle">Identifie les procédés littéraires</div>
+        </header>
+
+        <div id="startScreen" class="start-screen">
+            <p style="font-size: 1.1em; color: #b0b0b0; margin-bottom: 20px;">
+                Lis chaque extrait et identifie la figure de style utilisée.<br>
+                25 questions t'attendent!
+            </p>
+            <button class="start-btn" onclick="startGame()">Commencer</button>
+        </div>
+
+        <div id="gameContainer" class="game-container">
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+
+            <div class="question-section">
+                <div class="question-num">Question <span id="questionNum">1</span>/25</div>
+                <div class="excerpt">
+                    <div class="excerpt-text" id="excerptText"></div>
+                    <div class="excerpt-author" id="excerptAuthor"></div>
+                </div>
+            </div>
+
+            <div class="choices" id="choicesContainer"></div>
+
+            <div id="explanation" class="explanation">
+                <div class="explanation-title" id="explanationTitle"></div>
+                <div class="explanation-text" id="explanationText"></div>
+                <div class="definition" id="definitionText"></div>
+            </div>
+
+            <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Suivant →</button>
+        </div>
+
+        <div id="resultsScreen" class="results-screen">
+            <h2 style="font-size: 2em; margin-bottom: 20px;">Session terminée!</h2>
+            <div class="final-score" id="finalScore">25/25</div>
+            <div class="percentage" id="percentDisplay">100%</div>
+            <div class="stars" id="starsDisplay">⭐⭐⭐</div>
+            <div class="result-code" id="resultCode"></div>
+            <button class="replay-btn" onclick="location.reload()">Rejouer</button>
+        </div>
+    </div>
+
+    <script>
+        const FIGURES_DATA = [
+            {
+                figure: 'métaphore',
+                excerpt: 'La terre est un jardin que nous devons cultiver.',
+                author: 'Proverbe',
+                definition: 'Comparaison sans "comme" : désigne une chose par une autre pour créer une ressemblance.',
+                explanation: 'La terre est comparée à un jardin sans utiliser "comme". C\'est une métaphore.'
+            },
+            {
+                figure: 'comparaison',
+                excerpt: 'Ses cheveux blonds brillaient comme de l\'or au soleil.',
+                author: 'Description littéraire',
+                definition: 'Rapprochement entre deux choses distinctes utilisant "comme", "tel que" ou "semblable à".',
+                explanation: 'Les cheveux sont comparés à de l\'or avec le mot "comme". C\'est une comparaison.'
+            },
+            {
+                figure: 'personnification',
+                excerpt: 'Le vent chantait une mélodie douce à travers les arbres.',
+                author: 'Poésie',
+                definition: 'Attribuer des caractéristiques humaines à une chose inanimée ou un animal.',
+                explanation: 'Le vent "chante" - c\'est une action humaine attribuée au vent. C\'est une personnification.'
+            },
+            {
+                figure: 'hyperbole',
+                excerpt: 'Je t\'ai dit mille fois de ne pas faire ça!',
+                author: 'Expression courante',
+                definition: 'Exagération intentionnelle pour créer un effet dramatique ou comique.',
+                explanation: 'Le nombre "mille fois" est une exagération. C\'est une hyperbole.'
+            },
+            {
+                figure: 'litote',
+                excerpt: 'Ce n\'est pas mauvais, ce film.',
+                author: 'Dialogue',
+                definition: 'Expression d\'une idée par la négation du contraire, atténuation volontaire.',
+                explanation: '"Ce n\'est pas mauvais" signifie "c\'est bon". On dit le contraire pour atténuer. C\'est une litote.'
+            },
+            {
+                figure: 'antithèse',
+                excerpt: 'La vie est un combat constant entre l\'amour et la haine.',
+                author: 'Réflexion',
+                definition: 'Opposition entre deux idées, deux mots ou deux expressions pour créer un contraste.',
+                explanation: '"Amour" et "haine" sont opposés pour créer un contraste. C\'est une antithèse.'
+            },
+            {
+                figure: 'oxymore',
+                excerpt: 'C\'est une obscure clarté qui sort de ce confessionnal.',
+                author: 'Molière',
+                definition: 'Alliance de deux mots contraires dans une même expression.',
+                explanation: '"Obscure clarté" associe deux contraires. C\'est un oxymore.'
+            },
+            {
+                figure: 'anaphore',
+                excerpt: 'Jamais je ne t\'oublierai, jamais je ne te trahirai, jamais je n\'abandonnerai nos rêves.',
+                author: 'Discours',
+                definition: 'Répétition d\'un mot ou d\'un groupe de mots au début de phrases ou propositions successives.',
+                explanation: '"Jamais" est répété au début de chaque membre de phrase. C\'est une anaphore.'
+            },
+            {
+                figure: 'gradation',
+                excerpt: 'Il y avait une trace, une marque, une blessure profonde.',
+                author: 'Narration',
+                definition: 'Suite de mots ou d\'expressions d\'intensité croissante (ou décroissante).',
+                explanation: 'L\'intensité augmente : trace → marque → blessure. C\'est une gradation.'
+            },
+            {
+                figure: 'euphémisme',
+                excerpt: 'Il nous a quittés après une longue maladie.',
+                author: 'Expression respectueuse',
+                definition: 'Expression atténuée d\'une idée désagréable ou brutale.',
+                explanation: '"Il nous a quittés" est plus doux que "il est mort". C\'est un euphémisme.'
+            },
+            {
+                figure: 'périphrase',
+                excerpt: 'Le roi des animaux dormirait sans inquiétude.',
+                author: 'Littérature',
+                definition: 'Expression d\'une idée en plusieurs mots au lieu d\'un seul.',
+                explanation: '"Le roi des animaux" = le lion. On le désigne par plusieurs mots. C\'est une périphrase.'
+            },
+            {
+                figure: 'allégorie',
+                excerpt: 'La justice est une femme aux yeux bandés, tenant une épée et une balance.',
+                author: 'Tradition artistique',
+                definition: 'Représentation d\'une idée abstraite par une image concrète ou un personnage.',
+                explanation: 'La justice est représentée par une femme. C\'est une allégorie.'
+            },
+            {
+                figure: 'métonymie',
+                excerpt: 'J\'ai lu Shakespeare avec plaisir.',
+                author: 'Littérature',
+                definition: 'Remplacement d\'un mot par un autre avec lequel il entretient une relation.',
+                explanation: '"Shakespeare" désigne l\'auteur mais on comprend ses œuvres. C\'est une métonymie.'
+            },
+            {
+                figure: 'chiasme',
+                excerpt: 'Il faut vivre pour manger, non pas manger pour vivre.',
+                author: 'Proverbe',
+                definition: 'Inversion symétrique de la structure syntaxique pour créer un effet de contraste.',
+                explanation: 'Structure inversée : "vivre pour manger" puis "manger pour vivre". C\'est un chiasme.'
+            },
+            {
+                figure: 'métaphore',
+                excerpt: 'Tes yeux sont des étoiles qui illuminent mon ciel.',
+                author: 'Poésie d\'amour',
+                definition: 'Comparaison implicite entre deux choses.',
+                explanation: 'Les yeux sont assimilés à des étoiles sans "comme". C\'est une métaphore.'
+            },
+            {
+                figure: 'comparaison',
+                excerpt: 'Elle était courageuse comme un lion face au danger.',
+                author: 'Description',
+                definition: 'Similitude explicite entre deux éléments.',
+                explanation: 'Utilisation de "comme" pour comparer le courage au lion. C\'est une comparaison.'
+            },
+            {
+                figure: 'personnification',
+                excerpt: 'La maison gémissait sous le poids des années.',
+                author: 'Prose littéraire',
+                definition: 'Donner des traits humains à ce qui ne l\'est pas.',
+                explanation: 'La maison "gémit" - action humaine. C\'est une personnification.'
+            },
+            {
+                figure: 'hyperbole',
+                excerpt: 'J\'ai une faim de loup qui pourrait dévorer une montagne!',
+                author: 'Expression populaire',
+                definition: 'Outrance volontaire pour impressionner ou amuser.',
+                explanation: 'L\'exagération du loup et de la montagne crée l\'effet. C\'est une hyperbole.'
+            },
+            {
+                figure: 'litote',
+                excerpt: 'Ce n\'est pas inintéressant comme proposition.',
+                author: 'Dialogue',
+                definition: 'Assertion atténuée par négation du contraire.',
+                explanation: '"Pas inintéressant" veut dire intéressant. C\'est une litote.'
+            },
+            {
+                figure: 'antithèse',
+                excerpt: 'Elle apporte à la fois la joie et la tristesse à son cœur.',
+                author: 'Poésie',
+                definition: 'Mise en opposition de deux concepts.',
+                explanation: '"Joie" et "tristesse" s\'opposent. C\'est une antithèse.'
+            },
+            {
+                figure: 'oxymore',
+                excerpt: 'Le silence bruyant de la nuit l\'enveloppait.',
+                author: 'Description poétique',
+                definition: 'Contradiction interne entre deux mots proches.',
+                explanation: '"Silence" et "bruyant" sont contraires. C\'est un oxymore.'
+            },
+            {
+                figure: 'anaphore',
+                excerpt: 'Parlez, parlez plus fort! Parlez avec passion!',
+                author: 'Exhortation',
+                definition: 'Répétition initiale d\'un même mot.',
+                explanation: '"Parlez" est répété en début. C\'est une anaphore.'
+            },
+            {
+                figure: 'gradation',
+                excerpt: 'Un désir, une envie, une passion dévorante le consumait.',
+                author: 'Narration',
+                definition: 'Augmentation progressive d\'intensité.',
+                explanation: 'L\'intensité monte : désir → envie → passion. C\'est une gradation.'
+            },
+            {
+                figure: 'euphémisme',
+                excerpt: 'Il n\'a pas l\'intelligence qu\'on aurait souhaité.',
+                author: 'Critique douce',
+                definition: 'Formulation délicate d\'une vérité désagréable.',
+                explanation: 'On dit poliment qu\'il n\'est pas intelligent. C\'est un euphémisme.'
+            },
+            {
+                figure: 'périphrase',
+                excerpt: 'La ville lumière était en fête ce soir-là.',
+                author: 'Tourisme littéraire',
+                definition: 'Désignation indirecte par une description.',
+                explanation: '"La ville lumière" = Paris. Expression indirecte. C\'est une périphrase.'
+            },
+            {
+                figure: 'métonymie',
+                excerpt: 'Boire un verre avec des amis.',
+                author: 'Expression courante',
+                definition: 'Utilisation d\'un mot pour un autre lié par contiguïté.',
+                explanation: '"Un verre" désigne la boisson, pas le récipient. C\'est une métonymie.'
+            },
+            {
+                figure: 'chiasme',
+                excerpt: 'Tu me manques, je te manque. Nous nous manquons l\'un l\'autre.',
+                author: 'Poésie',
+                definition: 'Symétrie inversée de deux structures.',
+                explanation: 'Inversion symétrique de la structure. C\'est un chiasme.'
+            },
+            {
+                figure: 'allégorie',
+                excerpt: 'La mort vêtue de noir frappait à chaque porte.',
+                author: 'Littérature',
+                definition: 'Représentation symbolique par le concret.',
+                explanation: 'La mort est personnifiée et symbolisée. C\'est une allégorie.'
+            },
+            {
+                figure: 'comparaison',
+                excerpt: 'Doux comme le miel, sucré comme le sucre.',
+                author: 'Proverbe',
+                definition: 'Similitude explicite introduite par un outil de comparaison.',
+                explanation: 'Utilisation répétée de "comme". C\'est une comparaison.'
+            },
+            {
+                figure: 'personnification',
+                excerpt: 'La nature se réveille après son long sommeil hivernal.',
+                author: 'Saison',
+                definition: 'Attribution de qualités humaines au non-humain.',
+                explanation: 'La nature "se réveille" et "dort" - actions humaines. C\'est une personnification.'
+            }
+        ];
+
+        const FIGURE_DEFINITIONS = {
+            'métaphore': 'Comparaison sans "comme" entre deux réalités.',
+            'comparaison': 'Rapprochement explicite utilisant "comme" ou "semblable à".',
+            'personnification': 'Attribution de caractéristiques humaines à l\'inanimé.',
+            'hyperbole': 'Exagération intentionnelle pour un effet dramatique.',
+            'litote': 'Expression atténuée par la négation du contraire.',
+            'antithèse': 'Mise en opposition de deux idées contraires.',
+            'oxymore': 'Alliance de deux mots ou concepts contradictoires.',
+            'anaphore': 'Répétition d\'un mot au début de phrases successives.',
+            'gradation': 'Suite d\'éléments d\'intensité croissante ou décroissante.',
+            'euphémisme': 'Expression adoucie d\'une vérité désagréable.',
+            'périphrase': 'Expression d\'une idée en plusieurs mots au lieu d\'un seul.',
+            'allégorie': 'Représentation symbolique d\'une idée abstraite.',
+            'métonymie': 'Remplacement d\'un mot par un autre entretenant une relation.',
+            'chiasme': 'Inversion symétrique de structures syntaxiques.'
+        };
+
+        let gameState = {
+            currentQuestion: 0,
+            score: 0,
+            questions: [],
+            currentQuestionData: null,
+            answered: false
+        };
+
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function startGame() {
+            gameState.currentQuestion = 0;
+            gameState.score = 0;
+            gameState.answered = false;
+            gameState.questions = shuffleArray([...FIGURES_DATA]).slice(0, 25);
+
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameContainer').classList.add('active');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (gameState.currentQuestion >= 25) {
+                endGame();
+                return;
+            }
+
+            gameState.answered = false;
+            gameState.currentQuestionData = gameState.questions[gameState.currentQuestion];
+            const data = gameState.currentQuestionData;
+
+            const progress = ((gameState.currentQuestion) / 25) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('questionNum').textContent = gameState.currentQuestion + 1;
+            document.getElementById('excerptText').textContent = `"${data.excerpt}"`;
+            document.getElementById('excerptAuthor').textContent = `— ${data.author}`;
+
+            const allFigures = Object.keys(FIGURE_DEFINITIONS);
+            const correctFigure = data.figure;
+            const wrongFigures = allFigures.filter(f => f !== correctFigure);
+            const choices = [
+                correctFigure,
+                wrongFigures[Math.floor(Math.random() * wrongFigures.length)],
+                wrongFigures[Math.floor(Math.random() * wrongFigures.length)],
+                wrongFigures[Math.floor(Math.random() * wrongFigures.length)]
+            ];
+            const shuffledChoices = shuffleArray(choices);
+
+            const choicesContainer = document.getElementById('choicesContainer');
+            choicesContainer.innerHTML = '';
+            shuffledChoices.forEach((figure, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.textContent = figure.charAt(0).toUpperCase() + figure.slice(1);
+                btn.onclick = () => selectAnswer(figure, btn);
+                choicesContainer.appendChild(btn);
+            });
+
+            document.getElementById('explanation').classList.remove('show');
+            document.getElementById('nextBtn').classList.remove('show');
+        }
+
+        function selectAnswer(figure, btn) {
+            if (gameState.answered) return;
+
+            gameState.answered = true;
+            const isCorrect = figure === gameState.currentQuestionData.figure;
+
+            if (isCorrect) {
+                gameState.score++;
+                btn.classList.add('correct');
+            } else {
+                btn.classList.add('incorrect');
+                const buttons = document.querySelectorAll('.choice-btn');
+                buttons.forEach(b => {
+                    if (b.textContent === gameState.currentQuestionData.figure.charAt(0).toUpperCase() + gameState.currentQuestionData.figure.slice(1)) {
+                        b.classList.add('correct');
+                    }
+                    b.disabled = true;
+                    b.classList.add('disabled');
+                });
+            }
+
+            showExplanation();
+        }
+
+        function showExplanation() {
+            const data = gameState.currentQuestionData;
+            document.getElementById('explanationTitle').textContent = data.figure.toUpperCase();
+            document.getElementById('explanationText').textContent = data.explanation;
+            document.getElementById('definitionText').innerHTML = `<strong>Définition:</strong> ${FIGURE_DEFINITIONS[data.figure]}`;
+            document.getElementById('explanation').classList.add('show');
+            document.getElementById('nextBtn').classList.add('show');
+        }
+
+        function nextQuestion() {
+            gameState.currentQuestion++;
+            loadQuestion();
+        }
+
+        function endGame() {
+            document.getElementById('gameContainer').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('show');
+
+            const percentage = Math.round((gameState.score / 25) * 100);
+            const stars = Math.round((gameState.score / 25) * 3);
+
+            document.getElementById('finalScore').textContent = `${gameState.score}/25`;
+            document.getElementById('percentDisplay').textContent = `${percentage}%`;
+
+            let starDisplay = '';
+            for (let i = 0; i < 3; i++) {
+                starDisplay += i < stars ? '<span class="star-full">⭐</span>' : '<span class="star-empty">☆</span>';
+            }
+            document.getElementById('starsDisplay').innerHTML = starDisplay;
+
+            const now = new Date().toISOString().split('T')[0];
+            const resultCode = btoa(JSON.stringify({
+                v: 'c_figures',
+                dt: now,
+                score: `${gameState.score}/25`,
+                pct: percentage,
+                stars: stars
+            }));
+
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+    </script>
+</body>
+</html>

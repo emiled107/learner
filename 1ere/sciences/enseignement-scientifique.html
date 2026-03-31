@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enseignement Scientifique 1ère</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #08090f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 180, 219, 0.3);
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .subtitle {
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .question-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(0, 180, 219, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+        }
+        .question-number {
+            color: #00b4db;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        .question-text {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 12px;
+            background: rgba(0, 180, 219, 0.1);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            border-color: #00b4db;
+            background: rgba(0, 180, 219, 0.2);
+        }
+        .option.selected {
+            background: rgba(0, 180, 219, 0.3);
+            border-color: #00b4db;
+        }
+        .option.correct {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+        }
+        .option.incorrect {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #f44336;
+        }
+        .explanation {
+            background: rgba(255, 195, 0, 0.1);
+            border-left: 4px solid #ffc300;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 5px;
+            color: #d0d0d0;
+            font-size: 0.95em;
+            display: none;
+        }
+        .explanation.show {
+            display: block;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b4db 0%, #0083b0 100%);
+            transition: width 0.3s;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Nunito', sans-serif;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 180, 219, 0.4);
+        }
+        .btn-secondary {
+            background: rgba(0, 180, 219, 0.2);
+            color: #00b4db;
+            border: 2px solid #00b4db;
+        }
+        .btn-secondary:hover {
+            background: rgba(0, 180, 219, 0.3);
+        }
+        .results {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(0, 180, 219, 0.2) 0%, rgba(0, 131, 176, 0.2) 100%);
+            border-radius: 12px;
+            border: 2px solid rgba(0, 180, 219, 0.3);
+        }
+        .score-display {
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        .stars {
+            font-size: 2.5em;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+        .result-code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            word-break: break-all;
+            font-size: 0.9em;
+            color: #4caf50;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #00b4db;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            color: #0083b0;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            .question-container {
+                padding: 18px;
+            }
+            .score-display {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Enseignement Scientifique</h1>
+            <p class="subtitle">Classe de 1ère - Programme complet</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div id="quizContent"></div>
+
+        <div id="resultsSection" style="display:none;">
+            <div class="results">
+                <h2>Résultats</h2>
+                <div class="score-display" id="scoreDisplay">0/0</div>
+                <div class="stars" id="starsDisplay">☆☆☆☆☆</div>
+                <p id="percentageText"></p>
+                <div class="result-code" id="resultCode"></div>
+                <a href="/index.html" class="back-link">← Retour à l'accueil</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Qu'est-ce qu'un élément chimique?",
+                options: [
+                    "Une substance simple composée de molécules",
+                    "Une série d'atomes caractérisés par un numéro atomique (nombre de protons)",
+                    "Un gaz de l'atmosphère",
+                    "Une molécule"
+                ],
+                correct: 1,
+                explanation: "Un élément chimique se définit par son numéro atomique Z (nombre de protons)."
+            },
+            {
+                question: "Quel est l'élément chimique le plus abondant dans l'Univers?",
+                options: [
+                    "Le carbone",
+                    "L'oxygène",
+                    "L'hydrogène",
+                    "Le fer"
+                ],
+                correct: 2,
+                explanation: "L'hydrogène représente environ 75% de la matière ordinaire de l'Univers."
+            },
+            {
+                question: "Comment s'appelle la modification d'un noyau atomique spontanée?",
+                options: [
+                    "La radioactivité",
+                    "L'ionisation",
+                    "La condensation",
+                    "L'oxydation"
+                ],
+                correct: 0,
+                explanation: "La radioactivité est l'émission spontanée de particules ou de rayons par un noyau instable."
+            },
+            {
+                question: "Quel type de radiation est le plus pénétrant?",
+                options: [
+                    "Les rayons alpha",
+                    "Les rayons bêta",
+                    "Les rayons gamma",
+                    "Les neutrons"
+                ],
+                correct: 2,
+                explanation: "Les rayons gamma (photons très énergétiques) traversent facilement la matière."
+            },
+            {
+                question: "Qu'est-ce que la demi-vie d'une substance radioactive?",
+                options: [
+                    "Le temps pour que la substance disparaisse",
+                    "Le temps pour que la moitié de la substance se désintègre",
+                    "La durée de vie moyenne",
+                    "Le moment où elle n'est plus radioactive"
+                ],
+                correct: 1,
+                explanation: "La demi-vie est le temps nécessaire pour que 50% des noyaux se désintègrent."
+            },
+            {
+                question: "Quelle est la source d'énergie primaire du Soleil?",
+                options: [
+                    "La combustion chimique",
+                    "La fission nucléaire",
+                    "La fusion nucléaire de l'hydrogène",
+                    "L'énergie gravitationnelle"
+                ],
+                correct: 2,
+                explanation: "Le Soleil tire son énergie de la fusion de l'hydrogène en hélium."
+            },
+            {
+                question: "Quelle est l'ordre de grandeur de la masse du Soleil?",
+                options: [
+                    "10^27 kg",
+                    "10^30 kg",
+                    "10^15 kg",
+                    "10^35 kg"
+                ],
+                correct: 1,
+                explanation: "La masse du Soleil est d'environ 2 × 10^30 kg."
+            },
+            {
+                question: "Quel est le processus qui crée les éléments lourds dans l'Univers?",
+                options: [
+                    "La fusion légère dans les étoiles",
+                    "La fusion et la synthèse nucleosynthèse dans les étoiles massives",
+                    "La radioactivité naturelle",
+                    "Les réactions chimiques"
+                ],
+                correct: 1,
+                explanation: "Les éléments lourds se forment par fusion dans les étoiles massives et les supernovæ."
+            },
+            {
+                question: "Qu'est-ce que le cycle de vie d'une étoile?",
+                options: [
+                    "Un processus instantané",
+                    "La formation, l'évolution et la mort progressives d'une étoile",
+                    "Une pulsation régulière",
+                    "Un rôle secondaire"
+                ],
+                correct: 1,
+                explanation: "Les étoiles naissent, brûlent le combustible nucléaire, et finissent par mourir ou se transformer."
+            },
+            {
+                question: "Quel est l'état final d'une étoile de masse moyenne comme le Soleil?",
+                options: [
+                    "Un trou noir",
+                    "Une naine blanche",
+                    "Une étoile à neutrons",
+                    "Une géante rouge"
+                ],
+                correct: 1,
+                explanation: "Le Soleil finira par devenir une naine blanche après avoir expulsé ses couches externes."
+            },
+            {
+                question: "Qu'est-ce qu'une exoplanète?",
+                options: [
+                    "Une lune du système solaire",
+                    "Une planète orbitant une autre étoile",
+                    "Un astéroïde",
+                    "Une comète"
+                ],
+                correct: 1,
+                explanation: "Les exoplanètes sont des planètes découvertes en dehors du système solaire."
+            },
+            {
+                question: "Quel est l'âge estimé de la Terre?",
+                options: [
+                    "100 millions d'années",
+                    "4,5 milliards d'années",
+                    "Quelques millions d'années",
+                    "13,8 milliards d'années"
+                ],
+                correct: 1,
+                explanation: "La Terre s'est formée il y a environ 4,5 milliards d'années."
+            },
+            {
+                question: "Quel processus interne chauffe la Terre?",
+                options: [
+                    "L'énergie solaire exclusivement",
+                    "La radioactivité et l'énergie résiduelle de la formation",
+                    "Les volcans uniquement",
+                    "Le noyau froid"
+                ],
+                correct: 1,
+                explanation: "La Terre se chauffe par la désintégration radioactive dans son noyau et son manteau."
+            },
+            {
+                question: "Quel est le cycle principal de la roche terrestre?",
+                options: [
+                    "Pas de cycle",
+                    "Formation-érosion-sédimentation-lithification-métamorphisme-remontée",
+                    "Fusion seulement",
+                    "Crystallisation seulement"
+                ],
+                correct: 1,
+                explanation: "Le cycle des roches transforme continuellement les roches ignées, sédimentaires et métamorphiques."
+            },
+            {
+                question: "Qu'est-ce que la tectonique des plaques?",
+                options: [
+                    "La stabilité de la croûte terrestre",
+                    "Le mouvement des plaques lithosphériques créant séismes et volcans",
+                    "L'arrêt de la dérive continentale",
+                    "Une théorie obsolète"
+                ],
+                correct: 1,
+                explanation: "La tectonique des plaques explique le mouvement des continents et les phénomènes géologiques."
+            },
+            {
+                question: "Qu'est-ce que le son?",
+                options: [
+                    "Une forme de lumière",
+                    "Une onde mécanique se propageant dans les milieux matériels",
+                    "Une particule invisible",
+                    "Une manifestation de l'électricité"
+                ],
+                correct: 1,
+                explanation: "Le son est une onde mécanique créée par la vibration de la matière."
+            },
+            {
+                question: "Quelle est la vitesse du son dans l'air à 20°C?",
+                options: [
+                    "100 m/s",
+                    "340 m/s",
+                    "3000 m/s",
+                    "1000 m/s"
+                ],
+                correct: 1,
+                explanation: "Le son se propage à environ 340 m/s dans l'air à température ambiante."
+            },
+            {
+                question: "Qu'est-ce que la fréquence d'une onde sonore?",
+                options: [
+                    "La hauteur perçue (nombre d'oscillations par seconde)",
+                    "La distance entre deux crêtes",
+                    "L'intensité du son",
+                    "La durée du son"
+                ],
+                correct: 0,
+                explanation: "La fréquence (en Hz) détermine la hauteur: basse fréquence = son grave, haute fréquence = son aigu."
+            },
+            {
+                question: "Quel instrument produit les hauteurs les plus graves?",
+                options: [
+                    "La flûte",
+                    "Le contrebasse",
+                    "La trompette",
+                    "Le violon"
+                ],
+                correct: 1,
+                explanation: "La contrebasse produit les sons les plus graves des instruments à cordes."
+            },
+            {
+                question: "Qu'est-ce que la résonance en acoustique?",
+                options: [
+                    "L'absence de son",
+                    "L'amplification du son quand une fréquence correspond à la fréquence naturelle",
+                    "La diminution du son",
+                    "Un type de musique"
+                ],
+                correct: 1,
+                explanation: "La résonance amplifie le son quand la fréquence de vibration correspondà la fréquence propre."
+            },
+            {
+                question: "Qu'est-ce que l'intensité sonore?",
+                options: [
+                    "La hauteur du son",
+                    "La puissance acoustique par unité de surface (en décibels)",
+                    "La durée du son",
+                    "La timbre"
+                ],
+                correct: 1,
+                explanation: "L'intensité mesure la puissance du son, exprimée en décibels (dB)."
+            },
+            {
+                question: "Quel est l'effet Doppler?",
+                options: [
+                    "La réverbération du son",
+                    "Le changement de fréquence observé selon le mouvement relatif source-observateur",
+                    "L'absorption du son",
+                    "La distortion acoustique"
+                ],
+                correct: 1,
+                explanation: "L'effet Doppler crée une variation de fréquence: source qui s'approche = fréquence plus haute."
+            },
+            {
+                question: "Comment le timbre d'un instrument est-il créé?",
+                options: [
+                    "Par la hauteur seulement",
+                    "Par la superposition d'harmoniques (fréquences multiples de la fondamentale)",
+                    "Par l'intensité seule",
+                    "Uniquement par la durée"
+                ],
+                correct: 1,
+                explanation: "Le timbre résulte du mélange unique d'harmoniques propre à chaque instrument."
+            },
+            {
+                question: "Quel est le rôle de l'oreille externe?",
+                options: [
+                    "Créer le son",
+                    "Collecter et diriger les ondes sonores vers le tympan",
+                    "Transformer l'énergie mécanique",
+                    "Procurer l'équilibre"
+                ],
+                correct: 1,
+                explanation: "L'oreille externe (pavillon) collecte et amplifie les sons dirigés vers le tympan."
+            },
+            {
+                question: "Quel gamme de fréquences l'oreille humaine peut-elle percevoir?",
+                options: [
+                    "0 à 1000 Hz",
+                    "20 Hz à 20 kHz",
+                    "100 Hz à 1 MHz",
+                    "Toutes les fréquences"
+                ],
+                correct: 1,
+                explanation: "L'oreille humaine perçoit approximativement les fréquences entre 20 Hz et 20 000 Hz."
+            },
+            {
+                question: "Quel est l'impact du bruit sur la santé?",
+                options: [
+                    "Aucun impact",
+                    "Perte auditive, stress, troubles du sommeil, problèmes cardiovasculaires",
+                    "Uniquement une gêne mineure",
+                    "Un avantage pour la concentration"
+                ],
+                correct: 1,
+                explanation: "L'exposition prolongée au bruit cause des dommages auditifs et des problèmes de santé générale."
+            },
+            {
+                question: "Qu'est-ce qu'un son ultasonique?",
+                options: [
+                    "Un son très grave",
+                    "Un son avec fréquence supérieure à 20 kHz (inaudible pour l'humain)",
+                    "Un son de synthèse",
+                    "Un son enregistré"
+                ],
+                correct: 1,
+                explanation: "Les ultrasons ont des fréquences trop élevées pour l'audition humaine mais utilisés en médecine et technologie."
+            },
+            {
+                question: "Comment la Terre's singularité parmi les planètes?",
+                options: [
+                    "Elle est la plus grande",
+                    "Elle est l'unique avec de l'eau liquide abondante et une biosphère développée",
+                    "Elle est la plus proche du Soleil",
+                    "Elle n'a pas de singularité"
+                ],
+                correct: 1,
+                explanation: "La Terre est unique par sa présence d'eau liquide et de vie complexe."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        const userAnswers = [];
+        const startTime = Date.now();
+
+        function initQuiz() {
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const question = quizData[currentQuestion];
+            const total = quizData.length;
+            const progress = ((currentQuestion + 1) / total) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            let html = `
+                <div class="question-container">
+                    <div class="question-number">Question ${currentQuestion + 1}/${total}</div>
+                    <div class="question-text">${question.question}</div>
+                    <div class="options">
+            `;
+
+            question.options.forEach((option, index) => {
+                html += `
+                    <div class="option" onclick="selectOption(${index})">
+                        <input type="radio" name="question${currentQuestion}" value="${index}" id="opt${index}">
+                        <label for="opt${index}">${option}</label>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <div class="explanation" id="explanation${currentQuestion}">
+                        <strong>Explication:</strong> ${question.explanation}
+                    </div>
+                    <div class="button-group">
+                        ${currentQuestion > 0 ? '<button class="btn-secondary" onclick="previousQuestion()">← Précédent</button>' : ''}
+                        <button class="btn-primary" onclick="nextQuestion()" id="nextBtn">Suivant →</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('quizContent').innerHTML = html;
+            document.getElementById('nextBtn').disabled = true;
+        }
+
+        function selectOption(index) {
+            userAnswers[currentQuestion] = index;
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('.option')[index].classList.add('selected');
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById(`explanation${currentQuestion}`).classList.add('show');
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function showResults() {
+            score = userAnswers.filter((ans, i) => ans === quizData[i].correct).length;
+            const percentage = Math.round((score / quizData.length) * 100);
+            const stars = Math.ceil((percentage / 100) * 5);
+
+            const dt = new Date().toISOString();
+            const resultData = {
+                v: '1_es',
+                dt: dt,
+                score: score,
+                total: quizData.length,
+                pct: percentage,
+                stars: stars
+            };
+
+            const resultCode = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('scoreDisplay').textContent = `${score}/${quizData.length}`;
+            document.getElementById('percentageText').innerHTML = `Résultat: ${percentage}%`;
+            document.getElementById('starsDisplay').textContent = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        window.addEventListener('load', initQuiz);
+    </script>
+</body>
+</html>

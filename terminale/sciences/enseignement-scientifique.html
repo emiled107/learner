@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enseignement Scientifique Terminale</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #08090f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: linear-gradient(135deg, #1a1f3a 0%, #16213e 100%);
+            border: 2px solid transparent;
+            border-image: linear-gradient(135deg, #00ff88, #00ccff) 1;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.2);
+        }
+        h1 {
+            background: linear-gradient(135deg, #00ff88, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .topic-label {
+            display: inline-block;
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .progress {
+            font-size: 14px;
+            color: #a0a0a0;
+            margin-bottom: 20px;
+        }
+        .question {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid #00ff88;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .question-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #00ff88;
+        }
+        .context {
+            background: rgba(0, 255, 136, 0.1);
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #88ffcc;
+        }
+        .formula {
+            background: rgba(0, 204, 255, 0.15);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #88ccff;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 2px solid #333;
+            border-radius: 6px;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .option:hover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+        .option.selected {
+            border-color: #00ccff;
+            background: rgba(0, 204, 255, 0.3);
+        }
+        .option.correct {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.15);
+        }
+        .option.incorrect {
+            border-color: #ff0000;
+            background: rgba(255, 0, 0, 0.15);
+        }
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none;
+        }
+        .feedback.show { display: block; }
+        .feedback.correct {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 4px solid #00ff00;
+            color: #90ff90;
+        }
+        .feedback.incorrect {
+            background: rgba(255, 100, 100, 0.1);
+            border-left: 4px solid #ff6464;
+            color: #ff9999;
+        }
+        .explanation {
+            margin-top: 10px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #c0c0c0;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #00ff88, #00ccff);
+            color: #000;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+        }
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-next {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 2px solid #00ff88;
+        }
+        .btn-next:hover {
+            background: rgba(0, 255, 136, 0.3);
+        }
+        .results {
+            display: none;
+            text-align: center;
+        }
+        .results.show { display: block; }
+        .score-display {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00ff88, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        .stars {
+            font-size: 40px;
+            margin: 20px 0;
+            letter-spacing: 10px;
+        }
+        .result-code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            margin-top: 20px;
+            word-break: break-all;
+            color: #00ff88;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            color: #00ccff;
+            text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            h1 { font-size: 22px; }
+            .question { padding: 15px; }
+            .score-display { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧬 Enseignement Scientifique Terminale</h1>
+        <div class="topic-label" id="topic">Thème: Science et Climat</div>
+        <div class="progress"><span id="current">1</span> / 20</div>
+
+        <div id="quiz-content">
+            <div class="question">
+                <div class="question-text" id="question-text"></div>
+                <div class="context" id="context" style="display:none;"></div>
+                <div class="formula" id="formula" style="display:none;"></div>
+                <div class="options" id="options"></div>
+                <div class="feedback" id="feedback"></div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-submit" id="submit-btn" onclick="submitAnswer()">Valider</button>
+                <button class="btn-next" id="next-btn" onclick="nextQuestion()" style="display:none;">Suivant</button>
+            </div>
+        </div>
+
+        <div id="results" class="results">
+            <h2>✨ Résultats Finaux</h2>
+            <div class="score-display" id="final-score"></div>
+            <div class="stars" id="stars"></div>
+            <p id="message"></p>
+            <div class="result-code" id="result-code"></div>
+            <a href="/index.html" class="back-link">← Retour à l'accueil</a>
+        </div>
+    </div>
+
+    <script>
+        const topics = ['Science et Climat', 'Énergies', 'Histoire du Vivant', 'Intelligence Artificielle'];
+
+        const questions = [
+            {
+                topic: 'Science et Climat',
+                text: "Quel gaz est le principal responsable du réchauffement climatique?",
+                context: "Effet de serre et émissions anthropiques.",
+                options: ["Dioxyde d'azote", "Dioxyde de carbone (CO₂)", "Ozone troposphérique", "Monoxyde de carbone"],
+                correct: 1,
+                formula: "CO₂: concentration pré-industrielle ≈ 280 ppm → 2024 ≈ 420 ppm",
+                explanation: "Le CO₂ est le gaz à effet de serre majeur, sa concentration a augmenté de 50% depuis l'ère industrielle."
+            },
+            {
+                topic: 'Science et Climat',
+                text: "L'effet de serre fonctionne en...",
+                options: ["Bloquant l'arrivée du rayonnement solaire", "Emprisonnant la chaleur infrarouge", "Augmentant les ultraviolets", "Réduisant la pression atmosphérique"],
+                correct: 1,
+                explanation: "Les gaz à effet de serre absorbent et réémettent la chaleur infrarouge vers la Terre."
+            },
+            {
+                topic: 'Science et Climat',
+                text: "Quel est l'objectif de l'Accord de Paris (2015)?",
+                context: "Traité international sur le changement climatique.",
+                options: ["Arrêter immédiatement le CO₂", "Limiter le réchauffement à +1.5°C ou +2°C", "Éliminer l'énergie fossile", "Réduire seulement les émissions d'ozone"],
+                correct: 1,
+                explanation: "L'Accord de Paris vise à limiter le réchauffement climatique à +1.5-2°C par rapport à l'ère pré-industrielle."
+            },
+            {
+                topic: 'Science et Climat',
+                text: "Quel modèle climatique est utilisé pour prédire le futur climat?",
+                options: ["Modèle linéaire simple", "Modèles climatiques 3D basés sur les équations de la physique", "Extrapolation simple", "Sondage d'opinion"],
+                correct: 1,
+                explanation: "Les modèles climatiques complexes intègrent l'atmosphère, océans, glaces et surface terrestre."
+            },
+            {
+                topic: 'Énergies',
+                text: "L'énergie fossile (pétrole, gaz, charbon) représente actuellement environ __% de l'énergie mondiale?",
+                options: ["20%", "45%", "80%", "95%"],
+                correct: 2,
+                explanation: "Les énergies fossiles fournissent environ 80% de l'énergie primaire mondiale en 2024."
+            },
+            {
+                topic: 'Énergies',
+                text: "Quel est un avantage des énergies renouvelables?",
+                context: "Énergie solaire, éolienne, hydroélectrique, géothermale.",
+                options: ["Elles créent du CO₂", "Elles sont inépuisables et peu polluantes", "Elles sont très chères toujours", "Elles fonctionnent la nuit aussi bien que le jour"],
+                correct: 1,
+                explanation: "Les énergies renouvelables sont durables, avec de faibles émissions de carbone en exploitation."
+            },
+            {
+                topic: 'Énergies',
+                text: "Quel problème majeur pose l'énergie nucléaire?",
+                context: "Comparaison des sources d'énergie.",
+                options: ["Elle produit du CO₂", "Elle génère des déchets radioactifs difficiles à gérer", "Elle pollue l'air immédiatement", "Elle est intermittente"],
+                correct: 1,
+                explanation: "Le principal défi du nucléaire est la gestion des déchets radioactifs à longue demi-vie."
+            },
+            {
+                topic: 'Énergies',
+                text: "Le bilan carbone d'un produit mesure...",
+                options: ["Son poids", "La totalité des émissions de GES liées à sa production et transport", "Sa durée de vie", "Son prix"],
+                correct: 1,
+                explanation: "Le bilan carbone (empreinte carbone) quantifie les émissions de CO₂ équivalent d'un produit du berceau à la tombe."
+            },
+            {
+                topic: 'Histoire du Vivant',
+                text: "Quel scientifique a découvert la structure en double hélice de l'ADN?",
+                context: "Base moléculaire de l'hérédité.",
+                options: ["Linus Pauling", "Watson, Crick, Franklin", "Barbara McClintock", "Richard Dawkins"],
+                correct: 1,
+                explanation: "Watson, Crick et Rosalind Franklin ont élucidé la structure 3D de l'ADN en 1953."
+            },
+            {
+                topic: 'Histoire du Vivant',
+                text: "L'ADN est composé de quatre bases azotées. Laquelle n'en fait PAS partie?",
+                options: ["Adénine (A)", "Guanine (G)", "Cytosine (C)", "Thymine (T) et Uracile (U)"],
+                correct: 3,
+                formula: "ADN: A-T, G-C; ARN: A-U, G-C",
+                explanation: "L'ADN contient A, G, C, T; l'ARN contient A, G, C, U (pas T)."
+            },
+            {
+                topic: 'Histoire du Vivant',
+                text: "La théorie de l'évolution par sélection naturelle a été proposée par...",
+                options: ["Gregor Mendel", "Charles Darwin", "Jean-Baptiste Lamarck", "Louis Pasteur"],
+                correct: 1,
+                explanation: "Charles Darwin a publié 'L'Origine des espèces' en 1859, fondant la biologie évolutive moderne."
+            },
+            {
+                topic: 'Histoire du Vivant',
+                text: "Qu'est-ce que la biodiversité?",
+                context: "Variété du vivant à tous les niveaux.",
+                options: ["Uniformité des espèces", "Diversité génétique, spécifique et écosystémique", "Nombre d'individus", "Taille moyenne des organismes"],
+                correct: 1,
+                explanation: "La biodiversité inclut tous les niveaux: gènes, espèces et écosystèmes."
+            },
+            {
+                topic: 'Histoire du Vivant',
+                text: "Le taux actuel d'extinction des espèces est estimé à combien de fois le taux naturel?",
+                options: ["2 fois", "10 fois", "100 à 1000 fois", "Augmente très peu"],
+                correct: 2,
+                explanation: "Le taux d'extinction actuel est 100 à 1000 fois supérieur au taux de fond, constituant une 6e extinction de masse."
+            },
+            {
+                topic: 'Intelligence Artificielle',
+                text: "Un algorithme est...",
+                context: "Fondements de l'IA.",
+                options: ["Un ordinateur", "Une suite d'instructions pour résoudre un problème", "Un programme informatique complet", "Un langage de programmation"],
+                correct: 1,
+                explanation: "Un algorithme est une séquence finie d'étapes pour accomplir une tâche."
+            },
+            {
+                topic: 'Intelligence Artificielle',
+                text: "L'apprentissage automatique (Machine Learning) fonctionne en...",
+                options: ["Programmant explicitement chaque règle", "Extrayant des motifs à partir de données", "Imitant le cerveau humain seulement", "Utilisant l'intuition"],
+                correct: 1,
+                explanation: "Le ML découvre des motifs dans les données plutôt que de programmer les règles explicitement."
+            },
+            {
+                topic: 'Intelligence Artificielle',
+                text: "Quel est un enjeu éthique majeur de l'IA?",
+                context: "Implications sociétales de l'IA.",
+                options: ["Elle est trop lente", "Biais algorithmique, responsabilité et impact sur l'emploi", "Elle coûte peu", "Elle est trop efficace"],
+                correct: 1,
+                explanation: "Les défis éthiques incluent: biais dans les données, transparence, accountability et déplacement d'emplois."
+            },
+            {
+                topic: 'Intelligence Artificielle',
+                text: "Les données sont considérées comme...",
+                options: ["Sans valeur", "L'or noir de l'ère numérique - essentielles pour l'IA", "Dangereuses toujours", "Inutiles pour l'IA"],
+                correct: 1,
+                explanation: "Les données de qualité sont essentielles pour entraîner des modèles d'IA performants et fiables."
+            },
+            {
+                topic: 'Science et Climat',
+                text: "Quel phénomène météorologique est intensifié par le réchauffement climatique?",
+                context: "Impacts du changement climatique.",
+                options: ["Aucun changement", "Cyclones et tempêtes plus intenses, vagues de chaleur extrêmes", "Disparition totale des orages", "Refroidissement général"],
+                correct: 1,
+                explanation: "Le réchauffement augmente l'énergie atmosphérique, amplifiant phénomènes extrêmes et variabilité."
+            },
+            {
+                topic: 'Énergies',
+                text: "La transition énergétique vers les renouvelables signifie...",
+                context: "Changement de mix énergétique.",
+                options: ["Arrêter l'électricité", "Passer progressivement des fossiles aux sources durables et bas-carbone", "Garder seulement le pétrole", "Accepter l'instabilité énergétique"],
+                correct: 1,
+                explanation: "La transition énergétique est le passage des fossiles à des sources durables, essentielles pour la stabilité climatique."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedAnswer = null;
+        let currentTopic = 'Science et Climat';
+        const startTime = new Date();
+
+        function shuffleQuestions() {
+            for (let i = questions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [questions[i], questions[j]] = [questions[j], questions[i]];
+            }
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            currentTopic = q.topic;
+            document.getElementById('topic').textContent = `Thème: ${q.topic}`;
+            document.getElementById('question-text').textContent = q.text;
+
+            if (q.context) {
+                document.getElementById('context').textContent = q.context;
+                document.getElementById('context').style.display = 'block';
+            } else {
+                document.getElementById('context').style.display = 'none';
+            }
+
+            if (q.formula) {
+                document.getElementById('formula').textContent = q.formula;
+                document.getElementById('formula').style.display = 'block';
+            } else {
+                document.getElementById('formula').style.display = 'none';
+            }
+
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const label = document.createElement('div');
+                label.className = 'option';
+                label.textContent = opt;
+                label.onclick = () => selectOption(idx);
+                optionsDiv.appendChild(label);
+            });
+
+            document.getElementById('feedback').innerHTML = '';
+            document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
+            document.getElementById('submit-btn').style.display = 'block';
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('submit-btn').disabled = false;
+            selectedAnswer = null;
+        }
+
+        function selectOption(idx) {
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                opt.classList.toggle('selected', i === idx);
+            });
+            selectedAnswer = idx;
+        }
+
+        function submitAnswer() {
+            if (selectedAnswer === null) return;
+
+            const q = questions[currentQuestion];
+            const isCorrect = selectedAnswer === q.correct;
+            if (isCorrect) score++;
+
+            const options = document.querySelectorAll('.option');
+            options[q.correct].classList.add('correct');
+            if (!isCorrect) options[selectedAnswer].classList.add('incorrect');
+
+            const feedback = document.getElementById('feedback');
+            feedback.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+            feedback.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✗ Incorrect'}</strong><div class="explanation">${q.explanation}</div>`;
+
+            document.getElementById('submit-btn').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < 20) {
+                document.getElementById('current').textContent = currentQuestion + 1;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-content').style.display = 'none';
+            document.getElementById('results').classList.add('show');
+
+            const pct = Math.round((score / 20) * 100);
+            let stars = '';
+            if (pct >= 90) stars = '⭐⭐⭐⭐⭐';
+            else if (pct >= 80) stars = '⭐⭐⭐⭐';
+            else if (pct >= 70) stars = '⭐⭐⭐';
+            else if (pct >= 60) stars = '⭐⭐';
+            else stars = '⭐';
+
+            const endTime = new Date();
+            const timeSpent = Math.floor((endTime - startTime) / 1000);
+
+            const resultData = {
+                v: 't_es',
+                dt: new Date().toISOString(),
+                score: `${score}/20`,
+                pct: pct,
+                stars: stars.length / 2,
+                time: timeSpent
+            };
+
+            const resultCode = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
+
+            document.getElementById('final-score').textContent = `${score} / 20`;
+            document.getElementById('stars').textContent = stars;
+            document.getElementById('message').textContent =
+                pct >= 80 ? '🎉 Excellent travail!' :
+                pct >= 60 ? '👍 Bon effort!' :
+                '💪 Continue à réviser!';
+            document.getElementById('result-code').textContent = resultCode;
+        }
+
+        shuffleQuestions();
+        loadQuestion();
+    </script>
+</body>
+</html>

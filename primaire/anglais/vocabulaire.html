@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulaire Anglais - Flashcards</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            font-family: 'Nunito', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #08090f 0%, #1a1b2e 50%, #0f1628 100%);
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #00d4ff, #7c3aed, #ff006e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 1rem;
+        }
+
+        .mode-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .theme-btn, .mode-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .theme-btn:hover, .mode-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .theme-btn.active {
+            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.5);
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1a1b2e 0%, #2d1b3d 100%);
+            border: 2px solid #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .question-number {
+            color: #00d4ff;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .question {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .emoji {
+            font-size: 4rem;
+            margin: 20px 0;
+        }
+
+        .choices {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .choice-btn {
+            padding: 15px 20px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            background: #0f1628;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .choice-btn:hover {
+            border-color: #00d4ff;
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .choice-btn.correct {
+            background: linear-gradient(135deg, #00c896 0%, #00e5a0 100%);
+            border-color: #00e5a0;
+            box-shadow: 0 5px 20px rgba(0, 229, 160, 0.4);
+        }
+
+        .choice-btn.incorrect {
+            background: linear-gradient(135deg, #ff006e 0%, #ff4081 100%);
+            border-color: #ff4081;
+            box-shadow: 0 5px 20px rgba(255, 64, 129, 0.4);
+        }
+
+        .choice-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            min-height: 30px;
+        }
+
+        .feedback.correct {
+            color: #00e5a0;
+        }
+
+        .feedback.incorrect {
+            color: #ff4081;
+        }
+
+        .pronunciation {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(124, 58, 237, 0.2);
+            border-left: 4px solid #7c3aed;
+            border-radius: 8px;
+            font-style: italic;
+            color: #b3a7e6;
+            font-size: 0.95rem;
+        }
+
+        .next-btn {
+            margin-top: 20px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .stars {
+            font-size: 2rem;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+
+        .result-code {
+            background: #0a0b14;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+            margin-top: 30px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #00d4ff;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-link a {
+            color: #00d4ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-link a:hover {
+            color: #7c3aed;
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 25px;
+                min-height: 250px;
+            }
+
+            .emoji {
+                font-size: 3rem;
+            }
+
+            .question {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 English Flashcards</h1>
+            <p class="subtitle">Learn English vocabulary with fun challenges</p>
+        </header>
+
+        <div id="setupScreen" class="card">
+            <h2>Choose a Theme</h2>
+            <div class="mode-select">
+                <button class="theme-btn" onclick="selectTheme('colors')">🎨 Colors</button>
+                <button class="theme-btn" onclick="selectTheme('numbers')">🔢 Numbers 1-20</button>
+                <button class="theme-btn" onclick="selectTheme('animals')">🦁 Animals</button>
+                <button class="theme-btn" onclick="selectTheme('family')">👨‍👩‍👧‍👦 Family</button>
+                <button class="theme-btn" onclick="selectTheme('body')">💪 Body</button>
+                <button class="theme-btn" onclick="selectTheme('food')">🍕 Food</button>
+                <button class="theme-btn" onclick="selectTheme('mix')">🎲 Mix All</button>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="hidden">
+            <div class="question-number">Question <span id="questionNum">1</span>/15</div>
+            <div class="card">
+                <div class="question" id="question"></div>
+                <div class="emoji" id="emoji"></div>
+                <div class="choices" id="choices"></div>
+                <div class="feedback" id="feedback"></div>
+                <div class="pronunciation" id="pronunciation"></div>
+            </div>
+            <div style="text-align: center;">
+                <button class="next-btn" id="nextBtn" onclick="nextQuestion()" disabled>Next Question</button>
+            </div>
+        </div>
+
+        <div id="resultScreen" class="hidden">
+            <div class="card">
+                <h2>Game Complete! 🎉</h2>
+                <div class="stars" id="starsDisplay"></div>
+                <p style="font-size: 1.5rem; margin: 20px 0;">Score: <span id="scoreDisplay"></span>/15</p>
+                <p style="color: #aaa;">Percentage: <span id="percentDisplay"></span>%</p>
+                <button class="mode-btn" onclick="location.reload()" style="margin-top: 20px;">Play Again</button>
+            </div>
+            <div class="result-code" id="resultCode"></div>
+        </div>
+
+        <div class="back-link">
+            <a href="/index.html">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        const vocabulary = {
+            colors: [
+                { en: 'Red', fr: 'Rouge', emoji: '🔴', pronunciation: 'Rèd' },
+                { en: 'Blue', fr: 'Bleu', emoji: '🔵', pronunciation: 'Blou' },
+                { en: 'Yellow', fr: 'Jaune', emoji: '🟡', pronunciation: 'Yèlo' },
+                { en: 'Green', fr: 'Vert', emoji: '🟢', pronunciation: 'Grîn' },
+                { en: 'Orange', fr: 'Orange', emoji: '🟠', pronunciation: 'Orandj' },
+                { en: 'Purple', fr: 'Violet', emoji: '🟣', pronunciation: 'Peurpol' },
+                { en: 'Pink', fr: 'Rose', emoji: '🩷', pronunciation: 'Pink' },
+                { en: 'Black', fr: 'Noir', emoji: '⚫', pronunciation: 'Blak' },
+                { en: 'White', fr: 'Blanc', emoji: '⚪', pronunciation: 'Waït' },
+                { en: 'Brown', fr: 'Marron', emoji: '🟤', pronunciation: 'Braoun' }
+            ],
+            numbers: [
+                { en: 'One', fr: 'Un', emoji: '1️⃣', pronunciation: 'Oun' },
+                { en: 'Two', fr: 'Deux', emoji: '2️⃣', pronunciation: 'Tou' },
+                { en: 'Three', fr: 'Trois', emoji: '3️⃣', pronunciation: 'Thri' },
+                { en: 'Four', fr: 'Quatre', emoji: '4️⃣', pronunciation: 'For' },
+                { en: 'Five', fr: 'Cinq', emoji: '5️⃣', pronunciation: 'Faïv' },
+                { en: 'Six', fr: 'Six', emoji: '6️⃣', pronunciation: 'Siks' },
+                { en: 'Seven', fr: 'Sept', emoji: '7️⃣', pronunciation: 'Sèven' },
+                { en: 'Eight', fr: 'Huit', emoji: '8️⃣', pronunciation: 'Eït' },
+                { en: 'Nine', fr: 'Neuf', emoji: '9️⃣', pronunciation: 'Naïn' },
+                { en: 'Ten', fr: 'Dix', emoji: '🔟', pronunciation: 'Tèn' },
+                { en: 'Eleven', fr: 'Onze', emoji: '1️⃣1️⃣', pronunciation: 'Ilevon' },
+                { en: 'Twelve', fr: 'Douze', emoji: '1️⃣2️⃣', pronunciation: 'Twèlv' },
+                { en: 'Thirteen', fr: 'Treize', emoji: '1️⃣3️⃣', pronunciation: 'Theurtin' },
+                { en: 'Fourteen', fr: 'Quatorze', emoji: '1️⃣4️⃣', pronunciation: 'Fourtin' },
+                { en: 'Fifteen', fr: 'Quinze', emoji: '1️⃣5️⃣', pronunciation: 'Fifftin' },
+                { en: 'Sixteen', fr: 'Seize', emoji: '1️⃣6️⃣', pronunciation: 'Sikstin' },
+                { en: 'Seventeen', fr: 'Dix-sept', emoji: '1️⃣7️⃣', pronunciation: 'Seventin' },
+                { en: 'Eighteen', fr: 'Dix-huit', emoji: '1️⃣8️⃣', pronunciation: 'Eitin' },
+                { en: 'Nineteen', fr: 'Dix-neuf', emoji: '1️⃣9️⃣', pronunciation: 'Naïntin' },
+                { en: 'Twenty', fr: 'Vingt', emoji: '2️⃣0️⃣', pronunciation: 'Twènti' }
+            ],
+            animals: [
+                { en: 'Cat', fr: 'Chat', emoji: '🐱', pronunciation: 'Kat' },
+                { en: 'Dog', fr: 'Chien', emoji: '🐶', pronunciation: 'Dog' },
+                { en: 'Bird', fr: 'Oiseau', emoji: '🐦', pronunciation: 'Bord' },
+                { en: 'Fish', fr: 'Poisson', emoji: '🐠', pronunciation: 'Fish' },
+                { en: 'Lion', fr: 'Lion', emoji: '🦁', pronunciation: 'Laïon' },
+                { en: 'Tiger', fr: 'Tigre', emoji: '🐯', pronunciation: 'Taïgor' },
+                { en: 'Elephant', fr: 'Éléphant', emoji: '🐘', pronunciation: 'Éléfont' },
+                { en: 'Monkey', fr: 'Singe', emoji: '🐵', pronunciation: 'Monki' },
+                { en: 'Butterfly', fr: 'Papillon', emoji: '🦋', pronunciation: 'Butterfly' },
+                { en: 'Bee', fr: 'Abeille', emoji: '🐝', pronunciation: 'Bi' },
+                { en: 'Turtle', fr: 'Tortue', emoji: '🐢', pronunciation: 'Teurtel' },
+                { en: 'Penguin', fr: 'Pingouin', emoji: '🐧', pronunciation: 'Pèngwin' },
+                { en: 'Rabbit', fr: 'Lapin', emoji: '🐰', pronunciation: 'Rabbit' },
+                { en: 'Panda', fr: 'Panda', emoji: '🐼', pronunciation: 'Panda' },
+                { en: 'Horse', fr: 'Cheval', emoji: '🐴', pronunciation: 'Hors' }
+            ],
+            family: [
+                { en: 'Mother', fr: 'Mère', emoji: '👩', pronunciation: 'Mouðor' },
+                { en: 'Father', fr: 'Père', emoji: '👨', pronunciation: 'Faaðor' },
+                { en: 'Sister', fr: 'Sœur', emoji: '👧', pronunciation: 'Sistor' },
+                { en: 'Brother', fr: 'Frère', emoji: '👦', pronunciation: 'Broðor' },
+                { en: 'Grandmother', fr: 'Grand-mère', emoji: '👵', pronunciation: 'Grandmoðor' },
+                { en: 'Grandfather', fr: 'Grand-père', emoji: '👴', pronunciation: 'Grandfaaðor' },
+                { en: 'Aunt', fr: 'Tante', emoji: '👩‍🦰', pronunciation: 'Ant' },
+                { en: 'Uncle', fr: 'Oncle', emoji: '👨‍🦱', pronunciation: 'Onkol' },
+                { en: 'Cousin', fr: 'Cousin', emoji: '👦', pronunciation: 'Couzon' },
+                { en: 'Baby', fr: 'Bébé', emoji: '👶', pronunciation: 'Bébi' }
+            ],
+            body: [
+                { en: 'Head', fr: 'Tête', emoji: '🧠', pronunciation: 'Hèd' },
+                { en: 'Eye', fr: 'Œil', emoji: '👁️', pronunciation: 'Aï' },
+                { en: 'Ear', fr: 'Oreille', emoji: '👂', pronunciation: 'Îr' },
+                { en: 'Nose', fr: 'Nez', emoji: '👃', pronunciation: 'Nouz' },
+                { en: 'Mouth', fr: 'Bouche', emoji: '👄', pronunciation: 'Maouð' },
+                { en: 'Arm', fr: 'Bras', emoji: '💪', pronunciation: 'Arm' },
+                { en: 'Hand', fr: 'Main', emoji: '🖐️', pronunciation: 'Hand' },
+                { en: 'Leg', fr: 'Jambe', emoji: '🦵', pronunciation: 'Lèg' },
+                { en: 'Foot', fr: 'Pied', emoji: '🦶', pronunciation: 'Fut' },
+                { en: 'Heart', fr: 'Cœur', emoji: '❤️', pronunciation: 'Hârt' },
+                { en: 'Tooth', fr: 'Dent', emoji: '🦷', pronunciation: 'Touð' },
+                { en: 'Hair', fr: 'Cheveux', emoji: '💇', pronunciation: 'Hèr' }
+            ],
+            food: [
+                { en: 'Apple', fr: 'Pomme', emoji: '🍎', pronunciation: 'Appol' },
+                { en: 'Banana', fr: 'Banane', emoji: '🍌', pronunciation: 'Banana' },
+                { en: 'Pizza', fr: 'Pizza', emoji: '🍕', pronunciation: 'Pizza' },
+                { en: 'Bread', fr: 'Pain', emoji: '🍞', pronunciation: 'Brèd' },
+                { en: 'Cheese', fr: 'Fromage', emoji: '🧀', pronunciation: 'Tchiz' },
+                { en: 'Egg', fr: 'Œuf', emoji: '🥚', pronunciation: 'Èg' },
+                { en: 'Fish', fr: 'Poisson', emoji: '🐟', pronunciation: 'Fish' },
+                { en: 'Ice cream', fr: 'Crème glacée', emoji: '🍦', pronunciation: 'Aïs Krim' },
+                { en: 'Milk', fr: 'Lait', emoji: '🥛', pronunciation: 'Milk' },
+                { en: 'Orange', fr: 'Orange', emoji: '🍊', pronunciation: 'Orandj' },
+                { en: 'Cake', fr: 'Gâteau', emoji: '🍰', pronunciation: 'Kèk' },
+                { en: 'Chocolate', fr: 'Chocolat', emoji: '🍫', pronunciation: 'Tchocolèt' }
+            ]
+        };
+
+        let currentTheme = '';
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let questions = [];
+        let currentMode = 'eng-to-fr';
+        let answered = false;
+
+        function selectTheme(theme) {
+            currentTheme = theme;
+            score = 0;
+            currentQuestionIndex = 0;
+            answered = false;
+
+            let allVocab = [];
+            if (theme === 'mix') {
+                Object.keys(vocabulary).forEach(key => {
+                    allVocab = allVocab.concat(vocabulary[key]);
+                });
+            } else {
+                allVocab = vocabulary[theme];
+            }
+
+            questions = generateQuestions(allVocab);
+            document.getElementById('setupScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function generateQuestions(vocab) {
+            const shuffled = [...vocab].sort(() => Math.random() - 0.5);
+            return shuffled.slice(0, 15);
+        }
+
+        function showQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                endGame();
+                return;
+            }
+
+            answered = false;
+            const q = questions[currentQuestionIndex];
+            document.getElementById('questionNum').textContent = currentQuestionIndex + 1;
+
+            const mode = currentQuestionIndex % 2 === 0 ? 'eng-to-fr' : 'fr-to-eng';
+            currentMode = mode;
+
+            if (mode === 'eng-to-fr') {
+                document.getElementById('question').textContent = 'Translate to French:';
+                document.getElementById('emoji').textContent = q.emoji;
+                document.getElementById('emoji').style.display = 'block';
+                showChoices(q, 'en', 'fr');
+            } else {
+                document.getElementById('question').textContent = 'Translate to English:';
+                document.getElementById('emoji').textContent = q.emoji;
+                document.getElementById('emoji').style.display = 'block';
+                showChoices(q, 'fr', 'en');
+            }
+
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('pronunciation').textContent = '';
+            document.getElementById('nextBtn').disabled = true;
+        }
+
+        function showChoices(correct, fromLang, toLang) {
+            const choices = [correct];
+            const allWords = [];
+            Object.values(vocabulary).forEach(theme => {
+                theme.forEach(word => {
+                    allWords.push(word);
+                });
+            });
+
+            while (choices.length < 4) {
+                const random = allWords[Math.floor(Math.random() * allWords.length)];
+                const choice = toLang === 'fr' ? random.fr : random.en;
+                if (!choices.some(c => (toLang === 'fr' ? c.fr : c.en) === choice)) {
+                    choices.push(random);
+                }
+            }
+
+            const shuffled = choices.sort(() => Math.random() - 0.5);
+            const choicesHtml = shuffled.map((choice, idx) => {
+                const text = toLang === 'fr' ? choice.fr : choice.en;
+                return `<button class="choice-btn" onclick="checkAnswer(${idx}, ${shuffled.length}, '${text}', '${correct.en}', '${correct.fr}', '${correct.pronunciation}')">${text}</button>`;
+            }).join('');
+
+            document.getElementById('choices').innerHTML = choicesHtml;
+        }
+
+        function checkAnswer(idx, totalChoices, selected, correctEn, correctFr, pronunciation) {
+            if (answered) return;
+            answered = true;
+
+            const buttons = document.querySelectorAll('.choice-btn');
+            const isCorrect = (currentMode === 'eng-to-fr' && selected === correctFr) ||
+                              (currentMode === 'fr-to-eng' && selected === correctEn);
+
+            buttons.forEach((btn, index) => {
+                btn.disabled = true;
+                const btnText = btn.textContent;
+                if (isCorrect && (btnText === correctFr || btnText === correctEn)) {
+                    btn.classList.add('correct');
+                } else if (!isCorrect && index === idx) {
+                    btn.classList.add('incorrect');
+                } else if (!isCorrect && (btnText === correctFr || btnText === correctEn)) {
+                    btn.classList.add('correct');
+                }
+            });
+
+            if (isCorrect) {
+                score++;
+                document.getElementById('feedback').textContent = '✓ Correct!';
+                document.getElementById('feedback').classList.add('correct');
+            } else {
+                document.getElementById('feedback').textContent = '✗ Incorrect';
+                document.getElementById('feedback').classList.add('incorrect');
+            }
+
+            document.getElementById('pronunciation').textContent = `Pronunciation: ${pronunciation}`;
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            showQuestion();
+        }
+
+        function endGame() {
+            const percent = Math.round((score / 15) * 100);
+            let stars = '☆☆☆';
+            if (percent >= 80) stars = '★★★';
+            else if (percent >= 60) stars = '★★☆';
+            else if (percent >= 40) stars = '★☆☆';
+
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            document.getElementById('scoreDisplay').textContent = score;
+            document.getElementById('percentDisplay').textContent = percent;
+            document.getElementById('starsDisplay').textContent = stars;
+
+            const now = new Date().toISOString();
+            const resultCode = `v:'p_vocab', dt:'${now}', theme:'${currentTheme}', score:'${score}/15', pct:${percent}, stars:'${stars}'`;
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+    </script>
+</body>
+</html>

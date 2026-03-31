@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dérivées Express - 1ère</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            color: #fff;
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            background: linear-gradient(135deg, #1a1d2e 0%, #16111f 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(77, 150, 255, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #4d96ff, #ff6b6b, #ffd93d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .header p {
+            color: #aaa;
+            font-size: 0.95em;
+        }
+
+        .level-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .level-btn {
+            padding: 20px;
+            border: 2px solid;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .level-btn:nth-child(1) {
+            border-color: #6bcf7f;
+            color: #6bcf7f;
+        }
+
+        .level-btn:nth-child(1):hover {
+            background: rgba(107, 207, 127, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(107, 207, 127, 0.3);
+        }
+
+        .level-btn:nth-child(2) {
+            border-color: #ffd93d;
+            color: #ffd93d;
+        }
+
+        .level-btn:nth-child(2):hover {
+            background: rgba(255, 217, 61, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 217, 61, 0.3);
+        }
+
+        .level-btn:nth-child(3) {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .level-btn:nth-child(3):hover {
+            background: rgba(255, 107, 107, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .quiz-screen {
+            animation: fadeIn 0.5s ease;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4d96ff, #ff6b6b);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        .question-header {
+            background: rgba(77, 150, 255, 0.1);
+            padding: 15px;
+            border-left: 4px solid #4d96ff;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .math-display {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 1.2em;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            border: 1px solid rgba(77, 150, 255, 0.3);
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-family: 'Courier New', monospace;
+            font-size: 1.05em;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .option.selected {
+            border-color: #4d96ff;
+            background: rgba(77, 150, 255, 0.2);
+        }
+
+        .option.correct {
+            border-color: #6bcf7f;
+            background: rgba(107, 207, 127, 0.2);
+            animation: pulse 0.5s ease;
+        }
+
+        .option.incorrect {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.2);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4d96ff, #ff6b6b);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(77, 150, 255, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .derivation-steps {
+            background: rgba(107, 207, 127, 0.05);
+            border-left: 4px solid #6bcf7f;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.95em;
+            line-height: 1.6;
+            display: none;
+            font-family: 'Courier New', monospace;
+        }
+
+        .derivation-steps.show {
+            display: block;
+        }
+
+        .results-screen {
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4d96ff, #6bcf7f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+
+        .percentage {
+            font-size: 1.5em;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        .stars {
+            font-size: 3em;
+            margin: 20px 0;
+            letter-spacing: 10px;
+        }
+
+        .result-code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 0.85em;
+            word-break: break-all;
+            color: #4d96ff;
+            font-family: monospace;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #4d96ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #ff6b6b;
+            transform: translateX(-3px);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .level-selector {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .level-btn {
+                padding: 15px;
+                font-size: 0.9em;
+            }
+
+            .question-text {
+                font-size: 1em;
+            }
+
+            .math-display {
+                font-size: 1em;
+            }
+
+            .score-display {
+                font-size: 2.2em;
+            }
+
+            .stars {
+                font-size: 2em;
+                letter-spacing: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Level Selection Screen -->
+        <div class="screen active" id="levelScreen">
+            <div class="header">
+                <h1>🚀 Dérivées Express</h1>
+                <p>Maîtrise les dérivées avec des exercices progressifs - 15 questions par niveau</p>
+            </div>
+            <div class="level-selector" id="levelSelector"></div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div class="screen" id="quizScreen">
+            <div class="question-info">
+                <span id="questionNumber"></span>
+                <span id="levelBadge"></span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-header">
+                Trouvez la dérivée de:
+            </div>
+            <div class="math-display" id="functionDisplay"></div>
+            <div class="question-text">Calculez f'(x)</div>
+            <div class="options" id="optionsContainer"></div>
+            <div class="derivation-steps" id="derivationSteps"></div>
+            <button class="btn" id="nextBtn">Vérifier</button>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="screen results-screen" id="resultsScreen">
+            <h2>Quiz Terminé!</h2>
+            <div class="score-display" id="scoreDisplay"></div>
+            <div class="percentage" id="percentageDisplay"></div>
+            <div class="stars" id="starsDisplay"></div>
+            <div class="result-code">
+                <strong>Code de résultat:</strong><br>
+                <span id="resultCode"></span>
+            </div>
+            <button class="btn" onclick="location.reload()">Rejouer</button>
+            <a href="/index.html" class="back-link">← Retour à l'accueil</a>
+        </div>
+    </div>
+
+    <script>
+        const derivatives = {
+            'Niveau 1': [
+                {f: 'f(x) = 5', df: 'f\'(x) = 0', o: ['0', '5', '1', 'x'], c: 0, steps: 'Constante → dérivée = 0'},
+                {f: 'f(x) = x', df: 'f\'(x) = 1', o: ['1', '0', 'x', '2x'], c: 0, steps: 'Polynôme x¹ → dérivée = 1·x⁰ = 1'},
+                {f: 'f(x) = x²', df: 'f\'(x) = 2x', o: ['2x', 'x²', '2', 'x'], c: 0, steps: 'Polynôme x² → dérivée = 2·x¹ = 2x'},
+                {f: 'f(x) = x³', df: 'f\'(x) = 3x²', o: ['3x²', '3x', '3', 'x³'], c: 0, steps: 'Polynôme x³ → dérivée = 3·x² = 3x²'},
+                {f: 'f(x) = x⁴', df: 'f\'(x) = 4x³', o: ['4x³', '4x²', '4', 'x⁴'], c: 0, steps: 'Polynôme xⁿ → dérivée = n·xⁿ⁻¹ = 4x³'},
+                {f: 'f(x) = 3', df: 'f\'(x) = 0', o: ['0', '3', '-3', '1'], c: 0, steps: 'Toute constante a une dérivée nulle'},
+                {f: 'f(x) = -2', df: 'f\'(x) = 0', o: ['0', '-2', '2', '1'], c: 0, steps: 'Constante négative → dérivée = 0'},
+                {f: 'f(x) = x⁵', df: 'f\'(x) = 5x⁴', o: ['5x⁴', '5x³', '5', 'x⁵'], c: 0, steps: 'Règle puissance: d/dx(xⁿ) = nxⁿ⁻¹'},
+                {f: 'f(x) = 10', df: 'f\'(x) = 0', o: ['0', '10', '1', '-10'], c: 0, steps: 'Constante 10 → dérivée = 0'},
+                {f: 'f(x) = x⁶', df: 'f\'(x) = 6x⁵', o: ['6x⁵', '6x⁴', '6', 'x⁶'], c: 0, steps: 'd/dx(x⁶) = 6x⁵'},
+                {f: 'f(x) = 2x', df: 'f\'(x) = 2', o: ['2', '2x', '1', '4x'], c: 0, steps: 'd/dx(2x) = 2·1 = 2'},
+                {f: 'f(x) = 3x²', df: 'f\'(x) = 6x', o: ['6x', '3x', '6', '3x²'], c: 0, steps: 'd/dx(3x²) = 3·2x = 6x'},
+                {f: 'f(x) = 1/x', df: 'f\'(x) = -1/x²', o: ['-1/x²', '1/x', '-x²', '1'], c: 0, steps: 'd/dx(x⁻¹) = -1·x⁻² = -1/x²'},
+                {f: 'f(x) = √x', df: 'f\'(x) = 1/(2√x)', o: ['1/(2√x)', '1/√x', '1/2', '√x'], c: 0, steps: 'd/dx(x^(1/2)) = (1/2)x^(-1/2)'},
+                {f: 'f(x) = x⁷', df: 'f\'(x) = 7x⁶', o: ['7x⁶', '7x⁵', '7', 'x⁷'], c: 0, steps: 'd/dx(x⁷) = 7x⁶'},
+                {f: 'f(x) = -x²', df: 'f\'(x) = -2x', o: ['-2x', '2x', '-x', 'x²'], c: 0, steps: 'd/dx(-x²) = -2x'},
+                {f: 'f(x) = 4x³', df: 'f\'(x) = 12x²', o: ['12x²', '4x²', '12', '12x³'], c: 0, steps: 'd/dx(4x³) = 4·3x² = 12x²'},
+                {f: 'f(x) = x^(1/2)', df: 'f\'(x) = 1/(2√x)', o: ['1/(2√x)', '1/2', '√x', '2√x'], c: 0, steps: 'd/dx(√x) = (1/2)x^(-1/2) = 1/(2√x)'},
+                {f: 'f(x) = 5x', df: 'f\'(x) = 5', o: ['5', '5x', '1', '10x'], c: 0, steps: 'd/dx(5x) = 5'},
+                {f: 'f(x) = x⁸', df: 'f\'(x) = 8x⁷', o: ['8x⁷', '8x⁶', '8', 'x⁸'], c: 0, steps: 'd/dx(x⁸) = 8x⁷'}
+            ],
+            'Niveau 2': [
+                {f: 'f(x) = 2x + 3', df: 'f\'(x) = 2', o: ['2', '3', '2x', '5'], c: 0, steps: 'Somme: d/dx(2x) + d/dx(3) = 2 + 0 = 2'},
+                {f: 'f(x) = x² + x', df: 'f\'(x) = 2x + 1', o: ['2x + 1', '2x', 'x + 1', '2'], c: 0, steps: 'd/dx(x²) + d/dx(x) = 2x + 1'},
+                {f: 'f(x) = 3x² - 2x + 1', df: 'f\'(x) = 6x - 2', o: ['6x - 2', '6x', '6x + 2', '3x - 2'], c: 0, steps: '3(2x) - 2(1) + 0 = 6x - 2'},
+                {f: 'f(x) = 5x³ + 2x²', df: 'f\'(x) = 15x² + 4x', o: ['15x² + 4x', '15x + 4', '15x³ + 4x', '5x² + 2x'], c: 0, steps: '5(3x²) + 2(2x) = 15x² + 4x'},
+                {f: 'f(x) = x³ + 2x', df: 'f\'(x) = 3x² + 2', o: ['3x² + 2', '3x + 2', '3x² + 1', 'x² + 2'], c: 0, steps: 'd/dx(x³) + d/dx(2x) = 3x² + 2'},
+                {f: 'f(x) = -x² + 4x', df: 'f\'(x) = -2x + 4', o: ['-2x + 4', '2x + 4', '-2x', 'x + 4'], c: 0, steps: 'd/dx(-x²) + d/dx(4x) = -2x + 4'},
+                {f: 'f(x) = 7x - 5', df: 'f\'(x) = 7', o: ['7', '7x', '-5', '7x - 5'], c: 0, steps: 'd/dx(7x) + d/dx(-5) = 7 + 0 = 7'},
+                {f: 'f(x) = 2x² + 3x + 1', df: 'f\'(x) = 4x + 3', o: ['4x + 3', '4x', '2x + 3', '4x + 1'], c: 0, steps: '2(2x) + 3(1) + 0 = 4x + 3'},
+                {f: 'f(x) = x⁴ + x²', df: 'f\'(x) = 4x³ + 2x', o: ['4x³ + 2x', '4x + 2', '4x³', 'x³ + 2x'], c: 0, steps: 'd/dx(x⁴) + d/dx(x²) = 4x³ + 2x'},
+                {f: 'f(x) = -3x² - x', df: 'f\'(x) = -6x - 1', o: ['-6x - 1', '-6x', '-3x - 1', '6x + 1'], c: 0, steps: '-3(2x) - 1 = -6x - 1'},
+                {f: 'f(x) = x² - 5x + 2', df: 'f\'(x) = 2x - 5', o: ['2x - 5', '2x', '2x + 5', 'x - 5'], c: 0, steps: '2x - 5 + 0 = 2x - 5'},
+                {f: 'f(x) = 4x³ + x', df: 'f\'(x) = 12x² + 1', o: ['12x² + 1', '12x + 1', '12x²', '4x² + 1'], c: 0, steps: '4(3x²) + 1 = 12x² + 1'},
+                {f: 'f(x) = 6x² + 2x - 3', df: 'f\'(x) = 12x + 2', o: ['12x + 2', '12x', '6x + 2', '12x + 3'], c: 0, steps: '6(2x) + 2 + 0 = 12x + 2'},
+                {f: 'f(x) = 2x³ - x²', df: 'f\'(x) = 6x² - 2x', o: ['6x² - 2x', '6x - 2', '6x²', '2x² - 2x'], c: 0, steps: '2(3x²) - 2x = 6x² - 2x'},
+                {f: 'f(x) = x⁵ + 2x³', df: 'f\'(x) = 5x⁴ + 6x²', o: ['5x⁴ + 6x²', '5x + 6x', '5x⁴', 'x⁴ + 2x²'], c: 0, steps: '5x⁴ + 2(3x²) = 5x⁴ + 6x²'},
+                {f: 'f(x) = 3x + 2', df: 'f\'(x) = 3', o: ['3', '3x', '2', '3x + 2'], c: 0, steps: 'd/dx(3x) + d/dx(2) = 3'},
+                {f: 'f(x) = x³ - x', df: 'f\'(x) = 3x² - 1', o: ['3x² - 1', '3x - 1', '3x²', 'x² - 1'], c: 0, steps: '3x² - 1'},
+                {f: 'f(x) = 2x⁴ + 3x', df: 'f\'(x) = 8x³ + 3', o: ['8x³ + 3', '8x + 3', '8x³', '2x³ + 3'], c: 0, steps: '2(4x³) + 3 = 8x³ + 3'},
+                {f: 'f(x) = 5x² - 3x + 4', df: 'f\'(x) = 10x - 3', o: ['10x - 3', '10x', '5x - 3', '10x + 4'], c: 0, steps: '5(2x) - 3 + 0 = 10x - 3'},
+                {f: 'f(x) = x + 1', df: 'f\'(x) = 1', o: ['1', 'x', '0', 'x + 1'], c: 0, steps: 'd/dx(x) + d/dx(1) = 1 + 0 = 1'}
+            ],
+            'Niveau 3': [
+                {f: 'f(x) = (2x+1)(x-3)', df: 'f\'(x) = 4x - 5', o: ['4x - 5', '4x + 1', '2x - 3', '4x - 3'], c: 0, steps: 'Règle produit: u\'v + uv\' = 2(x-3) + (2x+1)(1) = 4x - 5'},
+                {f: 'f(x) = (x²)(x+1)', df: 'f\'(x) = 3x² + 2x', o: ['3x² + 2x', '2x + x²', '3x + 1', '2x² + x'], c: 0, steps: '2x(x+1) + x²(1) = 3x² + 2x'},
+                {f: 'f(x) = x/(x+1)', df: 'f\'(x) = 1/(x+1)²', o: ['1/(x+1)²', '1', 'x', '1/(x+1)'], c: 0, steps: 'Règle quotient: (u\'v - uv\')/v² = 1/(x+1)²'},
+                {f: 'f(x) = (x²+1)/(x-1)', df: 'f\'(x) = (x²-2x-1)/(x-1)²', o: ['(x²-2x-1)/(x-1)²', '2x/(x-1)', '(2x)/(x-1)²', '(x²)/(x-1)'], c: 0, steps: 'Quotient: [2x(x-1) - (x²+1)(1)]/(x-1)²'},
+                {f: 'f(x) = √(x²+1)', df: 'f\'(x) = x/√(x²+1)', o: ['x/√(x²+1)', '1/(2√x)', '2x', '1/(x²+1)'], c: 0, steps: 'Chaîne: d/dx(√u) = u\'/(2√u) = 2x/(2√(x²+1))'},
+                {f: 'f(x) = sin(2x)', df: 'f\'(x) = 2cos(2x)', o: ['2cos(2x)', 'cos(2x)', '2sin(2x)', 'sin(2x)'], c: 0, steps: 'Chaîne: d/dx[sin(u)] = u\'cos(u) = 2cos(2x)'},
+                {f: 'f(x) = cos(x)', df: 'f\'(x) = -sin(x)', o: ['-sin(x)', 'sin(x)', 'cos(x)', '-cos(x)'], c: 0, steps: 'd/dx[cos(x)] = -sin(x)'},
+                {f: 'f(x) = eˣ', df: 'f\'(x) = eˣ', o: ['eˣ', '1', 'x·eˣ⁻¹', 'ln(x)'], c: 0, steps: 'd/dx(eˣ) = eˣ (propriété fondamentale)'},
+                {f: 'f(x) = ln(x)', df: 'f\'(x) = 1/x', o: ['1/x', '1', 'eˣ', 'x'], c: 0, steps: 'd/dx[ln(x)] = 1/x'},
+                {f: 'f(x) = e^(3x)', df: 'f\'(x) = 3e^(3x)', o: ['3e^(3x)', 'e^(3x)', '3e^x', 'e^(3x)/3'], c: 0, steps: 'Chaîne: 3·e^(3x)'},
+                {f: 'f(x) = (3x-2)³', df: 'f\'(x) = 9(3x-2)²', o: ['9(3x-2)²', '3(3x-2)²', '9(3x-2)', '(3x-2)²'], c: 0, steps: 'Chaîne: 3(3x-2)²·3 = 9(3x-2)²'},
+                {f: 'f(x) = ln(2x)', df: 'f\'(x) = 1/x', o: ['1/x', '2/x', '1/(2x)', '2'], c: 0, steps: 'Chaîne: (1/2x)·2 = 1/x'},
+                {f: 'f(x) = x·sin(x)', df: 'f\'(x) = sin(x) + x·cos(x)', o: ['sin(x) + x·cos(x)', 'cos(x)', 'x·cos(x)', 'sin(x)'], c: 0, steps: 'Produit: 1·sin(x) + x·cos(x)'},
+                {f: 'f(x) = 1/(1+x)', df: 'f\'(x) = -1/(1+x)²', o: ['-1/(1+x)²', '1/(1+x)', '1', '1/(1+x)²'], c: 0, steps: 'Quotient ou chaîne: -(1+x)^(-2)'},
+                {f: 'f(x) = sin(x)/x', df: 'f\'(x) = (x·cos(x) - sin(x))/x²', o: ['(x·cos(x) - sin(x))/x²', 'cos(x)', 'sin(x)', '(cos(x) - sin(x))/x'], c: 0, steps: 'Quotient: [x·cos(x) - sin(x)]/x²'},
+                {f: 'f(x) = cos(3x)', df: 'f\'(x) = -3sin(3x)', o: ['-3sin(3x)', '3sin(3x)', '-sin(3x)', '3cos(3x)'], c: 0, steps: 'Chaîne: -3sin(3x)'},
+                {f: 'f(x) = e^(-x)', df: 'f\'(x) = -e^(-x)', o: ['-e^(-x)', 'e^(-x)', '-e^x', 'e^x'], c: 0, steps: 'Chaîne: -1·e^(-x) = -e^(-x)'},
+                {f: 'f(x) = (x²+2x)²', df: 'f\'(x) = 2(x²+2x)(2x+2)', o: ['2(x²+2x)(2x+2)', '(x²+2x)(2x+2)', '2(x²+2x)', '4x(x+1)'], c: 0, steps: 'Chaîne: 2(x²+2x)·(2x+2)'},
+                {f: 'f(x) = ln(x²)', df: 'f\'(x) = 2/x', o: ['2/x', '1/x', '2/x²', '1/x²'], c: 0, steps: 'Chaîne: (1/x²)·2x = 2/x'},
+                {f: 'f(x) = x·eˣ', df: 'f\'(x) = eˣ + x·eˣ', o: ['eˣ + x·eˣ', 'eˣ', 'x·eˣ', '(x+1)eˣ'], c: 0, steps: 'Produit: 1·eˣ + x·eˣ = (x+1)eˣ'}
+            ]
+        };
+
+        let currentLevel = '';
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let levelQuestions = [];
+
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function startQuiz(level) {
+            currentLevel = level;
+            levelQuestions = shuffle([...derivatives[level]]).slice(0, 15);
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('levelScreen').classList.remove('active');
+            document.getElementById('quizScreen').classList.add('active');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = levelQuestions[currentQuestionIndex];
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestionIndex + 1}/15`;
+            document.getElementById('levelBadge').textContent = currentLevel;
+            document.getElementById('functionDisplay').textContent = q.f;
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            q.o.forEach((option, index) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = option;
+                div.onclick = () => selectOption(index);
+                optionsContainer.appendChild(div);
+            });
+
+            document.getElementById('derivationSteps').classList.remove('show');
+            document.getElementById('nextBtn').textContent = 'Vérifier';
+            document.getElementById('nextBtn').disabled = false;
+
+            updateProgress();
+        }
+
+        function selectOption(index) {
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                opt.classList.remove('selected');
+                if (i === index) opt.classList.add('selected');
+            });
+        }
+
+        function nextQuestion() {
+            const selectedIdx = Array.from(document.querySelectorAll('.option')).findIndex(o => o.classList.contains('selected'));
+
+            if (selectedIdx === -1) return;
+
+            const q = levelQuestions[currentQuestionIndex];
+            const isCorrect = selectedIdx === q.c;
+
+            if (isCorrect) score++;
+
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                opt.style.pointerEvents = 'none';
+                if (i === q.c) opt.classList.add('correct');
+                else if (i === selectedIdx && !isCorrect) opt.classList.add('incorrect');
+            });
+
+            document.getElementById('derivationSteps').innerHTML = `<strong>Explication:</strong><br>${q.steps}`;
+            document.getElementById('derivationSteps').classList.add('show');
+            document.getElementById('nextBtn').textContent = currentQuestionIndex < 14 ? 'Question suivante' : 'Résultats';
+
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < 15) {
+                setTimeout(() => showQuestion(), 2500);
+            } else {
+                document.getElementById('nextBtn').onclick = () => showResults();
+            }
+        }
+
+        document.getElementById('nextBtn').onclick = nextQuestion;
+
+        function updateProgress() {
+            const percentage = ((currentQuestionIndex) / 15) * 100;
+            document.getElementById('progressFill').style.width = percentage + '%';
+        }
+
+        function showResults() {
+            document.getElementById('quizScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+
+            const percentage = Math.round((score / 15) * 100);
+            let stars = '☆☆☆';
+            if (percentage >= 80) stars = '★★★';
+            else if (percentage >= 60) stars = '★★☆';
+            else if (percentage >= 40) stars = '★☆☆';
+
+            document.getElementById('scoreDisplay').textContent = score + '/15';
+            document.getElementById('percentageDisplay').textContent = percentage + '%';
+            document.getElementById('starsDisplay').textContent = stars;
+
+            const now = new Date();
+            const dt = now.toISOString().split('T')[0];
+            const resultCode = btoa(JSON.stringify({
+                v: 'l_deriv',
+                dt: dt,
+                level: currentLevel,
+                score: score + '/15',
+                pct: percentage,
+                stars: stars.includes('★') ? stars.match(/★/g).length : 0
+            }));
+
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        const selector = document.getElementById('levelSelector');
+        Object.keys(derivatives).forEach(level => {
+            const btn = document.createElement('button');
+            btn.className = 'level-btn';
+            btn.textContent = level;
+            btn.onclick = () => startQuiz(level);
+            selector.appendChild(btn);
+        });
+    </script>
+</body>
+</html>

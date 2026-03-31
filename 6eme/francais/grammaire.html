@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nature des Mots - 6ème Français</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            color: #e0e0ff;
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: linear-gradient(135deg, #1a1d2e 0%, #16192b 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border: 2px solid #ff6b9d;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b9d 0%, #ff9d4d 50%, #ffeb3b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #2a2d3f;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b9d, #ffeb3b);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 12px;
+            color: #9d9dff;
+            font-weight: 600;
+        }
+
+        .question-container {
+            display: none;
+            animation: slideIn 0.4s ease;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-number {
+            font-size: 12px;
+            color: #ff6b9d;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .question-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 15px 0;
+            color: #ffffff;
+            line-height: 1.8;
+            background: #2a2d3f;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #ff6b9d;
+        }
+
+        .highlighted-word {
+            background: #ffeb3b;
+            color: #08090f;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .option {
+            padding: 15px;
+            background: #2a2d3f;
+            border: 2px solid #4a4d5f;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            border-color: #ff6b9d;
+            background: #32354d;
+        }
+
+        .option.selected {
+            background: #ff6b9d;
+            border-color: #ff9db3;
+            color: #ffffff;
+        }
+
+        .option.correct {
+            background: #00d47f;
+            border-color: #00ff9f;
+            color: #ffffff;
+        }
+
+        .option.incorrect {
+            background: #ff4757;
+            border-color: #ff6b7f;
+            color: #ffffff;
+        }
+
+        .feedback {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 14px;
+            display: none;
+            animation: slideIn 0.3s ease;
+            line-height: 1.6;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #00d47f33;
+            border-left: 4px solid #00d47f;
+            color: #00ffaf;
+        }
+
+        .feedback.incorrect {
+            background: #ff475733;
+            border-left: 4px solid #ff4757;
+            color: #ff9db3;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Nunito', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b9d, #ffeb3b);
+            color: #08090f;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 157, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #2a2d3f;
+            color: #ff6b9d;
+            border: 2px solid #ff6b9d;
+        }
+
+        .btn-secondary:hover {
+            background: #ff6b9d;
+            color: #08090f;
+        }
+
+        .results-screen {
+            display: none;
+            text-align: center;
+            animation: slideIn 0.4s ease;
+        }
+
+        .results-screen.show {
+            display: block;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b9d, #ffeb3b);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            font-size: 14px;
+        }
+
+        .score-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: #08090f;
+        }
+
+        .score-max {
+            font-size: 18px;
+            color: #08090f;
+            opacity: 0.9;
+        }
+
+        .score-percentage {
+            font-size: 28px;
+            font-weight: 800;
+            color: #ff6b9d;
+            margin: 15px 0;
+        }
+
+        .stars {
+            font-size: 40px;
+            margin: 15px 0;
+            letter-spacing: 5px;
+        }
+
+        .result-message {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 15px 0;
+            color: #e0e0ff;
+        }
+
+        .result-code {
+            background: #0a0c14;
+            border: 2px solid #ff6b9d;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #ff6b9d;
+            word-break: break-all;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .back-link {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .back-link a {
+            color: #ff6b9d;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .back-link a:hover {
+            color: #ffeb3b;
+            transform: translateX(-5px);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .question-text {
+                font-size: 15px;
+            }
+
+            .option {
+                font-size: 14px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Nature des Mots</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Question 1 / 20</div>
+        </div>
+
+        <div id="questionsSection">
+            <div id="questionContainer" class="question-container active">
+                <div class="question-number" id="questionNum">Question 1</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="options"></div>
+                <div class="feedback" id="feedback"></div>
+                <div class="button-group">
+                    <button class="btn btn-primary" id="submitBtn" onclick="submitAnswer()">Valider</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-screen" id="resultsScreen">
+            <h2 style="font-size: 24px; color: #e0e0ff; margin-bottom: 20px;">Résultats</h2>
+            <div class="score-circle">
+                <div class="score-number" id="scoreNumber">0</div>
+                <div class="score-max">/ 20</div>
+            </div>
+            <div class="score-percentage" id="scorePercentage">0%</div>
+            <div class="stars" id="stars"></div>
+            <div class="result-message" id="resultMessage"></div>
+            <div class="result-code" id="resultCode"></div>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="restartQuiz()">Recommencer</button>
+                <button class="btn btn-secondary" onclick="goHome()">Retour accueil</button>
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="/index.html">← Retour à l'accueil</a>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                sentence: "Le <span class='highlighted-word'>chat</span> dort.",
+                word: "chat",
+                options: ["verbe", "nom", "adjectif", "déterminant"],
+                correct: 1,
+                rule: "chat = nom (désigne un animal)"
+            },
+            {
+                sentence: "Elle <span class='highlighted-word'>marche</span> rapidement.",
+                word: "marche",
+                options: ["nom", "adjectif", "verbe", "adverbe"],
+                correct: 2,
+                rule: "marche = verbe (action)"
+            },
+            {
+                sentence: "La <span class='highlighted-word'>maison</span> est grande.",
+                word: "maison",
+                options: ["verbe", "nom", "adjectif", "adverbe"],
+                correct: 1,
+                rule: "maison = nom (chose)"
+            },
+            {
+                sentence: "Ce livre est <span class='highlighted-word'>intéressant</span>.",
+                word: "intéressant",
+                options: ["nom", "verbe", "adjectif", "déterminant"],
+                correct: 2,
+                rule: "intéressant = adjectif (qualité)"
+            },
+            {
+                sentence: "<span class='highlighted-word'>Le</span> soleil brille.",
+                word: "Le",
+                options: ["adjectif", "déterminant", "pronom", "nom"],
+                correct: 1,
+                rule: "Le = déterminant défini"
+            },
+            {
+                sentence: "Je <span class='highlighted-word'>suis</span> heureux.",
+                word: "suis",
+                options: ["nom", "adjectif", "verbe", "pronom"],
+                correct: 2,
+                rule: "suis = verbe être"
+            },
+            {
+                sentence: "Elle court <span class='highlighted-word'>vite</span>.",
+                word: "vite",
+                options: ["nom", "verbe", "adjectif", "adverbe"],
+                correct: 3,
+                rule: "vite = adverbe (modifie le verbe)"
+            },
+            {
+                sentence: "<span class='highlighted-word'>Il</span> joue au football.",
+                word: "Il",
+                options: ["nom", "déterminant", "pronom", "adjectif"],
+                correct: 2,
+                rule: "Il = pronom personnel"
+            },
+            {
+                sentence: "Les enfants <span class='highlighted-word'>jouent</span>.",
+                word: "jouent",
+                options: ["nom", "adjectif", "verbe", "adverbe"],
+                correct: 2,
+                rule: "jouent = verbe (action)"
+            },
+            {
+                sentence: "C'est une <span class='highlighted-word'>petite</span> fille.",
+                word: "petite",
+                options: ["nom", "adverbe", "adjectif", "verbe"],
+                correct: 2,
+                rule: "petite = adjectif (qualité)"
+            },
+            {
+                sentence: "Mon ami arrive <span class='highlighted-word'>demain</span>.",
+                word: "demain",
+                options: ["nom", "verbe", "adjectif", "adverbe"],
+                correct: 3,
+                rule: "demain = adverbe (temps)"
+            },
+            {
+                sentence: "J'aime <span class='highlighted-word'>et</span> je déteste.",
+                word: "et",
+                options: ["préposition", "pronom", "conjonction", "adverbe"],
+                correct: 2,
+                rule: "et = conjonction de coordination"
+            },
+            {
+                sentence: "Je vais <span class='highlighted-word'>à</span> l'école.",
+                word: "à",
+                options: ["conjonction", "préposition", "adverbe", "nom"],
+                correct: 1,
+                rule: "à = préposition"
+            },
+            {
+                sentence: "Les <span class='highlighted-word'>fleurs</span> sont belles.",
+                word: "fleurs",
+                options: ["verbe", "adjectif", "nom", "adverbe"],
+                correct: 2,
+                rule: "fleurs = nom (objet)"
+            },
+            {
+                sentence: "Tu <span class='highlighted-word'>étudies</span> beaucoup.",
+                word: "étudies",
+                options: ["nom", "verbe", "adjectif", "adverbe"],
+                correct: 1,
+                rule: "étudies = verbe"
+            },
+            {
+                sentence: "Mon frère est <span class='highlighted-word'>intelligent</span>.",
+                word: "intelligent",
+                options: ["nom", "verbe", "adjectif", "déterminant"],
+                correct: 2,
+                rule: "intelligent = adjectif"
+            },
+            {
+                sentence: "<span class='highlighted-word'>Nous</span> aimous le cinéma.",
+                word: "Nous",
+                options: ["nom", "déterminant", "pronom", "adjectif"],
+                correct: 2,
+                rule: "Nous = pronom personnel"
+            },
+            {
+                sentence: "Elle danse <span class='highlighted-word'>gracieusement</span>.",
+                word: "gracieusement",
+                options: ["nom", "adjectif", "verbe", "adverbe"],
+                correct: 3,
+                rule: "gracieusement = adverbe (manière)"
+            },
+            {
+                sentence: "Je vais <span class='highlighted-word'>au</span> parc.",
+                word: "au",
+                options: ["déterminant", "préposition", "nom", "adverbe"],
+                correct: 1,
+                rule: "au = déterminant contracté (à + le)"
+            },
+            {
+                sentence: "Tu es <span class='highlighted-word'>fort</span>.",
+                word: "fort",
+                options: ["nom", "verbe", "adjectif", "adverbe"],
+                correct: 2,
+                rule: "fort = adjectif (qualité)"
+            },
+            {
+                sentence: "Je <span class='highlighted-word'>pense</span> que c'est bien.",
+                word: "pense",
+                options: ["nom", "verbe", "adjectif", "conjonction"],
+                correct: 1,
+                rule: "pense = verbe"
+            },
+            {
+                sentence: "Un <span class='highlighted-word'>enfant</span> court.",
+                word: "enfant",
+                options: ["verbe", "adjectif", "nom", "adverbe"],
+                correct: 2,
+                rule: "enfant = nom"
+            },
+            {
+                sentence: "Elle va <span class='highlighted-word'>souvent</span> à la bibliothèque.",
+                word: "souvent",
+                options: ["nom", "adjectif", "verbe", "adverbe"],
+                correct: 3,
+                rule: "souvent = adverbe (fréquence)"
+            },
+            {
+                sentence: "Je vais avec <span class='highlighted-word'>toi</span>.",
+                word: "toi",
+                options: ["nom", "déterminant", "pronom", "adjectif"],
+                correct: 2,
+                rule: "toi = pronom personnel"
+            },
+            {
+                sentence: "Cet <span class='highlighted-word'>objet</span> est fragile.",
+                word: "objet",
+                options: ["verbe", "adjectif", "nom", "adverbe"],
+                correct: 2,
+                rule: "objet = nom"
+            },
+            {
+                sentence: "Il est <span class='highlighted-word'>rapide</span>.",
+                word: "rapide",
+                options: ["nom", "verbe", "adjectif", "adverbe"],
+                correct: 2,
+                rule: "rapide = adjectif"
+            },
+            {
+                sentence: "Je vais <span class='highlighted-word'>sous</span> la pluie.",
+                word: "sous",
+                options: ["conjonction", "préposition", "adverbe", "nom"],
+                correct: 1,
+                rule: "sous = préposition"
+            },
+            {
+                sentence: "Elle <span class='highlighted-word'>chante</span> une chanson.",
+                word: "chante",
+                options: ["nom", "adjectif", "verbe", "adverbe"],
+                correct: 2,
+                rule: "chante = verbe"
+            },
+            {
+                sentence: "Voici mes <span class='highlighted-word'>livres</span>.",
+                word: "livres",
+                options: ["verbe", "adjectif", "nom", "déterminant"],
+                correct: 2,
+                rule: "livres = nom"
+            },
+            {
+                sentence: "J'ai un <span class='highlighted-word'>chat</span> noir.",
+                word: "noir",
+                options: ["nom", "verbe", "adjectif", "adverbe"],
+                correct: 2,
+                rule: "noir = adjectif (couleur)"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+        const TOTAL_QUESTIONS = 20;
+
+        function shuffleArray(arr) {
+            const copy = [...arr];
+            for (let i = copy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+        }
+
+        const selectedQuestions = shuffleArray(questions).slice(0, TOTAL_QUESTIONS);
+
+        function loadQuestion() {
+            if (currentQuestion >= TOTAL_QUESTIONS) {
+                showResults();
+                return;
+            }
+
+            answered = false;
+            const q = selectedQuestions[currentQuestion];
+
+            document.getElementById('questionNum').textContent = `Question ${currentQuestion + 1}`;
+            document.getElementById('questionText').innerHTML = `Quelle est la nature du mot en jaune ?<br><br>${q.sentence}`;
+            document.getElementById('progressText').textContent = `Question ${currentQuestion + 1} / ${TOTAL_QUESTIONS}`;
+            document.getElementById('progressFill').style.width = `${((currentQuestion) / TOTAL_QUESTIONS) * 100}%`;
+
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((option, index) => {
+                const btn = document.createElement('div');
+                btn.className = 'option';
+                btn.textContent = option;
+                btn.onclick = () => selectOption(index);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
+            document.getElementById('submitBtn').textContent = 'Valider';
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function selectOption(index) {
+            if (answered) return;
+
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                opt.classList.toggle('selected', i === index);
+            });
+        }
+
+        function submitAnswer() {
+            if (answered) {
+                currentQuestion++;
+                loadQuestion();
+                return;
+            }
+
+            const selected = document.querySelector('.option.selected');
+            if (!selected) return;
+
+            answered = true;
+            const q = selectedQuestions[currentQuestion];
+            const selectedIndex = Array.from(document.querySelectorAll('.option')).indexOf(selected);
+            const isCorrect = selectedIndex === q.correct;
+
+            if (isCorrect) {
+                score++;
+                selected.classList.add('correct');
+                document.getElementById('feedback').classList.add('show', 'correct');
+                document.getElementById('feedback').textContent = '✓ Correct ! ' + q.rule;
+            } else {
+                selected.classList.add('incorrect');
+                document.querySelectorAll('.option')[q.correct].classList.add('correct');
+                document.getElementById('feedback').classList.add('show', 'incorrect');
+                document.getElementById('feedback').textContent = '✗ Incorrect. ' + q.rule;
+            }
+
+            document.getElementById('submitBtn').textContent = currentQuestion === TOTAL_QUESTIONS - 1 ? 'Voir les résultats' : 'Suivant';
+        }
+
+        function showResults() {
+            document.getElementById('questionsSection').style.display = 'none';
+            document.getElementById('resultsScreen').classList.add('show');
+
+            const percentage = Math.round((score / TOTAL_QUESTIONS) * 100);
+            let stars = '';
+
+            if (percentage === 100) stars = '★★★★★';
+            else if (percentage >= 80) stars = '★★★★☆';
+            else if (percentage >= 60) stars = '★★★☆☆';
+            else if (percentage >= 40) stars = '★★☆☆☆';
+            else stars = '★☆☆☆☆';
+
+            document.getElementById('scoreNumber').textContent = score;
+            document.getElementById('scorePercentage').textContent = percentage + '%';
+            document.getElementById('stars').textContent = stars;
+
+            let message = '';
+            if (percentage === 100) message = 'Expert en grammaire ! 🚀';
+            else if (percentage >= 80) message = 'Très bien ! Excellente maîtrise ! 🎉';
+            else if (percentage >= 60) message = 'Bien ! Vous progressez ! 💪';
+            else if (percentage >= 40) message = 'Pas mal ! Continuez ! 📚';
+            else message = 'À revoir ! Entraînez-vous ! 💯';
+
+            document.getElementById('resultMessage').textContent = message;
+
+            const now = new Date();
+            const resultCode = `v:'6_gram'|dt:${now.toISOString()}|score:${score}|pct:${percentage}|stars:${stars.length}`;
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('questionsSection').style.display = 'block';
+            document.getElementById('resultsScreen').classList.remove('show');
+            loadQuestion();
+        }
+
+        function goHome() {
+            window.location.href = '/index.html';
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>

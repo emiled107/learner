@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Civilisations Antiques - 6ème Histoire</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08090f;
+            color: #e0e0ff;
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: linear-gradient(135deg, #1a1d2e 0%, #16192b 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border: 2px solid #ffaa00;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffaa00 0%, #ffcc44 50%, #ff9944 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .period-badge {
+            display: inline-block;
+            background: #ffaa00;
+            color: #08090f;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #2a2d3f;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffaa00, #ff9944);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 12px;
+            color: #9d9dff;
+            font-weight: 600;
+        }
+
+        .question-container {
+            display: none;
+            animation: slideIn 0.4s ease;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-number {
+            font-size: 12px;
+            color: #ffaa00;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 15px 0;
+            color: #ffffff;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .option {
+            padding: 15px;
+            background: #2a2d3f;
+            border: 2px solid #4a4d5f;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            border-color: #ffaa00;
+            background: #32354d;
+        }
+
+        .option.selected {
+            background: #ffaa00;
+            border-color: #ffcc44;
+            color: #08090f;
+        }
+
+        .option.correct {
+            background: #00d47f;
+            border-color: #00ff9f;
+            color: #ffffff;
+        }
+
+        .option.incorrect {
+            background: #ff4757;
+            border-color: #ff6b7f;
+            color: #ffffff;
+        }
+
+        .feedback {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 13px;
+            display: none;
+            animation: slideIn 0.3s ease;
+            line-height: 1.6;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #00d47f33;
+            border-left: 4px solid #00d47f;
+            color: #00ffaf;
+        }
+
+        .feedback.incorrect {
+            background: #ff475733;
+            border-left: 4px solid #ff4757;
+            color: #ff9db3;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Nunito', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ffaa00, #ff9944);
+            color: #08090f;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 170, 0, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #2a2d3f;
+            color: #ffaa00;
+            border: 2px solid #ffaa00;
+        }
+
+        .btn-secondary:hover {
+            background: #ffaa00;
+            color: #08090f;
+        }
+
+        .results-screen {
+            display: none;
+            text-align: center;
+            animation: slideIn 0.4s ease;
+        }
+
+        .results-screen.show {
+            display: block;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffaa00, #ff9944);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            font-size: 14px;
+        }
+
+        .score-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: #08090f;
+        }
+
+        .score-max {
+            font-size: 18px;
+            color: #08090f;
+            opacity: 0.9;
+        }
+
+        .score-percentage {
+            font-size: 28px;
+            font-weight: 800;
+            color: #ffaa00;
+            margin: 15px 0;
+        }
+
+        .stars {
+            font-size: 40px;
+            margin: 15px 0;
+            letter-spacing: 5px;
+        }
+
+        .result-message {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 15px 0;
+            color: #e0e0ff;
+        }
+
+        .result-code {
+            background: #0a0c14;
+            border: 2px solid #ffaa00;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #ffaa00;
+            word-break: break-all;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .back-link {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .back-link a {
+            color: #ffaa00;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .back-link a:hover {
+            color: #ffcc44;
+            transform: translateX(-5px);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .question-text {
+                font-size: 16px;
+            }
+
+            .option {
+                font-size: 14px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Civilisations Antiques</h1>
+            <div class="period-badge" id="periodBadge">Mésopotamie</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Question 1 / 25</div>
+        </div>
+
+        <div id="questionsSection">
+            <div id="questionContainer" class="question-container active">
+                <div class="question-number" id="questionNum">Question 1</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="options"></div>
+                <div class="feedback" id="feedback"></div>
+                <div class="button-group">
+                    <button class="btn btn-primary" id="submitBtn" onclick="submitAnswer()">Valider</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-screen" id="resultsScreen">
+            <h2 style="font-size: 24px; color: #e0e0ff; margin-bottom: 20px;">Résultats</h2>
+            <div class="score-circle">
+                <div class="score-number" id="scoreNumber">0</div>
+                <div class="score-max">/ 25</div>
+            </div>
+            <div class="score-percentage" id="scorePercentage">0%</div>
+            <div class="stars" id="stars"></div>
+            <div class="result-message" id="resultMessage"></div>
+            <div class="result-code" id="resultCode"></div>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="restartQuiz()">Recommencer</button>
+                <button class="btn btn-secondary" onclick="goHome()">Retour accueil</button>
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="/index.html">← Retour à l'accueil</a>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "En quelle région la Mésopotamie s'est-elle développée ?",
+                options: ["Entre le Nil et la Méditerranée", "Entre le Tigre et l'Euphrate", "En Asie du Sud", "En Méditerranée"],
+                correct: 1,
+                period: "Mésopotamie",
+                explanation: "La Mésopotamie s'est développée entre les fleuves Tigre et Euphrate, dans l'actuelle Irak."
+            },
+            {
+                question: "Qui a inventé l'écriture cunéiforme ?",
+                options: ["Les Égyptiens", "Les Grecs", "Les Sumériens", "Les Romains"],
+                correct: 2,
+                period: "Mésopotamie",
+                explanation: "Les Sumériens ont inventé l'écriture cunéiforme, l'une des plus anciennes écritures."
+            },
+            {
+                question: "Qu'est-ce qu'une ziggourat ?",
+                options: ["Un temple égyptien", "Un temple mésopotamien en forme de tour", "Une maison romaine", "Une ville grecque"],
+                correct: 1,
+                period: "Mésopotamie",
+                explanation: "Une ziggourat est un temple mésopotamien caractérisé par sa forme de tour en étages."
+            },
+            {
+                question: "Quel code célèbre a été créé par Hammourabi ?",
+                options: ["Code civil", "Code de Hammourabi", "Constitution", "Déclaration"],
+                correct: 1,
+                period: "Mésopotamie",
+                explanation: "Hammourabi a créé le Code de Hammourabi, l'un des premiers codes de lois écrits."
+            },
+            {
+                question: "Où s'est développée la civilisation égyptienne ?",
+                options: ["En Mésopotamie", "Autour du Nil", "En Grèce", "En Italie"],
+                correct: 1,
+                period: "Égypte",
+                explanation: "L'Égypte antique s'est développée dans la vallée du Nil."
+            },
+            {
+                question: "Quel pharaon a construit la Grande Pyramide de Gizeh ?",
+                options: ["Khéops", "Ramsès", "Thoutmosis", "Akhenaton"],
+                correct: 0,
+                period: "Égypte",
+                explanation: "Le pharaon Khéops a fait construire la Grande Pyramide de Gizeh vers 2560 avant J.-C."
+            },
+            {
+                question: "Quel est le nom du papier utilisé par les Égyptiens ?",
+                options: ["Vélin", "Parchemin", "Papyrus", "Toile"],
+                correct: 2,
+                period: "Égypte",
+                explanation: "Les Égyptiens fabriquaient du papyrus à partir d'une plante du Nil."
+            },
+            {
+                question: "À quoi servait la momification en Égypte ?",
+                options: ["À soigner les malades", "À conserver les corps après la mort", "À créer des statues", "À décorer les temples"],
+                correct: 1,
+                period: "Égypte",
+                explanation: "La momification était un procédé pour conserver les corps des morts, croyance religieuse importante."
+            },
+            {
+                question: "Quelle ville-État était une démocratie en Grèce antique ?",
+                options: ["Sparte", "Athènes", "Corinthe", "Thèbes"],
+                correct: 1,
+                period: "Grèce antique",
+                explanation: "Athènes est connue pour avoir inventé la démocratie antique."
+            },
+            {
+                question: "Quel système politique Sparte avait-elle ?",
+                options: ["Démocratie", "Monarchie militaire", "Oligarchie", "Tyranie"],
+                correct: 2,
+                period: "Grèce antique",
+                explanation: "Sparte était une oligarchie gouvernée par deux rois et une assemblée."
+            },
+            {
+                question: "En quelle année les Jeux Olympiques ont-ils commencé ?",
+                options: ["776 avant J.-C.", "500 avant J.-C.", "100 avant J.-C.", "400 avant J.-C."],
+                correct: 0,
+                period: "Grèce antique",
+                explanation: "Les premiers Jeux Olympiques ont commencé en 776 avant J.-C. en Grèce."
+            },
+            {
+                question: "Quel grand philosophe grec a enseigné Aristote ?",
+                options: ["Socrate", "Platon", "Épicure", "Zénon"],
+                correct: 1,
+                period: "Grèce antique",
+                explanation: "Platon a été le maître d'Aristote dans l'Académie d'Athènes."
+            },
+            {
+                question: "Qui a fondé l'empire romain ?",
+                options: ["Jules César", "Auguste", "Néron", "Titus"],
+                correct: 1,
+                period: "Rome antique",
+                explanation: "Auguste a fondé l'empire romain en 27 avant J.-C."
+            },
+            {
+                question: "Quel magistrat romain avait le pouvoir suprême ?",
+                options: ["Consul", "Sénateur", "Empereur", "Tribun"],
+                correct: 2,
+                period: "Rome antique",
+                explanation: "L'empereur romain avait le pouvoir suprême dans l'empire."
+            },
+            {
+                question: "Quel volcan a détruit Pompéi et Herculanum ?",
+                options: ["Vésuve", "Etna", "Stromboli", "Vélino"],
+                correct: 0,
+                period: "Rome antique",
+                explanation: "Le Vésuve a détruit les villes romaines de Pompéi et d'Herculanum en 79 après J.-C."
+            },
+            {
+                question: "Quel empereur romain a construit le Panthéon ?",
+                options: ["Hadrien", "Trajan", "Antonin", "Marc-Aurèle"],
+                correct: 0,
+                period: "Rome antique",
+                explanation: "L'empereur Hadrien a fait construire le Panthéon de Rome."
+            },
+            {
+                question: "Où se trouvait la civilisation du Judaïsme antique ?",
+                options: ["Mésopotamie", "Égypte", "Palestine", "Syrie"],
+                correct: 2,
+                period: "Judaïsme et Christianisme",
+                explanation: "Le Judaïsme s'est développé en Palestine avec Abraham et Moïse."
+            },
+            {
+                question: "Quel est le texte sacré du Judaïsme ?",
+                options: ["Le Coran", "La Torah", "Les Vedas", "Le Tripitaka"],
+                correct: 1,
+                period: "Judaïsme et Christianisme",
+                explanation: "La Torah est le texte sacré du Judaïsme."
+            },
+            {
+                question: "En quelle année Jésus-Christ est-il né ?",
+                options: ["1 avant J.-C.", "1 après J.-C.", "Vers l'an 1", "Vers l'an 5"],
+                correct: 2,
+                period: "Judaïsme et Christianisme",
+                explanation: "Jésus-Christ est né vers l'an 1 (d'où le découpage de notre calendrier)."
+            },
+            {
+                question: "Quel empire a adopté le Christianisme comme religion d'État ?",
+                options: ["L'empire perse", "L'empire romain", "L'empire égyptien", "L'empire grec"],
+                correct: 1,
+                period: "Judaïsme et Christianisme",
+                explanation: "L'empire romain a adopté le Christianisme comme religion officielle au 4e siècle."
+            },
+            {
+                question: "Qui a écrit les évangiles ?",
+                options: ["Paul", "Pierre", "Les apôtres Matthieu, Marc, Luc et Jean", "Jésus"],
+                correct: 2,
+                period: "Judaïsme et Christianisme",
+                explanation: "Les quatre évangiles ont été écrits par Matthieu, Marc, Luc et Jean."
+            },
+            {
+                question: "Quel fleuve traverse l'Égypte ?",
+                options: ["Tigre", "Euphrate", "Nil", "Jourdain"],
+                correct: 2,
+                period: "Égypte",
+                explanation: "Le Nil traverse l'Égypte et a été crucial pour son développement."
+            },
+            {
+                question: "Quelle période a succédé à l'antiquité ?",
+                options: ["Modernité", "Moyen Âge", "Renaissance", "Époque contemporaine"],
+                correct: 1,
+                period: "Rome antique",
+                explanation: "Le Moyen Âge a succédé à l'Antiquité en Europe."
+            },
+            {
+                question: "Quel intellectuel grec a fondé l'Académie ?",
+                options: ["Aristote", "Platon", "Socrate", "Pythagore"],
+                correct: 1,
+                period: "Grèce antique",
+                explanation: "Platon a fondé l'Académie à Athènes vers 387 avant J.-C."
+            },
+            {
+                question: "Quel dieu principal les Égyptiens adoraient-ils ?",
+                options: ["Osiris", "Rê", "Isis", "Anubis"],
+                correct: 1,
+                period: "Égypte",
+                explanation: "Rê (le soleil) était l'une des principales divinités égyptiennes."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+        const TOTAL_QUESTIONS = 25;
+
+        function shuffleArray(arr) {
+            const copy = [...arr];
+            for (let i = copy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+        }
+
+        const selectedQuestions = shuffleArray(questions).slice(0, TOTAL_QUESTIONS);
+
+        function loadQuestion() {
+            if (currentQuestion >= TOTAL_QUESTIONS) {
+                showResults();
+                return;
+            }
+
+            answered = false;
+            const q = selectedQuestions[currentQuestion];
+
+            document.getElementById('questionNum').textContent = `Question ${currentQuestion + 1}`;
+            document.getElementById('questionText').textContent = q.question;
+            document.getElementById('periodBadge').textContent = q.period;
+            document.getElementById('progressText').textContent = `Question ${currentQuestion + 1} / ${TOTAL_QUESTIONS}`;
+            document.getElementById('progressFill').style.width = `${((currentQuestion) / TOTAL_QUESTIONS) * 100}%`;
+
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((option, index) => {
+                const btn = document.createElement('div');
+                btn.className = 'option';
+                btn.textContent = option;
+                btn.onclick = () => selectOption(index);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
+            document.getElementById('submitBtn').textContent = 'Valider';
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function selectOption(index) {
+            if (answered) return;
+
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                opt.classList.toggle('selected', i === index);
+            });
+        }
+
+        function submitAnswer() {
+            if (answered) {
+                currentQuestion++;
+                loadQuestion();
+                return;
+            }
+
+            const selected = document.querySelector('.option.selected');
+            if (!selected) return;
+
+            answered = true;
+            const q = selectedQuestions[currentQuestion];
+            const selectedIndex = Array.from(document.querySelectorAll('.option')).indexOf(selected);
+            const isCorrect = selectedIndex === q.correct;
+
+            if (isCorrect) {
+                score++;
+                selected.classList.add('correct');
+                document.getElementById('feedback').classList.add('show', 'correct');
+                document.getElementById('feedback').textContent = '✓ Correct ! ' + q.explanation;
+            } else {
+                selected.classList.add('incorrect');
+                document.querySelectorAll('.option')[q.correct].classList.add('correct');
+                document.getElementById('feedback').classList.add('show', 'incorrect');
+                document.getElementById('feedback').textContent = '✗ Incorrect. ' + q.explanation;
+            }
+
+            document.getElementById('submitBtn').textContent = currentQuestion === TOTAL_QUESTIONS - 1 ? 'Voir les résultats' : 'Suivant';
+        }
+
+        function showResults() {
+            document.getElementById('questionsSection').style.display = 'none';
+            document.getElementById('resultsScreen').classList.add('show');
+
+            const percentage = Math.round((score / TOTAL_QUESTIONS) * 100);
+            let stars = '';
+
+            if (percentage === 100) stars = '★★★★★';
+            else if (percentage >= 80) stars = '★★★★☆';
+            else if (percentage >= 60) stars = '★★★☆☆';
+            else if (percentage >= 40) stars = '★★☆☆☆';
+            else stars = '★☆☆☆☆';
+
+            document.getElementById('scoreNumber').textContent = score;
+            document.getElementById('scorePercentage').textContent = percentage + '%';
+            document.getElementById('stars').textContent = stars;
+
+            let message = '';
+            if (percentage === 100) message = 'Historien extraordinaire ! 🚀';
+            else if (percentage >= 80) message = 'Excellent ! Vous connaissez bien l\'Antiquité ! 🎉';
+            else if (percentage >= 60) message = 'Bien ! Vous progressez en histoire ! 💪';
+            else if (percentage >= 40) message = 'Pas mal ! Relisez vos cours ! 📚';
+            else message = 'À revoir ! Révisez l\'Antiquité ! 💯';
+
+            document.getElementById('resultMessage').textContent = message;
+
+            const now = new Date();
+            const resultCode = `v:'6_hist'|dt:${now.toISOString()}|score:${score}|pct:${percentage}|stars:${stars.length}`;
+            document.getElementById('resultCode').textContent = resultCode;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('questionsSection').style.display = 'block';
+            document.getElementById('resultsScreen').classList.remove('show');
+            loadQuestion();
+        }
+
+        function goHome() {
+            window.location.href = '/index.html';
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
