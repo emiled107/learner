@@ -45,64 +45,86 @@
             font-weight: 600;
             margin-bottom: 15px;
         }
-        .progress {
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff006e, #00d4ff);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+        .progress-text {
             font-size: 14px;
             color: #a0a0a0;
             margin-bottom: 20px;
         }
+        .streak-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #ffd700;
+        }
+        .streak-bar .fire { font-size: 18px; }
         .question {
             background: rgba(0, 0, 0, 0.4);
             border-left: 4px solid #ff006e;
             padding: 20px;
             margin-bottom: 20px;
             border-radius: 8px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .question-type {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #00d4ff;
+            margin-bottom: 8px;
+            font-weight: 700;
         }
         .question-text {
             font-size: 16px;
             font-weight: 600;
             margin-bottom: 15px;
             color: #ff006e;
+            line-height: 1.5;
         }
         .context {
             background: rgba(0, 212, 255, 0.1);
             padding: 12px;
-            margin: 10px 0;
+            margin: 10px 0 15px;
             border-radius: 5px;
             font-size: 14px;
             line-height: 1.6;
             color: #b0d0ff;
             font-style: italic;
         }
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+        .options { display: flex; flex-direction: column; gap: 10px; }
         .option {
-            padding: 12px;
+            padding: 12px 15px;
             border: 2px solid #333;
             border-radius: 6px;
             cursor: pointer;
             background: rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
             font-size: 14px;
+            line-height: 1.4;
         }
-        .option:hover {
-            border-color: #ff006e;
-            background: rgba(255, 0, 110, 0.1);
-        }
-        .option.selected {
-            border-color: #00d4ff;
-            background: rgba(0, 212, 255, 0.3);
-        }
-        .option.correct {
-            border-color: #00ff00;
-            background: rgba(0, 255, 0, 0.15);
-        }
-        .option.incorrect {
-            border-color: #ff0000;
-            background: rgba(255, 0, 0, 0.15);
-        }
+        .option:hover { border-color: #ff006e; background: rgba(255, 0, 110, 0.1); }
+        .option.selected { border-color: #00d4ff; background: rgba(0, 212, 255, 0.3); }
+        .option.correct { border-color: #00ff00; background: rgba(0, 255, 0, 0.15); }
+        .option.incorrect { border-color: #ff0000; background: rgba(255, 0, 0, 0.15); }
         .feedback {
             margin-top: 15px;
             padding: 12px;
@@ -127,11 +149,7 @@
             line-height: 1.6;
             color: #c0c0c0;
         }
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
+        .button-group { display: flex; gap: 10px; margin-top: 20px; }
         button {
             flex: 1;
             padding: 12px;
@@ -141,31 +159,17 @@
             cursor: pointer;
             font-size: 14px;
             transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
         }
         .btn-submit {
             background: linear-gradient(135deg, #ff006e, #00d4ff);
             color: #fff;
         }
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(255, 0, 110, 0.4);
-        }
-        .btn-submit:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .btn-next {
-            background: rgba(255, 0, 110, 0.2);
-            color: #ff006e;
-            border: 2px solid #ff006e;
-        }
-        .btn-next:hover {
-            background: rgba(255, 0, 110, 0.3);
-        }
-        .results {
-            display: none;
-            text-align: center;
-        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 0 20px rgba(255, 0, 110, 0.4); }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-next { background: rgba(255, 0, 110, 0.2); color: #ff006e; border: 2px solid #ff006e; }
+        .btn-next:hover { background: rgba(255, 0, 110, 0.3); }
+        .results { display: none; text-align: center; }
         .results.show { display: block; }
         .score-display {
             font-size: 48px;
@@ -176,20 +180,46 @@
             background-clip: text;
             margin: 20px 0;
         }
-        .stars {
-            font-size: 40px;
+        .stars { font-size: 40px; margin: 20px 0; letter-spacing: 10px; }
+        .axis-breakdown {
+            text-align: left;
             margin: 20px 0;
-            letter-spacing: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 15px;
         }
+        .axis-breakdown h3 {
+            font-size: 14px;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+        .axis-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 13px;
+        }
+        .axis-row:last-child { border-bottom: none; }
+        .axis-score { color: #ff006e; font-weight: 700; }
         .result-code {
             background: rgba(0, 0, 0, 0.5);
             padding: 15px;
             border-radius: 6px;
             font-family: 'Courier New', monospace;
-            font-size: 12px;
+            font-size: 11px;
             margin-top: 20px;
             word-break: break-all;
             color: #ff006e;
+            cursor: pointer;
+            position: relative;
+        }
+        .result-code:hover::after {
+            content: 'Cliquer pour copier';
+            position: absolute; top: -25px; right: 0;
+            font-size: 11px; color: #00d4ff;
+            font-family: 'Nunito', sans-serif;
         }
         .back-link {
             display: inline-block;
@@ -199,10 +229,7 @@
             font-weight: 600;
             transition: all 0.3s ease;
         }
-        .back-link:hover {
-            color: #00d4ff;
-            text-decoration: underline;
-        }
+        .back-link:hover { color: #00d4ff; text-decoration: underline; }
         @media (max-width: 600px) {
             .container { padding: 20px; }
             h1 { font-size: 22px; }
@@ -215,10 +242,15 @@
     <div class="container">
         <h1>🌍 Bac English - Terminale</h1>
         <div class="axis-label" id="axis-label">Axis: Identities and Exchanges</div>
-        <div class="progress"><span id="current">1</span> / 20</div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:5%"></div></div>
+        <div class="progress-text">Question <span id="current">1</span> / 20</div>
+        <div class="streak-bar" id="streak-bar" style="display:none;">
+            <span class="fire">🔥</span> <span id="streak-count">0</span> correct in a row!
+        </div>
 
         <div id="quiz-content">
             <div class="question">
+                <div class="question-type" id="question-type"></div>
                 <div class="question-text" id="question-text"></div>
                 <div class="context" id="context" style="display:none;"></div>
                 <div class="options" id="options"></div>
@@ -226,8 +258,8 @@
             </div>
 
             <div class="button-group">
-                <button class="btn-submit" id="submit-btn" onclick="submitAnswer()">Validate</button>
-                <button class="btn-next" id="next-btn" onclick="nextQuestion()" style="display:none;">Next</button>
+                <button class="btn-submit" id="submit-btn" onclick="submitAnswer()" disabled>Validate</button>
+                <button class="btn-next" id="next-btn" onclick="nextQuestion()" style="display:none;">Next →</button>
             </div>
         </div>
 
@@ -235,9 +267,14 @@
             <h2>✨ Final Results</h2>
             <div class="score-display" id="final-score"></div>
             <div class="stars" id="stars"></div>
-            <p id="message"></p>
-            <div class="result-code" id="result-code"></div>
-            <a href="/index.html" class="back-link">← Back to home</a>
+            <p id="message" style="font-size:16px;margin-bottom:10px;"></p>
+            <div class="axis-breakdown" id="axis-breakdown">
+                <h3>📊 Score by Axis</h3>
+            </div>
+            <p style="font-size:13px;color:#888;margin-top:15px;">📋 Copy your result code to track progress:</p>
+            <div class="result-code" id="result-code" onclick="copyCode()"></div>
+            <p id="copy-msg" style="color:#00ff88;font-size:12px;margin-top:5px;display:none;">✓ Copied!</p>
+            <a href="/learner/index.html" class="back-link">← Back to home</a>
         </div>
     </div>
 
@@ -249,176 +286,395 @@
             'innovation': 'Innovations'
         };
 
-        const questions = [
+        const allQuestions = [
+            // ===== IDENTITIES AND EXCHANGES =====
             {
-                axis: 'identities',
-                text: "What word means 'to change someone's cultural identity'?",
-                context: "The process of adopting a new culture and losing one's original traditions.",
-                options: ["Assimilate", "Integrate", "Migrate", "Adapt"],
+                axis: 'identities', type: 'Vocabulary',
+                text: "Which word best describes the process of adopting a new culture while losing one's original traditions?",
+                options: ["Integration", "Segregation", "Assimilation", "Emigration"],
+                correct: 2,
+                explanation: "Assimilation means fully absorbing into the dominant culture, often at the expense of one's original identity. Integration, by contrast, implies maintaining elements of both cultures."
+            },
+            {
+                axis: 'identities', type: 'Comprehension',
+                text: "In the context of multiculturalism, what does the metaphor 'melting pot' imply?",
+                options: ["Different cultures coexist separately", "Cultures blend together into one unified identity", "One dominant culture absorbs all others", "Cultural traditions are preserved unchanged"],
+                correct: 1,
+                explanation: "The 'melting pot' metaphor suggests different cultures merge into a new, blended identity. This contrasts with the 'salad bowl' metaphor where each culture remains distinct."
+            },
+            {
+                axis: 'identities', type: 'Grammar',
+                text: "Choose the correct sentence:",
+                options: [
+                    "If she would have stayed, she would learn the language.",
+                    "If she had stayed, she would have learnt the language.",
+                    "If she stayed, she would have learnt the language.",
+                    "If she has stayed, she will have learnt the language."
+                ],
+                correct: 1,
+                explanation: "This is a third conditional (past unreal condition): If + past perfect, would have + past participle. It expresses a hypothetical situation in the past."
+            },
+            {
+                axis: 'identities', type: 'Essay Writing',
+                text: "Which linking phrase best introduces a concession in an argumentative essay?",
+                options: ["As a result,", "In addition to this,", "Admittedly, … however,", "For instance,"],
+                correct: 2,
+                explanation: "'Admittedly… however' acknowledges the opposing view before countering it — a key skill in essay writing. It shows nuanced thinking expected at Bac level."
+            },
+            {
+                axis: 'identities', type: 'Culture',
+                text: "The 'Windrush generation' refers to:",
+                context: "Post-WWII migration to the United Kingdom.",
+                options: [
+                    "Irish immigrants fleeing the Great Famine in the 1840s",
+                    "Caribbean migrants who came to the UK from 1948 onwards",
+                    "Indian workers brought to South Africa in the 19th century",
+                    "European refugees after World War I"
+                ],
+                correct: 1,
+                explanation: "The Windrush generation refers to people from Caribbean countries who migrated to Britain between 1948 and 1971, named after the ship HMT Empire Windrush."
+            },
+            {
+                axis: 'identities', type: 'Vocabulary',
+                text: "What does 'a sense of belonging' mean?",
+                options: [
+                    "Feeling rejected by a community",
+                    "Owning property in a foreign country",
+                    "The feeling of being accepted and part of a group",
+                    "Legally obtaining citizenship"
+                ],
+                correct: 2,
+                explanation: "'A sense of belonging' is the psychological experience of feeling accepted, valued, and included within a group or community. It's central to identity formation."
+            },
+            {
+                axis: 'identities', type: 'Comprehension',
+                text: "'Code-switching' in sociolinguistics refers to:",
+                options: [
+                    "Translating documents from one language to another",
+                    "Alternating between two or more languages or dialects in conversation",
+                    "Learning a programming language",
+                    "Changing one's accent permanently"
+                ],
+                correct: 1,
+                explanation: "Code-switching is the practice of shifting between languages, dialects, or registers depending on the social context. It reflects the complexity of multicultural identities."
+            },
+
+            // ===== PRIVATE AND PUBLIC SPACES =====
+            {
+                axis: 'spaces', type: 'Comprehension',
+                text: "George Orwell's '1984' explores the theme of:",
+                context: "A dystopian novel about a totalitarian regime.",
+                options: [
+                    "The benefits of technological progress",
+                    "Mass surveillance and the erasure of privacy",
+                    "Peaceful coexistence between nations",
+                    "The triumph of democracy over oppression"
+                ],
+                correct: 1,
+                explanation: "'1984' depicts a society where the government monitors every aspect of citizens' lives through 'Big Brother', making privacy virtually non-existent."
+            },
+            {
+                axis: 'spaces', type: 'Vocabulary',
+                text: "What does 'gentrification' mean?",
+                options: [
+                    "The renovation of urban areas leading to displacement of poorer residents",
+                    "The decline of city centres due to lack of investment",
+                    "Government housing programmes for low-income families",
+                    "The migration of people from cities to rural areas"
+                ],
                 correct: 0,
-                explanation: "Assimilation refers to absorbing into a different culture; integration maintains both cultures."
+                explanation: "Gentrification refers to the process of wealthier people moving into a neighbourhood, raising property values and living costs, which often displaces the original residents."
             },
             {
-                axis: 'identities',
-                text: "Fill the blank: 'She _____ her heritage despite living abroad.'",
-                context: "Talking about someone who maintains their cultural connections.",
-                options: ["refused", "preserved", "abandoned", "ignored"],
-                correct: 1,
-                explanation: "'Preserved' means to keep or maintain something for the future."
+                axis: 'spaces', type: 'Grammar',
+                text: "Select the correct passive form: 'They are building new surveillance cameras everywhere.'",
+                options: [
+                    "New surveillance cameras are being built everywhere.",
+                    "New surveillance cameras have been built everywhere.",
+                    "New surveillance cameras were built everywhere.",
+                    "New surveillance cameras are built everywhere."
+                ],
+                correct: 0,
+                explanation: "The present continuous passive is formed with: subject + am/is/are + being + past participle. This maintains the ongoing nature of the original sentence."
             },
             {
-                axis: 'identities',
-                text: "Which linking word shows contrast?",
-                options: ["Furthermore", "However", "Consequently", "Moreover"],
+                axis: 'spaces', type: 'Essay Writing',
+                text: "Which of these is the strongest thesis statement for an essay about social media and privacy?",
+                options: [
+                    "Social media is popular among teenagers.",
+                    "While social media platforms offer unprecedented connectivity, they fundamentally challenge our right to privacy by monetising personal data.",
+                    "I think social media can be bad for privacy sometimes.",
+                    "Many people use social media every day around the world."
+                ],
                 correct: 1,
-                explanation: "'However' introduces a contrasting idea; others show addition or consequence."
+                explanation: "A strong thesis statement presents a clear argument with both a concession ('unprecedented connectivity') and a claim ('challenge our right to privacy'). It gives the essay a clear direction."
             },
             {
-                axis: 'identities',
-                text: "What does 'cultural diversity' mean?",
-                context: "Understanding different ways of life in society.",
-                options: ["Same culture everywhere", "Many different cultures coexisting", "Loss of traditions", "Separation of groups"],
-                correct: 1,
-                explanation: "Cultural diversity refers to the coexistence of multiple distinct cultures."
+                axis: 'spaces', type: 'Culture',
+                text: "What was the main concern raised by Edward Snowden's 2013 revelations?",
+                options: [
+                    "Corporate tax avoidance by tech companies",
+                    "Environmental damage caused by data centres",
+                    "Mass government surveillance programmes collecting citizens' data",
+                    "Social media companies censoring political speech"
+                ],
+                correct: 2,
+                explanation: "Snowden, a former NSA contractor, revealed that the US government was conducting mass surveillance on its own citizens and foreign allies through programmes like PRISM."
+            },
+
+            // ===== ART AND POWER =====
+            {
+                axis: 'art', type: 'Culture',
+                text: "Banksy's street art is primarily known for:",
+                options: [
+                    "Decorating museums with classical paintings",
+                    "Creating commercial advertisements",
+                    "Satirical social and political commentary through public art",
+                    "Restoring damaged historical artworks"
+                ],
+                correct: 2,
+                explanation: "Banksy uses street art as a form of protest, addressing topics like war, capitalism, consumerism, and government surveillance. The anonymity adds to the subversive power."
             },
             {
-                axis: 'spaces',
-                text: "Which describes a 'private space'?",
-                options: ["Public square", "Your home", "Shopping mall", "Train station"],
-                correct: 1,
-                explanation: "Private spaces are personal areas like homes; public spaces are shared by everyone."
+                axis: 'art', type: 'Vocabulary',
+                text: "The word 'propaganda' refers to:",
+                options: [
+                    "Neutral journalism reporting facts",
+                    "Academic research published in journals",
+                    "Entertainment designed purely for profit",
+                    "Biased information used to promote a political cause or point of view"
+                ],
+                correct: 3,
+                explanation: "Propaganda is deliberately biased or misleading material used to promote a political agenda. It has been used extensively in wars, dictatorships, and political campaigns."
             },
             {
-                axis: 'spaces',
-                text: "Fill: 'Working from home has _____ the boundary between work and personal life.'",
-                options: ["clarified", "blurred", "removed", "strengthened"],
-                correct: 1,
-                explanation: "'Blurred' means to make unclear or less distinct—fitting for mixing work/home."
+                axis: 'art', type: 'Comprehension',
+                text: "Why is Picasso's 'Guernica' considered a political artwork?",
+                context: "Painted in 1937 during the Spanish Civil War.",
+                options: [
+                    "It celebrates the beauty of Spanish landscapes",
+                    "It was commissioned by a dictator to glorify war",
+                    "It depicts the horror of the bombing of a Basque town and condemns war",
+                    "It is a self-portrait of the artist in exile"
+                ],
+                correct: 2,
+                explanation: "Guernica was Picasso's response to the Nazi bombing of the Basque town of Guernica. The painting's distorted figures and monochrome palette powerfully convey the suffering caused by war."
             },
             {
-                axis: 'spaces',
-                text: "How do social media affect public vs private distinction?",
-                context: "People share personal information on platforms seen by many.",
-                options: ["They strengthen privacy", "They blur the boundaries", "They have no effect", "They create more public space"],
+                axis: 'art', type: 'Grammar',
+                text: "Choose the correct reported speech: He said, 'Art can change the world.'",
+                options: [
+                    "He said that art can change the world.",
+                    "He said that art could change the world.",
+                    "He said art changes the world.",
+                    "He told art could change the world."
+                ],
                 correct: 1,
-                explanation: "Social media allow private information to become public, blurring traditional boundaries."
+                explanation: "In reported speech, 'can' becomes 'could' (backshift). 'Said that + subject + could + base form' is the correct structure. 'Told' requires a direct object (told someone)."
             },
             {
-                axis: 'spaces',
-                text: "Which linking word adds information?",
-                options: ["Despite", "Moreover", "Although", "Unless"],
-                correct: 1,
-                explanation: "'Moreover' adds additional supporting information; others show contrast or condition."
+                axis: 'art', type: 'Essay Writing',
+                text: "In an essay about censorship, which approach shows the most critical thinking?",
+                options: [
+                    "Listing all the books that have been banned throughout history",
+                    "Stating that censorship is always wrong without nuance",
+                    "Weighing arguments for and against censorship with specific examples before reaching a balanced conclusion",
+                    "Copying the definition of censorship from a dictionary"
+                ],
+                correct: 2,
+                explanation: "Critical thinking at Bac level requires presenting multiple perspectives, using evidence, and reaching a nuanced conclusion — not simply stating an opinion or listing facts."
             },
             {
-                axis: 'art',
-                text: "Art can be a form of what?",
-                options: ["Entertainment only", "Power and expression", "Business transaction", "Decoration alone"],
-                correct: 1,
-                explanation: "Art is a powerful form of expression and can challenge authority and beliefs."
+                axis: 'art', type: 'Culture',
+                text: "The Harlem Renaissance was:",
+                context: "A major cultural movement in the United States.",
+                options: [
+                    "A revival of European classical art in the 18th century",
+                    "A political party founded in New York in the 1950s",
+                    "A flourishing of African American art, literature, and music in 1920s–1930s New York",
+                    "A contemporary digital art movement on social media"
+                ],
+                correct: 2,
+                explanation: "The Harlem Renaissance (1920s–1930s) was a cultural explosion of African American art, music (jazz), and literature centred in Harlem, New York. Key figures include Langston Hughes and Duke Ellington."
+            },
+
+            // ===== INNOVATIONS =====
+            {
+                axis: 'innovation', type: 'Vocabulary',
+                text: "What does 'disruptive technology' mean?",
+                options: [
+                    "Technology that frequently breaks down",
+                    "Technology that is too expensive for consumers",
+                    "An innovation that significantly alters the way industries or markets function",
+                    "Software used to block internet access"
+                ],
+                correct: 2,
+                explanation: "Disruptive technology radically changes existing markets or creates new ones. Examples include smartphones (disrupting cameras, GPS, music players) and streaming services (disrupting cinemas)."
             },
             {
-                axis: 'art',
-                text: "Which word means 'to make something understood through art'?",
-                options: ["Create", "Convey", "Construct", "Combine"],
+                axis: 'innovation', type: 'Comprehension',
+                text: "What is the main ethical concern regarding facial recognition technology?",
+                options: [
+                    "It makes phones unlock too slowly",
+                    "It threatens individual privacy and can enable mass surveillance and discrimination",
+                    "It uses too much electricity",
+                    "It cannot recognise people wearing glasses"
+                ],
                 correct: 1,
-                explanation: "'Convey' means to communicate or make known; artists convey messages."
+                explanation: "Facial recognition raises serious ethical issues: mass surveillance, racial bias in algorithms, consent violations, and the potential for authoritarian misuse."
             },
             {
-                axis: 'art',
-                text: "Historical art often _____ political beliefs of its time.",
-                options: ["ignores", "reflects", "denies", "opposes"],
-                correct: 1,
-                explanation: "Art reflects the values, conflicts, and beliefs of its historical period."
+                axis: 'innovation', type: 'Grammar',
+                text: "Complete: 'By 2050, scientists _____ a cure for most cancers.'",
+                options: [
+                    "will find",
+                    "are finding",
+                    "will have found",
+                    "found"
+                ],
+                correct: 2,
+                explanation: "Future perfect ('will have found') expresses an action that will be completed before a specific future time ('by 2050'). It combines future perspective with completion."
             },
             {
-                axis: 'art',
-                text: "How does censorship relate to art and power?",
-                context: "Governments sometimes try to control what artists can create.",
-                options: ["It encourages creativity", "It demonstrates power over expression", "It has no effect", "It improves quality"],
-                correct: 1,
-                explanation: "Censorship is a form of control showing how power restricts artistic freedom."
+                axis: 'innovation', type: 'Culture',
+                text: "What is 'the digital divide'?",
+                context: "A concept relating to inequality in the modern world.",
+                options: [
+                    "The gap between people who have access to technology and those who don't",
+                    "The difference between analogue and digital television",
+                    "A type of computer virus",
+                    "The division between hardware and software companies"
+                ],
+                correct: 0,
+                explanation: "The digital divide refers to the inequality between those who have access to computers, the internet, and digital skills, and those who don't — often linked to socioeconomic factors."
             },
             {
-                axis: 'innovation',
-                text: "Technology innovation mainly means...",
-                options: ["Making things cheaper", "Creating new solutions to problems", "Using old methods", "Avoiding change"],
-                correct: 1,
-                explanation: "Innovation is about creating new or improved technologies to solve problems."
+                axis: 'innovation', type: 'Essay Writing',
+                text: "Which sentence would best conclude a paragraph about AI's impact on employment?",
+                options: [
+                    "In conclusion, AI is a computer programme.",
+                    "To sum up, many people use AI at work now.",
+                    "Therefore, while AI creates new opportunities, societies must address the risk of widespread job displacement through education reform and social policies.",
+                    "AI is very interesting and will change many things in the future."
+                ],
+                correct: 2,
+                explanation: "An effective concluding sentence synthesises the argument (acknowledges both sides) and points toward solutions. It demonstrates analytical depth expected at Bac level."
             },
             {
-                axis: 'innovation',
-                text: "Artificial Intelligence is changing society because...",
-                context: "AI affects healthcare, work, and daily life.",
-                options: ["It never works", "It processes data and makes decisions", "It's only theoretical", "It has no real impact"],
-                correct: 1,
-                explanation: "AI has real applications that affect how we live and work."
+                axis: 'innovation', type: 'Comprehension',
+                text: "What does 'planned obsolescence' refer to?",
+                options: [
+                    "A strategy to make products last as long as possible",
+                    "Recycling electronic waste in developing countries",
+                    "Designing products with a deliberately limited lifespan to encourage repeat purchases",
+                    "Government regulations on product safety"
+                ],
+                correct: 2,
+                explanation: "Planned obsolescence is a business strategy where products are intentionally designed to become outdated or non-functional after a set period, forcing consumers to buy replacements."
             },
             {
-                axis: 'innovation',
-                text: "Which word means 'the practical application of knowledge'?",
-                options: ["Theory", "Technology", "Theology", "Terminology"],
+                axis: 'innovation', type: 'Vocabulary',
+                text: "'Whistleblower' means:",
+                options: [
+                    "A person who plays a musical instrument",
+                    "A sports referee",
+                    "A company spokesperson",
+                    "A person who exposes secret wrongdoing within an organisation"
+                ],
+                correct: 3,
+                explanation: "A whistleblower reveals illegal or unethical practices within an organisation. Famous examples include Edward Snowden (NSA surveillance) and Frances Haugen (Facebook)."
+            },
+
+            // ===== CROSS-AXIS QUESTIONS =====
+            {
+                axis: 'identities', type: 'Essay Writing',
+                text: "Which introduction technique is most effective for a Bac essay?",
+                options: [
+                    "Starting with 'Since the beginning of time…'",
+                    "Opening with a relevant quote, fact, or question that leads to the thesis",
+                    "Writing 'In this essay I will talk about…'",
+                    "Beginning with a dictionary definition of the key word"
+                ],
                 correct: 1,
-                explanation: "'Technology' is the practical use of scientific discoveries."
+                explanation: "An engaging hook (quote, striking fact, rhetorical question) captures the reader's attention and naturally leads to the thesis statement. Generic openings weaken the essay."
             },
             {
-                axis: 'innovation',
-                text: "What ethical concern surrounds AI?",
-                context: "Questions about privacy, bias, and control.",
-                options: ["It's too slow", "Responsibility and bias in decision-making", "It costs too much", "Nobody uses it"],
-                correct: 1,
-                explanation: "Ethical concerns include algorithmic bias, privacy, and who controls AI systems."
+                axis: 'spaces', type: 'Vocabulary',
+                text: "The expression 'to infringe on someone's privacy' means:",
+                options: [
+                    "To protect someone's personal information",
+                    "To improve someone's living conditions",
+                    "To violate or encroach upon someone's right to privacy",
+                    "To share someone's social media posts"
+                ],
+                correct: 2,
+                explanation: "'To infringe on' means to violate or encroach upon a right. It's a formal expression commonly used in essays about surveillance, data protection, and civil liberties."
             },
             {
-                axis: 'innovation',
-                text: "Renewable energy innovation is important because...",
-                options: ["Coal is cheaper", "We need sustainable alternatives to fossil fuels", "It doesn't work", "Oil will never end"],
-                correct: 1,
-                explanation: "Renewable energy is crucial for sustainability and fighting climate change."
+                axis: 'art', type: 'Vocabulary',
+                text: "A 'dystopia' is:",
+                options: [
+                    "An imagined society where everything is perfect",
+                    "A historical period of great artistic achievement",
+                    "An imagined society characterised by oppression, suffering, and injustice",
+                    "A style of architecture popular in the 20th century"
+                ],
+                correct: 2,
+                explanation: "A dystopia is the opposite of a utopia. Dystopian fiction (1984, Brave New World, The Handmaid's Tale) warns about the dangers of totalitarianism, technology, and social control."
             },
             {
-                axis: 'spaces',
-                text: "Urban spaces have changed due to...",
-                context: "Cities are growing and transforming.",
-                options: ["Nothing", "Technology and population growth", "Less development", "Fewer people"],
+                axis: 'innovation', type: 'Grammar',
+                text: "Choose the correct relative clause: 'The app _____ was released last month has already reached 10 million downloads.'",
+                options: [
+                    "who", "which", "whom", "whose"
+                ],
                 correct: 1,
-                explanation: "Urbanization results from population growth and technological development."
-            },
-            {
-                axis: 'art',
-                text: "Street art is considered powerful because...",
-                options: ["It costs nothing", "It makes public statements about society", "It's legal", "Anyone can do it"],
-                correct: 1,
-                explanation: "Street art brings messages to public spaces, challenging conventional views."
-            },
-            {
-                axis: 'identities',
-                text: "What is the relationship between language and identity?",
-                context: "Language is how we express who we are.",
-                options: ["None at all", "Language shapes how we see ourselves and culture", "Language is irrelevant", "Everyone speaks the same"],
-                correct: 1,
-                explanation: "Language is central to cultural identity and how we express belonging."
+                explanation: "'Which' is used for things (the app). 'Who' is for people, 'whom' is an object pronoun for people, and 'whose' indicates possession."
             }
         ];
 
+        // Select 20 questions ensuring balanced axes
+        let questions = [];
         let currentQuestion = 0;
         let score = 0;
         let selectedAnswer = null;
-        let currentAxis = 'identities';
+        let streak = 0;
+        let maxStreak = 0;
         const startTime = new Date();
+        const axisScores = { identities: { correct: 0, total: 0 }, spaces: { correct: 0, total: 0 }, art: { correct: 0, total: 0 }, innovation: { correct: 0, total: 0 } };
 
-        function shuffleQuestions() {
-            for (let i = questions.length - 1; i > 0; i--) {
+        function selectQuestions() {
+            const byAxis = {};
+            allQuestions.forEach(q => {
+                if (!byAxis[q.axis]) byAxis[q.axis] = [];
+                byAxis[q.axis].push(q);
+            });
+            // Shuffle each axis pool
+            Object.values(byAxis).forEach(arr => {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+            });
+            // Pick 5 from each axis
+            const selected = [];
+            Object.values(byAxis).forEach(arr => {
+                selected.push(...arr.slice(0, 5));
+            });
+            // Shuffle final selection
+            for (let i = selected.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [questions[i], questions[j]] = [questions[j], questions[i]];
+                [selected[i], selected[j]] = [selected[j], selected[i]];
             }
+            questions = selected;
         }
 
         function loadQuestion() {
             const q = questions[currentQuestion];
-            currentAxis = q.axis;
             document.getElementById('axis-label').textContent = `Axis: ${axisNames[q.axis]}`;
+            document.getElementById('question-type').textContent = q.type;
             document.getElementById('question-text').textContent = q.text;
+            document.getElementById('progress-fill').style.width = ((currentQuestion + 1) / 20 * 100) + '%';
 
             if (q.context) {
                 document.getElementById('context').textContent = q.context;
@@ -429,7 +685,6 @@
 
             const optionsDiv = document.getElementById('options');
             optionsDiv.innerHTML = '';
-
             q.options.forEach((opt, idx) => {
                 const label = document.createElement('div');
                 label.className = 'option';
@@ -441,8 +696,8 @@
             document.getElementById('feedback').innerHTML = '';
             document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
             document.getElementById('submit-btn').style.display = 'block';
+            document.getElementById('submit-btn').disabled = true;
             document.getElementById('next-btn').style.display = 'none';
-            document.getElementById('submit-btn').disabled = false;
             selectedAnswer = null;
         }
 
@@ -451,16 +706,35 @@
                 opt.classList.toggle('selected', i === idx);
             });
             selectedAnswer = idx;
+            document.getElementById('submit-btn').disabled = false;
         }
 
         function submitAnswer() {
             if (selectedAnswer === null) return;
-
             const q = questions[currentQuestion];
             const isCorrect = selectedAnswer === q.correct;
-            if (isCorrect) score++;
+
+            axisScores[q.axis].total++;
+            if (isCorrect) {
+                score++;
+                streak++;
+                if (streak > maxStreak) maxStreak = streak;
+                axisScores[q.axis].correct++;
+            } else {
+                streak = 0;
+            }
+
+            // Update streak display
+            const streakBar = document.getElementById('streak-bar');
+            if (streak >= 2) {
+                streakBar.style.display = 'flex';
+                document.getElementById('streak-count').textContent = streak;
+            } else {
+                streakBar.style.display = 'none';
+            }
 
             const options = document.querySelectorAll('.option');
+            options.forEach(o => { o.style.pointerEvents = 'none'; });
             options[q.correct].classList.add('correct');
             if (!isCorrect) options[selectedAnswer].classList.add('incorrect');
 
@@ -487,38 +761,64 @@
             document.getElementById('results').classList.add('show');
 
             const pct = Math.round((score / 20) * 100);
-            let stars = '';
-            if (pct >= 90) stars = '⭐⭐⭐⭐⭐';
-            else if (pct >= 80) stars = '⭐⭐⭐⭐';
-            else if (pct >= 70) stars = '⭐⭐⭐';
-            else if (pct >= 60) stars = '⭐⭐';
-            else stars = '⭐';
+            let starCount;
+            if (pct >= 90) starCount = 5;
+            else if (pct >= 75) starCount = 4;
+            else if (pct >= 60) starCount = 3;
+            else if (pct >= 40) starCount = 2;
+            else starCount = 1;
+            const starsStr = '⭐'.repeat(starCount);
 
             const endTime = new Date();
             const timeSpent = Math.floor((endTime - startTime) / 1000);
 
+            // Axis breakdown
+            const breakdownDiv = document.getElementById('axis-breakdown');
+            Object.entries(axisNames).forEach(([key, name]) => {
+                const data = axisScores[key];
+                const row = document.createElement('div');
+                row.className = 'axis-row';
+                const axisPct = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
+                row.innerHTML = `<span>${name}</span><span class="axis-score">${data.correct}/${data.total} (${axisPct}%)</span>`;
+                breakdownDiv.appendChild(row);
+            });
+
             const resultData = {
                 v: 't_angl',
                 dt: new Date().toISOString(),
-                axis: currentAxis,
                 score: `${score}/20`,
                 pct: pct,
-                stars: stars.length / 2,
-                time: timeSpent
+                stars: starCount,
+                time: timeSpent,
+                streak: maxStreak,
+                axes: {}
             };
+            Object.entries(axisScores).forEach(([key, data]) => {
+                resultData.axes[key] = { c: data.correct, t: data.total };
+            });
 
             const resultCode = btoa(unescape(encodeURIComponent(JSON.stringify(resultData))));
 
             document.getElementById('final-score').textContent = `${score} / 20`;
-            document.getElementById('stars').textContent = stars;
+            document.getElementById('stars').textContent = starsStr;
             document.getElementById('message').textContent =
-                pct >= 80 ? '🎉 Excellent work!' :
-                pct >= 60 ? '👍 Good effort!' :
-                '💪 Keep practicing!';
+                pct >= 85 ? '🎉 Outstanding! You\'re well prepared for the Bac!' :
+                pct >= 70 ? '👏 Great job! Keep revising the weaker axes.' :
+                pct >= 50 ? '👍 Decent effort. Focus on your weak areas.' :
+                '💪 Keep practising! Review each axis carefully.';
             document.getElementById('result-code').textContent = resultCode;
         }
 
-        shuffleQuestions();
+        function copyCode() {
+            const code = document.getElementById('result-code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const msg = document.getElementById('copy-msg');
+                msg.style.display = 'block';
+                setTimeout(() => { msg.style.display = 'none'; }, 2000);
+            });
+        }
+
+        selectQuestions();
         loadQuestion();
     </script>
 </body>
